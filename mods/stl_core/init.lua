@@ -7,6 +7,7 @@ math.round = math.round
 
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."names.lua")
+dofile(modpath.."nodes.lua")
 dofile(modpath.."mapgen.lua")
 
 minetest.register_chatcommand("planet", {
@@ -14,7 +15,7 @@ minetest.register_chatcommand("planet", {
     description = "Get info about the current planet",
     privs = {debug=true},
     func = function (playername)
-        local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos())
+        local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos().y)
         if not index then return false, "Not currently in a planet" end
         return true, "Planet Index: "..index.."\nName: "..stellua.planets[index].name.."\nSeed: "..stellua.planets[index].seed
     end
