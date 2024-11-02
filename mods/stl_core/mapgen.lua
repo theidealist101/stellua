@@ -44,7 +44,7 @@ end
 local function get_nearby_param2(rand, param2)
     local x, y = (param2-1)%16, math.ceil(param2/16)-1
     x = (x+rand:next(-4, 4))%16
-    y = (y+rand:next(-4, 4))%16
+    y = math.min(math.max(y+rand:next(-4, 4), 0), 15)
     return y*16+x+1
 end
 
