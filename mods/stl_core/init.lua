@@ -1,5 +1,10 @@
 stellua = {}
 
+--shut up vs code
+table.insert_all = table.insert_all
+table.indexof = table.indexof
+math.round = math.round
+
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."names.lua")
 dofile(modpath.."mapgen.lua")
