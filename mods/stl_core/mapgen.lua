@@ -58,6 +58,7 @@ if not next(planets) then
         planet.level = level
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
+        planet.param2_stone = prand:next(0, 255)
 
         --noise maps
         local scale = prand:next(100, 200)*0.01
@@ -89,9 +90,9 @@ local c_air = minetest.CONTENT_AIR
 --The actual mapgen
 function luamap.logic(noises, x, y, z, seed)
     local index = get_planet_index(y)
-    if not index then return c_air end
+    if not index then return c_air, 0 end
     local planet = planets[index]
     local noise = noises["planet"..index]
-    if y <= noise then return planet.c_stone end
-    return c_air
+    if y <= noise then return planet.c_stone, planet.param2_stone end
+    return c_air, 0
 end

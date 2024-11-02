@@ -77,6 +77,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
 	
 	local data = vm:get_data()
+	local param2_data = vm:get_param2_data()
 	local sidelen = maxp.x - minp.x + 1
 	local chulens3d = {x=sidelen, y=sidelen, z=sidelen}
 	local chulens2d = {x=sidelen, y=sidelen, z=1}
@@ -131,7 +132,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
                     	noise_vals[name] = elements.nvals[i3dy]
 					end
                 end
-                data[vi] = logic(noise_vals,x,y,z,seed,data[vi])
+                data[vi], param2_data[vi] = logic(noise_vals,x,y,z,seed,data[vi], param2_data[vi])
 				i3dy = i3dy + ystride 
 			end
 			
@@ -142,6 +143,7 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	end
 	luamap.postcalc(data, area, vm, minp, maxp, seed)
 	vm:set_data(data)
+	vm:set_param2_data(param2_data)
 	vm:calc_lighting()
 	vm:write_to_map(data)
 	vm:update_liquids()
