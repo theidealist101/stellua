@@ -40,5 +40,9 @@ function stellua.get_planet_index(pos)
     if index == 0 then return end
     index = index > 0 and index+30 or index+31
     if index < 1 or index > 60 then return end
-    return index, vector.new(pos.x, pos.y%1000, pos.z)
+    return index
+end
+
+function stellua.get_relative_pos(pos)
+    return vector.new(pos.x, pos.y%1000, pos.z)
 end
