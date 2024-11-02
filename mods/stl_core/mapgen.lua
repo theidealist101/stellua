@@ -56,20 +56,22 @@ if not next(planets) then
         --specifics of terrain
         local level = stellua.get_planet_level(i)
         planet.level = level
-        planet.mapgen_stone = "stl_core:stone1"
+        planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
 
         --noise maps
+        local scale = prand:next(100, 200)*0.01
+        local spread = math.round(prand:next(100, 200)*scale)
         luamap.register_noise("planet"..i, {
             type = "2d",
             ymin = level-500,
             ymax = level+499,
             np_vals = {
                 offset = level,
-                scale = 100,
-                spread = {x=256, y=256, z=256},
+                scale = 10^scale,
+                spread = {x=spread, y=spread, z=spread},
                 seed = seed,
-                octaves = 5,
+                octaves = math.round(3+scale),
                 persistence = 0.5,
                 lacunarity = 2
             }
