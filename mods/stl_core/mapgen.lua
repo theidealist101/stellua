@@ -41,10 +41,11 @@ function stellua.get_planet_level(index)
 end
 
 --Get a param2 that's somewhere nearby another one
-local function get_nearby_param2(rand, param2)
+local function get_nearby_param2(rand, param2, dist)
+    dist = dist or 4
     local x, y = (param2-1)%16, math.ceil(param2/16)-1
-    x = (x+rand:next(-4, 4))%16
-    y = math.min(math.max(y+rand:next(-4, 4), 0), 15)
+    x = (x+rand:next(-dist, dist))%16
+    y = math.min(math.max(y+rand:next(-dist, dist), 0), 15)
     return y*16+x+1
 end
 
@@ -60,6 +61,7 @@ if not next(planets) then
         table.insert(planets, planet)
         planet.name = stellua.generate_name(prand, "star")
         planet.seed = seed
+        planet.life_stat = prand:next(0, 2)
 
         --specifics of terrain
         local level = stellua.get_planet_level(i)
@@ -70,7 +72,31 @@ if not next(planets) then
         planet.mapgen_filler = "stl_core:filler"..prand:next(1, 8)
         planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
         planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
-        planet.depth_filler = prand:next(0, 2)+prand:next(0, 1) --more likely to be 1 or 2 than 0 or 3
+        planet.depth_filler = planet.life_stat+prand:next(0, 1)
+
+        --foliage
+        if planet.life_stat > 0 then
+            planet.fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.02
+            local param2_grass = get_nearby_param2(prand, planet.param2_filler)
+            minetest.register_decoration({
+                deco_type = "simple",
+                place_on = {planet.mapgen_stone, planet.mapgen_filler},
+                fill_ratio = planet.fill_ratio,
+                y_min = level-500,
+                y_max = level+499,
+                decoration = "stl_core:grass"..prand:next(1, 8),
+                param2 = param2_grass
+            })
+            minetest.register_decoration({
+                deco_type = "simple",
+                place_on = {planet.mapgen_stone, planet.mapgen_filler},
+                fill_ratio = planet.fill_ratio*prand:next(1, 10)*0.1,
+                y_min = level-500,
+                y_max = level+499,
+                decoration = "stl_core:grass"..prand:next(1, 8),
+                param2 = get_nearby_param2(prand, param2_grass, 2)
+            })
+        end
 
         --noise maps
         local scale = prand:next(100, 200)*0.01
@@ -106,7 +132,7 @@ function luamap.logic(noises, x, y, z, seed)
     local planet = planets[index]
     local noise = noises["planet"..index]
     local height = y-noise
-    if height <= -planet.depth_filler then return planet.c_stone, planet.param2_stone
-    elseif height <= 0 then return planet.c_filler, planet.param2_filler end
+    if height < -planet.depth_filler then return planet.c_stone, planet.param2_stone
+    elseif height < 0 then return planet.c_filler, planet.param2_filler end
     return c_air, 0
 end

@@ -9,6 +9,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_filler3.png <- default_sand.png
 - stl_core_filler4.png <- default_sandstone.png
 - stl_core_filler5.png <- default_gravel.png
+- stl_core_grass(1-4).png <- default_grass_(1-4).png
+- stl_core_grass(5-8).png <- default_dry_grass_(1-4).png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -21,3 +23,5 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_filler6.png <- default_dirt.png
 - stl_core_filler7.png <- default_sand.png
 - stl_core_filler8.png <- default_gravel.png
+- stl_core_bush1.png <- mcl_flowers_tallgrass.png
+- stl_core_bush2.png <- mcl_flowers_fern.png
