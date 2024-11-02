@@ -17,6 +17,7 @@ minetest.register_chatcommand("planet", {
     func = function (playername)
         local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos().y)
         if not index then return false, "Not currently in a planet" end
-        return true, "Planet Index: "..index.."\nName: "..stellua.planets[index].name.."\nSeed: "..stellua.planets[index].seed
+        local planet = stellua.planets[index]
+        return true, "Planet Index: "..index.."\nName: "..planet.name.."\nSeed: "..planet.seed.."\nHeat: "..planet.heat_stat.."K\nLife: "..planet.life_stat
     end
 })

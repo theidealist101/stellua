@@ -40,13 +40,21 @@ function stellua.get_planet_level(index)
     return index*1000
 end
 
+--Get param2 in range depending on heat stat
+local function get_heat_param2(rand, heat)
+    local y = rand:next(0, 15)
+    local minx = heat <= 300 and 0 or math.round(luamap.remap(heat, 300, 500, 0, 7))
+    local maxx = heat >= 300 and 15 or math.round(luamap.remap(heat, 100, 300, 15, 8))
+    return y*16+rand:next(minx, maxx)
+end
+
 --Get a param2 that's somewhere nearby another one
 local function get_nearby_param2(rand, param2, dist)
     dist = dist or 4
-    local x, y = (param2-1)%16, math.ceil(param2/16)-1
+    local x, y = param2%16, math.floor(param2/16)
     x = (x+rand:next(-dist, dist))%16
     y = math.min(math.max(y+rand:next(-dist, dist), 0), 15)
-    return y*16+x+1
+    return y*16+x
 end
 
 --Set up planets and attributes on first load
@@ -61,14 +69,15 @@ if not next(planets) then
         table.insert(planets, planet)
         planet.name = stellua.generate_name(prand, "star")
         planet.seed = seed
-        planet.life_stat = prand:next(0, 2)
+        planet.heat_stat = prand:next(100, 300)+prand:next(0, 200) --temperature in Kelvin
+        planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and prand:next(1, 2) or 0
 
         --specifics of terrain
         local level = stellua.get_planet_level(i)
         planet.level = level
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
-        planet.param2_stone = prand:next(0, 255)
+        planet.param2_stone = get_heat_param2(prand, planet.heat_stat)
         planet.mapgen_filler = "stl_core:filler"..prand:next(1, 8)
         planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
         planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
