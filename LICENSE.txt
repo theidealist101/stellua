@@ -1,0 +1,15 @@
+=== MEDIA ===
+
+The following textures are borrowed from Minetest Game and are under CC BY-SA 3.0:
+
+- stl_core_stone1.png <- default_stone.png
+- stl_core_stone2.png <- default_cobble.png
+
+The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
+
+- stl_core_stone3.png <- default_stone.png
+- stl_core_stone4.png <- default_cobble.png
+- stl_core_stone5.png <- mcl_deepslate.png
+- stl_core_stone6.png <- mcl_core_granite.png
+- stl_core_stone7.png <- mcl_core_diorite.png
+- stl_core_stone8.png <- mcl_deepslate_tuff.png
