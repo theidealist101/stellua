@@ -4,6 +4,11 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 
 - stl_core_stone1.png <- default_stone.png
 - stl_core_stone2.png <- default_cobble.png
+- stl_core_filler1.png <- default_dirt.png
+- stl_core_filler2.png <- default_dry_dirt.png
+- stl_core_filler3.png <- default_sand.png
+- stl_core_filler4.png <- default_sandstone.png
+- stl_core_filler5.png <- default_gravel.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -13,3 +18,6 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_stone6.png <- mcl_core_granite.png
 - stl_core_stone7.png <- mcl_core_diorite.png
 - stl_core_stone8.png <- mcl_deepslate_tuff.png
+- stl_core_filler6.png <- default_dirt.png
+- stl_core_filler7.png <- default_sand.png
+- stl_core_filler8.png <- default_gravel.png

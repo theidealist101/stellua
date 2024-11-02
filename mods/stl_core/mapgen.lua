@@ -40,6 +40,14 @@ function stellua.get_planet_level(index)
     return index*1000
 end
 
+--Get a param2 that's somewhere nearby another one
+local function get_nearby_param2(rand, param2)
+    local x, y = (param2-1)%16, math.ceil(param2/16)-1
+    x = (x+rand:next(-4, 4))%16
+    y = (y+rand:next(-4, 4))%16
+    return y*16+x+1
+end
+
 --Set up planets and attributes on first load
 if not next(planets) then
     local rand = PcgRandom(minetest.get_mapgen_setting("seed"))
@@ -59,6 +67,10 @@ if not next(planets) then
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
         planet.param2_stone = prand:next(0, 255)
+        planet.mapgen_filler = "stl_core:filler"..prand:next(1, 8)
+        planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
+        planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
+        planet.depth_filler = prand:next(0, 2)+prand:next(0, 1) --more likely to be 1 or 2 than 0 or 3
 
         --noise maps
         local scale = prand:next(100, 200)*0.01
@@ -93,6 +105,8 @@ function luamap.logic(noises, x, y, z, seed)
     if not index then return c_air, 0 end
     local planet = planets[index]
     local noise = noises["planet"..index]
-    if y <= noise then return planet.c_stone, planet.param2_stone end
+    local height = y-noise
+    if height <= -planet.depth_filler then return planet.c_stone, planet.param2_stone
+    elseif height <= 0 then return planet.c_filler, planet.param2_filler end
     return c_air, 0
 end
