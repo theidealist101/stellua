@@ -87,10 +87,10 @@ if not next(planets) then
             return {
                 type = "plain",
                 base_color = {r=newcol.x, g=newcol.y, b=newcol.z},
-                fog = fog_table
+                fog = fog_table,
+                clouds = false --clouds are currently bugged
             }
         end
-        planet.sun = {sunrise = "sunrisebg.png^[opacity:"..(alpha*255)}
         planet.stars = {day_opacity=1-alpha}
 
         --specifics of terrain
@@ -174,16 +174,20 @@ minetest.register_globalstep(function()
         if not index then
             player:set_sky({
                 type = "plain",
-                base_color = "#000000"
+                base_color = "#000000",
+                clouds = false
             })
-            player:set_sun({sunrise_visible=false})
             player:set_stars({day_opacity=1})
         else
             local planet = planets[index]
             player:set_sky(planet.sky(minetest.get_timeofday()))
-            player:set_sun(planet.sun)
             player:set_stars(planet.stars)
-            --minetest.log(planet.sky.fog.fog_start)
+            player:set_clouds({height=planet.level+120})
         end
     end
+end)
+
+minetest.register_on_joinplayer(function(player)
+    player:set_sun({visible=false, sunrise_visible=false})
+    player:set_moon({visible=false})
 end)
