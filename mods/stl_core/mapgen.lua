@@ -77,15 +77,19 @@ if not next(planets) then
 
         --sky stuffs
         local alpha = math.min(planet.atmo_stat, 1)
-        local fog = planet.atmo_stat*0.33333
-        local fog_dist = 200-fog*180
+        local fog = (planet.atmo_stat*0.33333)^2
+        local fog_dist = 250-fog*180
+        local fog_table = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
         local r, g = prand:next(0, 255), prand:next(0, 255)
         local col = SKY_COL*alpha*(1-fog)+vector.new(r, g, math.min(512-r-g, 255))*fog
-        planet.sky = {
-            type = "plain",
-            base_color = {r=col.x, g=col.y, b=col.z},
-            fog = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
-        }
+        function planet.sky(timeofday)
+            local newcol = col*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
+            return {
+                type = "plain",
+                base_color = {r=newcol.x, g=newcol.y, b=newcol.z},
+                fog = fog_table
+            }
+        end
         planet.sun = {sunrise = "sunrisebg.png^[opacity:"..(alpha*255)}
         planet.stars = {day_opacity=1-alpha}
 
@@ -102,12 +106,12 @@ if not next(planets) then
 
         --foliage
         if planet.life_stat > 0 then
-            planet.fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.05
+            local fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.05
             local param2_grass = get_nearby_param2(prand, planet.param2_filler)
             minetest.register_decoration({
                 deco_type = "simple",
                 place_on = {planet.mapgen_stone, planet.mapgen_filler},
-                fill_ratio = planet.fill_ratio,
+                fill_ratio = fill_ratio,
                 y_min = level-500,
                 y_max = level+499,
                 decoration = "stl_core:grass"..prand:next(1, 8),
@@ -116,7 +120,7 @@ if not next(planets) then
             minetest.register_decoration({
                 deco_type = "simple",
                 place_on = {planet.mapgen_stone, planet.mapgen_filler},
-                fill_ratio = planet.fill_ratio*prand:next(1, 10)*0.1,
+                fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
                 y_min = level-500,
                 y_max = level+499,
                 decoration = "stl_core:grass"..prand:next(1, 8),
@@ -176,7 +180,7 @@ minetest.register_globalstep(function()
             player:set_stars({day_opacity=1})
         else
             local planet = planets[index]
-            player:set_sky(planet.sky)
+            player:set_sky(planet.sky(minetest.get_timeofday()))
             player:set_sun(planet.sun)
             player:set_stars(planet.stars)
             --minetest.log(planet.sky.fog.fog_start)
