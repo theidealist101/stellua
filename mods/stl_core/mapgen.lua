@@ -57,6 +57,8 @@ local function get_nearby_param2(rand, param2, dist)
     return y*16+x
 end
 
+local SKY_COL = vector.new(97, 181, 245)
+
 --Set up planets and attributes on first load
 if not next(planets) then
     local rand = PcgRandom(minetest.get_mapgen_setting("seed"))
@@ -70,7 +72,22 @@ if not next(planets) then
         planet.name = stellua.generate_name(prand, "star")
         planet.seed = seed
         planet.heat_stat = prand:next(100, 300)+prand:next(0, 200) --temperature in Kelvin
-        planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and prand:next(1, 2) or 0
+        planet.atmo_stat = prand:next(0, 300)*0.01 --atmospheric pressure in atmospheres
+        planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 2) or 0
+
+        --sky stuffs
+        local alpha = math.min(planet.atmo_stat, 1)
+        local fog = planet.atmo_stat*0.33333
+        local fog_dist = 200-fog*180
+        local r, g = prand:next(0, 255), prand:next(0, 255)
+        local col = SKY_COL*alpha*(1-fog)+vector.new(r, g, math.min(512-r-g, 255))*fog
+        planet.sky = {
+            type = "plain",
+            base_color = {r=col.x, g=col.y, b=col.z},
+            fog = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
+        }
+        planet.sun = {sunrise = "sunrisebg.png^[opacity:"..(alpha*255)}
+        planet.stars = {day_opacity=1-alpha}
 
         --specifics of terrain
         local level = stellua.get_planet_level(i)
@@ -85,7 +102,7 @@ if not next(planets) then
 
         --foliage
         if planet.life_stat > 0 then
-            planet.fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.02
+            planet.fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.05
             local param2_grass = get_nearby_param2(prand, planet.param2_filler)
             minetest.register_decoration({
                 deco_type = "simple",
@@ -145,3 +162,24 @@ function luamap.logic(noises, x, y, z, seed)
     elseif height < 0 then return planet.c_filler, planet.param2_filler end
     return c_air, 0
 end
+
+--Show player planet sky
+minetest.register_globalstep(function()
+    for _, player in ipairs(minetest.get_connected_players()) do
+        local index = get_planet_index(player:get_pos().y)
+        if not index then
+            player:set_sky({
+                type = "plain",
+                base_color = "#000000"
+            })
+            player:set_sun({sunrise_visible=false})
+            player:set_stars({day_opacity=1})
+        else
+            local planet = planets[index]
+            player:set_sky(planet.sky)
+            player:set_sun(planet.sun)
+            player:set_stars(planet.stars)
+            --minetest.log(planet.sky.fog.fog_start)
+        end
+    end
+end)
