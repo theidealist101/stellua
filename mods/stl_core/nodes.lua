@@ -54,8 +54,11 @@ for i = 1, 8 do
 end
 
 --Surface liquids
+stellua.registered_waters = {}
+
 local function register_water(name, defs)
     local op = defs.tiles_opacity and "^[opacity:"..defs.tiles_opacity or ""
+    table.insert(stellua.registered_waters, {name, defs})
 
     minetest.register_node(name.."_source", {
         description = defs.description.." Source",
@@ -76,7 +79,7 @@ local function register_water(name, defs)
         liquid_alternative_source = name.."_source",
         liquid_alternative_flowing = name.."_flowing",
         liquid_alternative_frozen = defs.frozen_tiles and name.."_frozen",
-        liquid_viscosity = 0,
+        liquid_viscosity = defs.liquid_viscosity or 0,
         liquid_renewable = defs.liquid_renewable,
         liquid_range = 8,
         drowning = 1,
@@ -103,7 +106,7 @@ local function register_water(name, defs)
         liquidtype = "flowing",
         liquid_alternative_source = name.."_source",
         liquid_alternative_flowing = name.."_flowing",
-        liquid_viscosity = 7,
+        liquid_viscosity = defs.liquid_viscosity or 0,
         liquid_renewable = defs.liquid_renewable,
         liquid_range = 8,
         drowning = 1,
@@ -134,7 +137,8 @@ register_water("stl_core:water", {
     frozen_tiles = "default_ice.png^[opacity:225",
     tint = {a=192, r=40, g=70, b=120},
     melt_point = 273,
-    boil_point = 373
+    boil_point = 373,
+    weight = 2
 })
 
 register_water("stl_core:ammonia_water", {
@@ -149,21 +153,35 @@ register_water("stl_core:ammonia_water", {
 register_water("stl_core:methane", {
     description = "Methane",
     tiles = "stl_core_methane",
-    tiles_opacity = 224,
-    tint = {a=224, r=0, g=5, b=0},
+    tiles_opacity = 128,
+    tint = {a=128, r=0, g=5, b=0},
+    liquid_viscosity = 0, --remember this wants to be a gas
     liquid_renewable = false,
     damage_per_second = 1,
-    melt_point = -100, --can't be arsed to deal with solid methane
-    boil_point = 110
+    melt_point = 0, --can't be arsed to deal with solid methane
+    boil_point = 185
+})
+
+register_water("stl_core:petroleum", {
+    description = "Petroleum",
+    tiles = "stl_core_methane",
+    tint = {a=250, r=0, g=5, b=0},
+    liquid_viscosity = 7,
+    liquid_renewable = false,
+    animation_period = 2,
+    damage_per_second = 2,
+    melt_point = 360, --an excuse to make it less common
+    boil_point = 600
 })
 
 register_water("stl_core:lava", {
     description = "Lava",
     tiles = "default_lava",
     tint = {a=240, r=192, g=64, b=0},
+    liquid_viscosity = 7,
     liquid_renewable = false,
     animation_period = 2,
     damage_per_second = 2,
     melt_point = 400, --lol
-    boil_point = 1000
+    boil_point = 1000 --also lol
 })

@@ -83,8 +83,8 @@ minetest.register_on_mods_loaded(function()
             local fog = (planet.atmo_stat*0.33333)^2
             local fog_dist = 250-fog*180
             local fog_table = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
-            local r, g = prand:next(0, 255), prand:next(0, 255)
-            local col = SKY_COL*alpha*(1-fog)+vector.new(r, g, math.min(512-r-g, 255))*fog
+            local r, g = prand:next(0, 400), prand:next(0, 400) --bit more likely to be yellow rather than blue
+            local col = SKY_COL*alpha*(1-fog)+vector.new(math.min(r, 255), math.min(g, 255), math.min(512-r-g, 255))*fog
             function planet.sky(timeofday)
                 local newcol = col*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
                 return {
@@ -125,36 +125,43 @@ minetest.register_on_mods_loaded(function()
             planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
             planet.depth_filler = planet.life_stat+prand:next(0, 1)
 
-            local water_options = {}
-            for name, defs in pairs(minetest.registered_nodes) do
-                if defs.liquidtype == "source" and planet.heat_stat < defs.boil_point and (defs.liquid_alternative_frozen or planet.heat_stat > defs.melt_point) then
-                    table.insert(water_options, {name, defs})
+            local water_options = {{0, 0}}
+            for _, val in pairs(stellua.registered_waters) do
+                local name, defs = unpack(val)
+                if planet.heat_stat < defs.boil_point and (defs.frozen_tiles or planet.heat_stat > defs.melt_point) then
+                    for _ = 1, defs.weight or 1 do
+                        table.insert(water_options, {name, defs})
+                    end
                 end
             end
 
             if planet.atmo_stat >= 0.5 and #water_options > 0 then
-                planet.water_level = level+prand:next(math.round(-0.5*10^scale), math.round(0.5*10^scale))
-
                 local water, defs = unpack(water_options[prand:next(1, #water_options)])
-                planet.mapgen_water = water
-                planet.c_water = minetest.get_content_id(planet.mapgen_water)
+                if water ~= 0 then
+                    planet.water_level = level+prand:next(math.round(-0.5*10^scale), math.round(0.5*10^scale))
 
-                repeat b = prand:next(1, 8) until a ~= b
-                planet.mapgen_seabed = "stl_core:filler"..b
-                planet.c_seabed = minetest.get_content_id(planet.mapgen_seabed)
-                planet.param2_seabed = get_nearby_param2(prand, planet.param2_stone)
-                planet.depth_seabed = math.max(planet.life_stat+prand:next(-1, 0), 0)
+                    planet.mapgen_water = water.."_source"
+                    planet.c_water = minetest.get_content_id(planet.mapgen_water)
+                    planet.water_name = defs.description
 
-                repeat c = prand:next(1, 8) until a ~= c and b ~= c
-                planet.mapgen_beach = "stl_core:filler"..c
-                planet.c_beach = minetest.get_content_id(planet.mapgen_beach)
-                planet.param2_beach = get_nearby_param2(prand, planet.param2_stone-32, 2)
-                planet.depth_beach = planet.life_stat
+                    repeat b = prand:next(1, 8) until a ~= b
+                    planet.mapgen_seabed = "stl_core:filler"..b
+                    planet.c_seabed = minetest.get_content_id(planet.mapgen_seabed)
+                    planet.param2_seabed = get_nearby_param2(prand, planet.param2_stone)
+                    planet.depth_seabed = math.max(planet.life_stat+prand:next(-1, 0), 0)
 
-                if planet.heat_stat <= defs.melt_point and defs.liquid_alternative_frozen then
-                    planet.mapgen_water_top = defs.liquid_alternative_frozen
-                    planet.c_water_top = minetest.get_content_id(planet.mapgen_water_top)
-                    planet.depth_water_top = math.ceil((defs.melt_point-planet.heat_stat+1)*0.1)
+                    repeat c = prand:next(1, 8) until a ~= c and b ~= c
+                    planet.mapgen_beach = "stl_core:filler"..c
+                    planet.c_beach = minetest.get_content_id(planet.mapgen_beach)
+                    planet.param2_beach = get_nearby_param2(prand, planet.param2_stone-32, 2)
+                    planet.depth_beach = planet.life_stat
+
+                    if planet.heat_stat <= defs.melt_point and defs.frozen_tiles then
+                        planet.mapgen_water_top = water.."_frozen"
+                        planet.c_water_top = minetest.get_content_id(planet.mapgen_water_top)
+                        planet.depth_water_top = math.ceil((defs.melt_point-planet.heat_stat+1)*0.1)
+                        planet.water_name = planet.water_name.." Ice"
+                    end
                 end
             end
 
@@ -227,10 +234,12 @@ minetest.register_globalstep(function()
                 base_color = "#000000",
                 clouds = false
             })
+            player:set_sun({visible=false})
             player:set_stars({day_opacity=1})
         else
             local planet = planets[index]
             player:set_sky(planet.sky(minetest.get_timeofday()))
+            player:set_sun({visible=true})
             player:set_stars(planet.stars)
             player:set_clouds({height=(planet.water_level or planet.level)+120})
         end
@@ -238,6 +247,6 @@ minetest.register_globalstep(function()
 end)
 
 minetest.register_on_joinplayer(function(player)
-    player:set_sun({visible=false, sunrise_visible=false})
+    player:set_sun({sunrise_visible=false})
     player:set_moon({visible=false})
 end)
