@@ -129,7 +129,7 @@ minetest.register_on_mods_loaded(function()
             for _, val in pairs(stellua.registered_waters) do
                 local name, defs = unpack(val)
                 if planet.heat_stat < defs.boil_point and (defs.frozen_tiles or planet.heat_stat > defs.melt_point) then
-                    for _ = 1, defs.weight or 1 do
+                    for _ = 1, (defs.weight or 1)*10 do
                         table.insert(water_options, {name, defs})
                     end
                 end

@@ -159,7 +159,8 @@ register_water("stl_core:methane", {
     liquid_renewable = false,
     damage_per_second = 1,
     melt_point = 0, --can't be arsed to deal with solid methane
-    boil_point = 185
+    boil_point = 230, --technically propane
+    weight = 1.5
 })
 
 register_water("stl_core:petroleum", {
@@ -171,7 +172,8 @@ register_water("stl_core:petroleum", {
     animation_period = 2,
     damage_per_second = 2,
     melt_point = 360, --an excuse to make it less common
-    boil_point = 600
+    boil_point = 600,
+    weight = 0.5
 })
 
 register_water("stl_core:lava", {
