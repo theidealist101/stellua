@@ -48,6 +48,7 @@ for i = 1, 8 do
         pointable = false,
         buildable_to = true,
         floodable = true,
+        waving = 1,
         groups = {attached_node=1},
         drop = {}
     })
@@ -85,6 +86,7 @@ local function register_water(name, defs)
         liquid_range = 8,
         drowning = 1,
         damage_per_second = defs.damage_per_second,
+        waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point
     })
@@ -112,6 +114,7 @@ local function register_water(name, defs)
         liquid_range = 8,
         drowning = 1,
         damage_per_second = defs.damage_per_second,
+        waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point
     })
@@ -221,6 +224,7 @@ register_water("stl_core:lava", {
     description = "Lava",
     tiles = "default_lava",
     tint = {a=240, r=192, g=64, b=0},
+    snow = "stl_core:charred_earth",
     liquid_viscosity = 7,
     liquid_renewable = false,
     animation_period = 2,
