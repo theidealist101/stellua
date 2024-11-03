@@ -22,6 +22,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_methane_flowing_animated.png <- default_lava_flowing_animated.png
 - default_snow.png
 - stl_core_benzene_snow.png <- default_grass.png
+- default_coal_block.png
+- stl_core_ash.png <- default_clay.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

@@ -191,7 +191,7 @@ minetest.register_on_mods_loaded(function()
                 end
             end
 
-            if planet.atmo_stat >= 0.5 and #snow_options > 0 then
+            if #snow_options > 0 then
                 local snow, defs = unpack(snow_options[prand:next(1, #snow_options)])
                 if snow ~= 0 then
                     minetest.register_decoration({

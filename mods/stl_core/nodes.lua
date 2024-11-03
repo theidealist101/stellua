@@ -198,7 +198,7 @@ register_water("stl_core:methane", {
     weight = 1.5
 })
 
-register_snow("stl_core:benzene_snow", { --source, I saw it on wikipedia
+register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
     description = "Benzene Snow",
     tiles = "stl_core_benzene_snow.png",
     melt_point = 250
@@ -227,4 +227,16 @@ register_water("stl_core:lava", {
     damage_per_second = 2,
     melt_point = 400, --lol
     boil_point = 1000 --also lol
+})
+
+register_snow("stl_core:ash", {
+    description = "Ash",
+    tiles = "stl_core_ash.png",
+    start_point = 350
+})
+
+register_snow("stl_core:charred_earth", {
+    description = "Charred Earth",
+    tiles = "default_coal_block.png",
+    start_point = 410
 })
