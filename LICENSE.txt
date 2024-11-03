@@ -20,6 +20,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - default_lava_flowing_animated.png
 - stl_core_methane_source_animated.png <- default_lava_source_animated.png
 - stl_core_methane_flowing_animated.png <- default_lava_flowing_animated.png
+- default_snow.png
+- stl_core_benzene_snow.png <- default_grass.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -35,3 +37,4 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_bush1.png <- mcl_flowers_tallgrass.png
 - stl_core_bush2.png <- mcl_flowers_fern.png
 - mcl_core_ice_packed.png
+- stl_core_ammonia_snow.png <- default_snow.png

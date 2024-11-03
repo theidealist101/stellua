@@ -125,7 +125,8 @@ minetest.register_on_mods_loaded(function()
             planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
             planet.depth_filler = planet.life_stat+prand:next(0, 1)
 
-            local water_options = {{0, 0}}
+            local water_options = {}
+            for _ = 1, 10 do table.insert(water_options, {0, 0}) end
             for _, val in pairs(stellua.registered_waters) do
                 local name, defs = unpack(val)
                 if planet.heat_stat < defs.boil_point and (defs.frozen_tiles or planet.heat_stat > defs.melt_point) then
@@ -161,17 +162,58 @@ minetest.register_on_mods_loaded(function()
                         planet.c_water_top = minetest.get_content_id(planet.mapgen_water_top)
                         planet.depth_water_top = math.ceil((defs.melt_point-planet.heat_stat+1)*0.1)
                         planet.water_name = planet.water_name.." Ice"
+
+                        if defs.snow then
+                            local snow_defs = minetest.registered_nodes[defs.snow]
+                            minetest.register_decoration({
+                                deco_type = "simple",
+                                place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
+                                fill_ratio = math.min(snow_defs.melt_point-planet.heat_stat+1, planet.heat_stat-snow_defs.start_point+1)*0.05,
+                                y_min = level-500,
+                                y_max = level+499,
+                                decoration = defs.snow,
+                                param2 = 8,
+                                param2_max = 16
+                            })
+                        end
                     end
+                end
+            end
+
+            local snow_options = {{0, 0}}
+            for _ = 1, 20 do table.insert(snow_options, {0, 0}) end
+            for _, val in pairs(stellua.registered_snows) do
+                local name, defs = unpack(val)
+                if planet.heat_stat < defs.melt_point and planet.heat_stat > defs.start_point then
+                    for _ = 1, (defs.weight or 1)*10 do
+                        table.insert(snow_options, {name, defs})
+                    end
+                end
+            end
+
+            if planet.atmo_stat >= 0.5 and #snow_options > 0 then
+                local snow, defs = unpack(snow_options[prand:next(1, #snow_options)])
+                if snow ~= 0 then
+                    minetest.register_decoration({
+                        deco_type = "simple",
+                        place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
+                        fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.05,
+                        y_min = level-500,
+                        y_max = level+499,
+                        decoration = snow,
+                        param2 = 8,
+                        param2_max = 16
+                    })
                 end
             end
 
             --foliage
             if planet.life_stat > 0 then
-                local fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.05
+                local fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.005
                 local param2_grass = get_nearby_param2(prand, planet.param2_filler)
                 minetest.register_decoration({
                     deco_type = "simple",
-                    place_on = {planet.mapgen_stone, planet.mapgen_filler},
+                    place_on = {planet.mapgen_filler},
                     fill_ratio = fill_ratio,
                     y_min = level-500,
                     y_max = level+499,

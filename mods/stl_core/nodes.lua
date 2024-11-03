@@ -4,7 +4,7 @@ minetest.override_item("", {
         full_punch_interval = 1,
         groupcaps = {
             cracky = {times={2}},
-            crumbly = {times={2}},
+            crumbly = {times={1, 2}},
             snappy = {times={0.5}}
         }
     }
@@ -28,7 +28,7 @@ for i = 1, 8 do
         tiles = {"stl_core_filler"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {crumbly=1}
+        groups = {crumbly=2}
     })
 end
 
@@ -55,6 +55,7 @@ end
 
 --Surface liquids
 stellua.registered_waters = {}
+stellua.registered_snows = {}
 
 local function register_water(name, defs)
     local op = defs.tiles_opacity and "^[opacity:"..defs.tiles_opacity or ""
@@ -131,23 +132,55 @@ local function register_water(name, defs)
     end
 end
 
+local function register_snow(name, defs)
+    defs.start_point = defs.start_point or 0
+    defs.melt_point = defs.melt_point or 1000
+    table.insert(stellua.registered_snows, {name, defs})
+    minetest.register_node(name, {
+        description = defs.description,
+        drawtype = "nodebox",
+        node_box = {type="leveled", fixed={-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}},
+        tiles = {defs.tiles},
+        paramtype = "light",
+        sunlight_propagates = true,
+        paramtype2 = "leveled",
+        groups = {crumbly=1},
+        melt_point = defs.melt_point,
+        start_point = defs.start_point
+    })
+end
+
 register_water("stl_core:water", {
     description = "Water",
     tiles = "default_water",
     frozen_tiles = "default_ice.png^[opacity:225",
+    snow = "stl_core:water_snow",
     tint = {a=192, r=40, g=70, b=120},
     melt_point = 273,
     boil_point = 373,
     weight = 2
 })
 
+register_snow("stl_core:water_snow", {
+    description = "Water Snow",
+    tiles = "default_snow.png",
+    melt_point = 273
+})
+
 register_water("stl_core:ammonia_water", {
     description = "Ammonia Water",
     tiles = "default_river_water",
     frozen_tiles = "mcl_core_ice_packed.png^[opacity:225",
+    snow = "stl_core:ammonia_snow",
     tint = {a=192, r=50, g=100, b=130},
     melt_point = 180,
     boil_point = 310
+})
+
+register_snow("stl_core:ammonia_snow", {
+    description = "Ammonia Snow",
+    tiles = "stl_core_ammonia_snow.png",
+    melt_point = 180
 })
 
 register_water("stl_core:methane", {
@@ -161,6 +194,12 @@ register_water("stl_core:methane", {
     melt_point = 0, --can't be arsed to deal with solid methane
     boil_point = 230, --technically propane
     weight = 1.5
+})
+
+register_snow("stl_core:benzene_snow", { --source, I saw it on wikipedia
+    description = "Benzene Snow",
+    tiles = "stl_core_benzene_snow.png",
+    melt_point = 200 --actually higher but yeah
 })
 
 register_water("stl_core:petroleum", {
