@@ -127,7 +127,7 @@ minetest.register_on_mods_loaded(function()
 
             local water_options = {}
             for name, defs in pairs(minetest.registered_nodes) do
-                if defs.liquidtype == "source" and planet.heat_stat < defs.boil_point then
+                if defs.liquidtype == "source" and planet.heat_stat < defs.boil_point and (defs.liquid_alternative_frozen or planet.heat_stat > defs.melt_point) then
                     table.insert(water_options, {name, defs})
                 end
             end
@@ -151,7 +151,7 @@ minetest.register_on_mods_loaded(function()
                 planet.param2_beach = get_nearby_param2(prand, planet.param2_stone-32, 2)
                 planet.depth_beach = planet.life_stat
 
-                if planet.heat_stat <= defs.melt_point then
+                if planet.heat_stat <= defs.melt_point and defs.liquid_alternative_frozen then
                     planet.mapgen_water_top = defs.liquid_alternative_frozen
                     planet.c_water_top = minetest.get_content_id(planet.mapgen_water_top)
                     planet.depth_water_top = math.ceil((defs.melt_point-planet.heat_stat+1)*0.1)
