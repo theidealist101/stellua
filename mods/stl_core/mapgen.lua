@@ -71,6 +71,8 @@ minetest.register_on_mods_loaded(function()
         planet.heat_stat = prand:next(100, 300)+prand:next(0, 200) --temperature in Kelvin
         planet.atmo_stat = prand:next(0, 300)*0.01 --atmospheric pressure in atmospheres
         planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 200)*0.01 or 0
+        local e = (planet.atmo_stat/3)^0.225
+        planet.dist = 127300*(1-e/2)/planet.heat_stat^2 --no idea what this does but it feels realistic enough
 
         --sky stuffs
         local alpha = math.min(planet.atmo_stat, 1)
@@ -82,6 +84,7 @@ minetest.register_on_mods_loaded(function()
         local r = prand:next(0, total)
         local col = SKY_COL*alpha*(1-fog)+vector.new(math.min(r, 255), math.min(total-r, 255), b)*fog
         planet.stars = {day_opacity=1-alpha}
+        planet.sun = {visible=true, scale=1/planet.dist}
 
         function planet.sky(timeofday)
             local newcol = col*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
@@ -288,7 +291,7 @@ minetest.register_globalstep(function()
         else
             local planet = planets[index]
             player:set_sky(planet.sky(minetest.get_timeofday()))
-            player:set_sun({visible=true})
+            player:set_sun(planet.sun)
             player:set_stars(planet.stars)
             player:set_clouds({height=(planet.water_level or planet.level)+120})
         end
