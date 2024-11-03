@@ -71,6 +71,8 @@ if not next(planets) then
         table.insert(planets, planet)
         planet.name = stellua.generate_name(prand, "star")
         planet.seed = seed
+        local level = stellua.get_planet_level(i)
+        planet.level = level
         planet.heat_stat = prand:next(100, 300)+prand:next(0, 200) --temperature in Kelvin
         planet.atmo_stat = prand:next(0, 300)*0.01 --atmospheric pressure in atmospheres
         planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 2) or 0
@@ -93,16 +95,52 @@ if not next(planets) then
         end
         planet.stars = {day_opacity=1-alpha}
 
+        --noise maps
+        local scale = prand:next(100, 200)*0.01
+        local spread = math.round(prand:next(100, 200)*scale)
+        luamap.register_noise("planet"..i, {
+            type = "2d",
+            ymin = level-500,
+            ymax = level+499,
+            np_vals = {
+                offset = level,
+                scale = 10^scale,
+                spread = {x=spread, y=spread, z=spread},
+                seed = seed,
+                octaves = math.round(3+scale),
+                persistence = 0.5,
+                lacunarity = 2
+            }
+        })
+
         --specifics of terrain
-        local level = stellua.get_planet_level(i)
-        planet.level = level
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
         planet.param2_stone = get_heat_param2(prand, planet.heat_stat)
-        planet.mapgen_filler = "stl_core:filler"..prand:next(1, 8)
+
+        local a, b, c = prand:next(1, 8)
+        planet.mapgen_filler = "stl_core:filler"..a
         planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
         planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
         planet.depth_filler = planet.life_stat+prand:next(0, 1)
+
+        if planet.heat_stat < 373 and planet.atmo_stat > 0.5 then
+            repeat b = prand:next(1, 8) until a ~= b
+            planet.mapgen_seabed = "stl_core:filler"..b
+            planet.c_seabed = minetest.get_content_id(planet.mapgen_seabed)
+            planet.param2_seabed = get_nearby_param2(prand, planet.param2_stone)
+            planet.depth_seabed = math.max(planet.life_stat+prand:next(-1, 0), 0)
+
+            repeat c = prand:next(1, 8) until a ~= c and b ~= c
+            planet.mapgen_beach = "stl_core:filler"..c
+            planet.c_beach = minetest.get_content_id(planet.mapgen_beach)
+            planet.param2_beach = get_nearby_param2(prand, planet.param2_stone-32, 2)
+            planet.depth_beach = planet.life_stat
+
+            planet.water_level = level+prand:next(math.round(-0.5*10^scale), math.round(0.5*10^scale))
+            planet.mapgen_water = "stl_core:water_source"
+            planet.c_water = minetest.get_content_id(planet.mapgen_water)
+        end
 
         --foliage
         if planet.life_stat > 0 then
@@ -127,24 +165,6 @@ if not next(planets) then
                 param2 = get_nearby_param2(prand, param2_grass, 2)
             })
         end
-
-        --noise maps
-        local scale = prand:next(100, 200)*0.01
-        local spread = math.round(prand:next(100, 200)*scale)
-        luamap.register_noise("planet"..i, {
-            type = "2d",
-            ymin = level-500,
-            ymax = level+499,
-            np_vals = {
-                offset = level,
-                scale = 10^scale,
-                spread = {x=spread, y=spread, z=spread},
-                seed = seed,
-                octaves = math.round(3+scale),
-                persistence = 0.5,
-                lacunarity = 2
-            }
-        })
     end
 end
 
@@ -162,8 +182,18 @@ function luamap.logic(noises, x, y, z, seed)
     local planet = planets[index]
     local noise = noises["planet"..index]
     local height = y-noise
+    if planet.water_level then
+        if noise <= planet.water_level-3 then
+            if height < -planet.depth_seabed then return planet.c_stone, planet.param2_stone
+            elseif height < 0 then return planet.c_seabed, planet.param2_seabed end
+        elseif noise <= planet.water_level+3 then
+            if height < -planet.depth_beach then return planet.c_stone, planet.param2_stone
+            elseif height < 0 then return planet.c_beach, planet.param2_beach end
+        end
+    end
     if height < -planet.depth_filler then return planet.c_stone, planet.param2_stone
     elseif height < 0 then return planet.c_filler, planet.param2_filler end
+    if planet.water_level and y-planet.water_level <= 0 then return planet.c_water, 0 end
     return c_air, 0
 end
 
@@ -182,7 +212,7 @@ minetest.register_globalstep(function()
             local planet = planets[index]
             player:set_sky(planet.sky(minetest.get_timeofday()))
             player:set_stars(planet.stars)
-            player:set_clouds({height=planet.level+120})
+            player:set_clouds({height=(planet.water_level or planet.level)+120})
         end
     end
 end)

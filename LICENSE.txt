@@ -11,6 +11,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_filler5.png <- default_gravel.png
 - stl_core_grass(1-4).png <- default_grass_(1-4).png
 - stl_core_grass(5-8).png <- default_dry_grass_(1-4).png
+- default_water_source_animated.png
+- default_water_flowing_animated.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
