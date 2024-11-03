@@ -4,6 +4,7 @@
         "PcgRandom",
         "dump",
         "vector",
-        "stellua"
+        "stellua",
+        "unpack"
     ]
 }
