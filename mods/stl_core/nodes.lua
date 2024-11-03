@@ -154,7 +154,7 @@ register_water("stl_core:methane", {
     liquid_renewable = false,
     damage_per_second = 1,
     melt_point = -100, --can't be arsed to deal with solid methane
-    boil_point = 185 --technically the boiling point of ethane but whatever
+    boil_point = 110
 })
 
 register_water("stl_core:lava", {
@@ -164,6 +164,6 @@ register_water("stl_core:lava", {
     liquid_renewable = false,
     animation_period = 2,
     damage_per_second = 2,
-    melt_point = 350, --lol
+    melt_point = 400, --lol
     boil_point = 1000
 })
