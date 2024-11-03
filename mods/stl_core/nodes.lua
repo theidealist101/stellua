@@ -150,6 +150,9 @@ local function register_snow(name, defs)
         groups = {crumbly=1},
         melt_point = defs.melt_point,
         start_point = defs.start_point,
+        walkable = false,
+        buildable_to = true,
+        floodable = true,
         drop = {}
     })
 end
@@ -255,5 +258,8 @@ minetest.register_node("stl_core:moss", {
     sunlight_propagates = true,
     paramtype2 = "color",
     palette = "palette_foliage.png",
+    walkable = false,
+    buildable_to = true,
+    floodable = true,
     groups = {snappy=1}
 })
