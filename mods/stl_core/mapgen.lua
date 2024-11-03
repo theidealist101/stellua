@@ -168,7 +168,7 @@ minetest.register_on_mods_loaded(function()
                             minetest.register_decoration({
                                 deco_type = "simple",
                                 place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
-                                fill_ratio = math.min(snow_defs.melt_point-planet.heat_stat+1, planet.heat_stat-snow_defs.start_point+1)*0.05,
+                                fill_ratio = math.min(snow_defs.melt_point-planet.heat_stat+1, planet.heat_stat-snow_defs.start_point+1)*0.01+0.5,
                                 y_min = level-500,
                                 y_max = level+499,
                                 decoration = defs.snow,
@@ -197,7 +197,7 @@ minetest.register_on_mods_loaded(function()
                     minetest.register_decoration({
                         deco_type = "simple",
                         place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
-                        fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.05,
+                        fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.01+0.5,
                         y_min = level-500,
                         y_max = level+499,
                         decoration = snow,

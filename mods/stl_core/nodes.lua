@@ -146,7 +146,8 @@ local function register_snow(name, defs)
         paramtype2 = "leveled",
         groups = {crumbly=1},
         melt_point = defs.melt_point,
-        start_point = defs.start_point
+        start_point = defs.start_point,
+        drop = {}
     })
 end
 
@@ -180,7 +181,8 @@ register_water("stl_core:ammonia_water", {
 register_snow("stl_core:ammonia_snow", {
     description = "Ammonia Snow",
     tiles = "stl_core_ammonia_snow.png",
-    melt_point = 180
+    melt_point = 215,
+    weight = 2
 })
 
 register_water("stl_core:methane", {
@@ -199,7 +201,7 @@ register_water("stl_core:methane", {
 register_snow("stl_core:benzene_snow", { --source, I saw it on wikipedia
     description = "Benzene Snow",
     tiles = "stl_core_benzene_snow.png",
-    melt_point = 200 --actually higher but yeah
+    melt_point = 250
 })
 
 register_water("stl_core:petroleum", {
