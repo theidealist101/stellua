@@ -244,3 +244,16 @@ register_snow("stl_core:charred_earth", {
     tiles = "default_coal_block.png",
     start_point = 410
 })
+
+--Some more life stuff
+minetest.register_node("stl_core:moss", {
+    description = "Moss",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
+    tiles = {"mcl_core_grass_block_top.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    paramtype2 = "color",
+    palette = "palette_foliage.png",
+    groups = {snappy=1}
+})

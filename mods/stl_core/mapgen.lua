@@ -231,6 +231,17 @@ minetest.register_on_mods_loaded(function()
                     decoration = "stl_core:grass"..prand:next(1, 8),
                     param2 = get_nearby_param2(prand, param2_grass, 2)
                 })
+                if planet.life_stat > 1 then
+                    minetest.register_decoration({
+                        deco_type = "simple",
+                        place_on = {planet.mapgen_filler},
+                        fill_ratio = (planet.life_stat-1)*0.4+prand:next(1, 20)*0.1,
+                        y_min = level-500,
+                        y_max = level+499,
+                        decoration = "stl_core:moss",
+                        param2 = get_nearby_param2(prand, param2_grass)
+                    })
+                end
             end
         end
     end
