@@ -76,7 +76,7 @@ minetest.register_on_mods_loaded(function()
             planet.level = level
             planet.heat_stat = prand:next(100, 300)+prand:next(0, 200) --temperature in Kelvin
             planet.atmo_stat = prand:next(0, 300)*0.01 --atmospheric pressure in atmospheres
-            planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 2) or 0
+            planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 200)*0.01 or 0
 
             --sky stuffs
             local alpha = math.min(planet.atmo_stat, 1)
@@ -123,7 +123,7 @@ minetest.register_on_mods_loaded(function()
             planet.mapgen_filler = "stl_core:filler"..a
             planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
             planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
-            planet.depth_filler = planet.life_stat+prand:next(0, 1)
+            planet.depth_filler = math.ceil(planet.life_stat+prand:next(0, 100)*0.01)
 
             local water_options = {}
             for _ = 1, 10 do table.insert(water_options, {0, 0}) end
@@ -149,13 +149,13 @@ minetest.register_on_mods_loaded(function()
                     planet.mapgen_seabed = "stl_core:filler"..b
                     planet.c_seabed = minetest.get_content_id(planet.mapgen_seabed)
                     planet.param2_seabed = get_nearby_param2(prand, planet.param2_stone)
-                    planet.depth_seabed = math.max(planet.life_stat+prand:next(-1, 0), 0)
+                    planet.depth_seabed = math.ceil(planet.life_stat+prand:next(-100, 0)*0.01)
 
                     repeat c = prand:next(1, 8) until a ~= c and b ~= c
                     planet.mapgen_beach = "stl_core:filler"..c
                     planet.c_beach = minetest.get_content_id(planet.mapgen_beach)
                     planet.param2_beach = get_nearby_param2(prand, planet.param2_stone-32, 2)
-                    planet.depth_beach = planet.life_stat
+                    planet.depth_beach = math.ceil(planet.life_stat+prand:next(-50, 50)*0.01)
 
                     if planet.heat_stat <= defs.melt_point and defs.frozen_tiles then
                         planet.mapgen_water_top = water.."_frozen"
@@ -209,7 +209,7 @@ minetest.register_on_mods_loaded(function()
 
             --foliage
             if planet.life_stat > 0 then
-                local fill_ratio = (planet.life_stat-1)*0.3+prand:next(1, 12)*0.005
+                local fill_ratio = planet.life_stat*0.2+prand:next(1, 12)*0.005
                 local param2_grass = get_nearby_param2(prand, planet.param2_filler)
                 minetest.register_decoration({
                     deco_type = "simple",
