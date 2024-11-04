@@ -19,7 +19,7 @@ minetest.register_chatcommand("planet", {
         local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos().y)
         if not index then return false, "Not currently in a planet" end
         local planet = stellua.planets[index]
-        return true, "Name: "..planet.name.."\nSeed: "..planet.seed.."\nHeat: "..planet.heat_stat.."K\nAtmosphere: "..planet.atmo_stat.."atm\n"..(planet.water_level and planet.water_name.." Level: "..(planet.water_level-planet.level) or "No surface liquid").."\nLife: "..planet.life_stat.."   Dist: "..planet.dist
+        return true, "Name: "..planet.name.."\nSeed: "..planet.seed.."   Scale: "..planet.scale.."\nHeat: "..planet.heat_stat.."K\nAtmosphere: "..planet.atmo_stat.."atm\n"..(planet.water_level and planet.water_name.." Level: "..(planet.water_level-planet.level) or "No surface liquid").."\nLife: "..planet.life_stat.."   Dist: "..math.round(planet.dist*1000)*0.001
     end
 })
 

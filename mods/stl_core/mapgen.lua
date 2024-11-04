@@ -67,7 +67,7 @@ minetest.register_on_mods_loaded(function()
         table.insert(stars, star)
         star.name = stellua.generate_name(prand, "star")
         star.seed = seed
-        star.scale = 10^(prand:next(-10, 10)*0.01)
+        star.scale = 10^(prand:next(-10, 10)*0.02)
         star.planets = {}
     end
 
@@ -115,6 +115,9 @@ minetest.register_on_mods_loaded(function()
 
         --noise maps
         local scale = prand:next(100, 200)*0.01
+        planet.scale = (planet.atmo_stat+1)*scale*0.25
+        planet.gravity = planet.scale^1.5
+        planet.walk_speed = math.min(1/planet.gravity, 1)
         local spread = math.round(prand:next(100, 200)*scale)
         luamap.register_noise("planet"..i, {
             type = "2d",
@@ -311,6 +314,7 @@ minetest.register_globalstep(function()
             player:set_sun(planet.sun)
             player:set_stars(planet.stars)
             player:set_clouds({height=(planet.water_level or planet.level)+120})
+            player:set_physics_override({gravity=planet.gravity, speed=planet.walk_speed})
         end
     end
 end)
