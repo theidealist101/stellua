@@ -69,6 +69,7 @@ minetest.register_on_mods_loaded(function()
         star.seed = seed
         star.scale = 10^(prand:next(-10, 10)*0.02)
         star.planets = {}
+        star.pos = vector.new(prand:next(-100, 100), prand:next(-100, 100), prand:next(-100, 100))*0.02 --parsecs
     end
 
     for i = 1, 60 do
@@ -95,6 +96,7 @@ minetest.register_on_mods_loaded(function()
         local alpha = math.min(planet.atmo_stat, 1)
         local fog = planet.atmo_stat*0.33333
         local fog_dist = 250-fog*180
+        planet.fog_dist = fog_dist
         local fog_table = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
         local b = luamap.remap(planet.heat_stat, 100, 500, 255, 0)
         local total = prand:next(255, 384)-b
@@ -295,31 +297,3 @@ function luamap.logic(noises, x, y, z, seed)
     end
     return c_air, 0
 end
-
---Show player planet sky
-minetest.register_globalstep(function()
-    for _, player in ipairs(minetest.get_connected_players()) do
-        local index = get_planet_index(player:get_pos().y)
-        if not index then
-            player:set_sky({
-                type = "plain",
-                base_color = "#000000",
-                clouds = false
-            })
-            player:set_sun({visible=false})
-            player:set_stars({day_opacity=1})
-        else
-            local planet = planets[index]
-            player:set_sky(planet.sky(minetest.get_timeofday()))
-            player:set_sun(planet.sun)
-            player:set_stars(planet.stars)
-            player:set_clouds({height=(planet.water_level or planet.level)+120})
-            player:set_physics_override({gravity=planet.gravity, speed=planet.walk_speed})
-        end
-    end
-end)
-
-minetest.register_on_joinplayer(function(player)
-    player:set_sun({sunrise_visible=false})
-    player:set_moon({visible=false})
-end)

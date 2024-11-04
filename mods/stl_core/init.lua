@@ -10,6 +10,7 @@ local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."names.lua")
 dofile(modpath.."nodes.lua")
 dofile(modpath.."mapgen.lua")
+dofile(modpath.."sky.lua")
 
 minetest.register_chatcommand("planet", {
     params = "",
@@ -19,7 +20,7 @@ minetest.register_chatcommand("planet", {
         local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos().y)
         if not index then return false, "Not currently in a planet" end
         local planet = stellua.planets[index]
-        return true, "Name: "..planet.name.."\nSeed: "..planet.seed.."   Scale: "..planet.scale.."\nHeat: "..planet.heat_stat.."K\nAtmosphere: "..planet.atmo_stat.."atm\n"..(planet.water_level and planet.water_name.." Level: "..(planet.water_level-planet.level) or "No surface liquid").."\nLife: "..planet.life_stat.."   Dist: "..math.round(planet.dist*1000)*0.001
+        return true, "Name: "..planet.name.."\nSeed: "..planet.seed.."   Scale: "..planet.scale.."\nHeat: "..planet.heat_stat.."K\nAtmosphere: "..planet.atmo_stat.."atm\n"..(planet.water_level and planet.water_name.." Level: "..(planet.water_level-planet.level) or "No surface liquid").."\nLife: "..planet.life_stat.."   Dist: "..(math.round(planet.dist*1000)*0.001).."AU"
     end
 })
 
@@ -31,11 +32,6 @@ minetest.register_chatcommand("star", {
         local index = stellua.get_planet_index(minetest.get_player_by_name(playername):get_pos().y)
         if not index then return false, "Not currently in a planet" end
         local star = stellua.stars[stellua.planets[index].star]
-        local out = {}
-        for _, i in ipairs(star.planets) do
-            local planet = stellua.planets[i]
-            table.insert(out, "- "..planet.name.." ("..i..")")
-        end
-        return true, "Name: "..star.name.."\nSeed: "..star.seed.."\nScale: "..star.scale.."\nPlanets:\n"..table.concat(out, "\n")
+        return true, "Name: "..star.name.."\nSeed: "..star.seed.."\nScale: "..star.scale.."\nPlanets: "..#star.planets.."\nPosition: ("..star.pos.x..", "..star.pos.y..", "..star.pos.z..")"
     end
 })
