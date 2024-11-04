@@ -181,3 +181,15 @@ function stellua.generate_name(rand, type)
     --return finished name
     return string.upper(string.sub(out, 1, 1))..string.sub(out, 2)
 end
+
+--Get the Roman numeral for the given number
+function stellua.roman_numeral(n)
+    local out = {}
+    for _, val in ipairs({{50, "L"}, {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"}, {1, "I"}}) do
+        while n >= val[1] do
+            n = n-val[1]
+            out[#out+1] = val[2]
+        end
+    end
+    return table.concat(out)
+end

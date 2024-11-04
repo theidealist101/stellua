@@ -5,6 +5,8 @@
 --Remember what the planet stuff was so we don't have to calculate it again
 local planets = {}
 stellua.planets = planets
+local stars = {}
+stellua.stars = stars
 
 --Choose a certain number of items from a range randomly
 local function choices(rand, n, a, b)
@@ -57,6 +59,18 @@ local SKY_COL = vector.new(97, 181, 245)
 --Set up planets and attributes on first load
 minetest.register_on_mods_loaded(function()
     local rand = PcgRandom(minetest.get_mapgen_setting("seed"))
+
+    for i = 1, 16 do
+        local seed = rand:next()
+        local prand = PcgRandom(seed)
+        local star = {}
+        table.insert(stars, star)
+        star.name = stellua.generate_name(prand, "star")
+        star.seed = seed
+        star.scale = 10^(prand:next(-10, 10)*0.01)
+        star.planets = {}
+    end
+
     for i = 1, 60 do
 
         --some basics
@@ -64,7 +78,10 @@ minetest.register_on_mods_loaded(function()
         local prand = PcgRandom(seed)
         local planet = {}
         table.insert(planets, planet)
-        planet.name = stellua.generate_name(prand, "star")
+        planet.star = prand:next(1, #stars)
+        local star = stars[planet.star]
+        table.insert(star.planets, i)
+        planet.name = star.name.." "..stellua.roman_numeral(#star.planets)
         planet.seed = seed
         local level = stellua.get_planet_level(i)
         planet.level = level
@@ -84,7 +101,7 @@ minetest.register_on_mods_loaded(function()
         local r = prand:next(0, total)
         local col = SKY_COL*alpha*(1-fog)+vector.new(math.min(r, 255), math.min(total-r, 255), b)*fog
         planet.stars = {day_opacity=1-alpha}
-        planet.sun = {visible=true, scale=1/planet.dist}
+        planet.sun = {visible=true, scale=star.scale/planet.dist}
 
         function planet.sky(timeofday)
             local newcol = col*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
