@@ -19,6 +19,10 @@ minetest.register_entity("stl_core:skybox", {
         self.star = i
         self.object:set_properties({textures={"sun.png"}})
     end,
+    set_planet = function (self, i)
+        self.planet = i
+        self.object:set_properties({textures={stellua.planets[i].icon}})
+    end,
     on_step = function (self)
         if not self.player:is_valid() then self.object:remove() return end
         local pos = self.player:get_pos()
@@ -27,10 +31,11 @@ minetest.register_entity("stl_core:skybox", {
         local planet = stellua.planets[stellua.get_planet_index(pos.y)]
         self.object:set_pos(pos)
         self.object:set_velocity(self.player:get_velocity())
-        local rot = vector.dir_to_rotation(vector.rotate_around_axis(stellua.stars[self.star].pos-stellua.stars[planet.star].pos, NORTH, minetest.get_timeofday()*2*math.pi))
+        local rot = vector.dir_to_rotation(vector.rotate_around_axis(self.star and stellua.stars[self.star].pos-stellua.stars[planet.star].pos or stellua.planets[self.planet].pos-planet.pos, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
         self.object:set_rotation(rot)
-        local dist = 100*(planet.fog_dist+20)
-        self.object:set_properties({visual_size={x=dist*0.005, y=dist*0.005, z=dist}})
+        local dist = 120*(planet.fog_dist)
+        local scale = dist*(self.star and 0.005 or 0.1*stellua.planets[self.planet].scale/vector.distance(stellua.planets[self.planet].pos, planet.pos))
+        self.object:set_properties({visual_size={x=scale, y=scale, z=dist+200-scale}})
     end
 })
 
@@ -64,6 +69,13 @@ minetest.register_globalstep(function()
                 if i ~= planet.star then
                     local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
                     if obj then obj:get_luaentity():set_star(i) end
+                end
+            end
+            for _, i in ipairs(stellua.stars[planet.star].planets) do
+                local pl = stellua.planets[i]
+                if pl ~= planet then
+                    local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
+                    if obj then obj:get_luaentity():set_planet(i) end
                 end
             end
         end

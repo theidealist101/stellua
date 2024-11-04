@@ -18,6 +18,19 @@ local function choices(rand, n, a, b)
     return out
 end
 
+--Since I need pseudo-random
+function stellua.random_direction(rand)
+	-- Generate a random direction of unit length, via rejection sampling
+	local x, y, z, l2
+	repeat -- expected less than two attempts on average (volume sphere vs. cube)
+		x, y, z = rand:next(0, 99999)*0.00001 * 2 - 1, rand:next(0, 99999)*0.00001 * 2 - 1, rand:next(0, 99999)*0.00001 * 2 - 1
+        l2 = x*x + y*y + z*z
+	until l2 <= 1 and l2 >= 1e-6
+	-- normalize
+	local l = math.sqrt(l2)
+	return vector.new(x/l, y/l, z/l)
+end
+
 --Quickly convert actual position to planet index and coordinates
 function stellua.get_planet_index(y)
     local index = math.round(y*0.001)
@@ -91,6 +104,7 @@ minetest.register_on_mods_loaded(function()
         planet.life_stat = planet.heat_stat <= 400 and planet.heat_stat >= 200 and planet.atmo_stat > 0.5 and prand:next(1, 200)*0.01 or 0
         local e = (planet.atmo_stat/3)^0.225
         planet.dist = 127300*(1-e/2)/planet.heat_stat^2 --no idea what this does but it feels realistic enough
+        planet.pos = stellua.random_direction(prand)*planet.dist
 
         --sky stuffs
         local alpha = math.min(planet.atmo_stat, 1)
@@ -145,7 +159,7 @@ minetest.register_on_mods_loaded(function()
         planet.mapgen_filler = "stl_core:filler"..a
         planet.c_filler = minetest.get_content_id(planet.mapgen_filler)
         planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
-        planet.depth_filler = math.ceil(planet.life_stat+prand:next(0, 100)*0.01)
+        planet.depth_filler = math.ceil(planet.life_stat+prand:next(-50, 100)*0.01)
 
         local water_options = {}
         for _ = 1, 10 do table.insert(water_options, {0, 0}) end
@@ -263,6 +277,14 @@ minetest.register_on_mods_loaded(function()
                 })
             end
         end
+
+        --the funny icon on maps or in the sky
+        local turn_to_dimensions = function(param2) return (param2%16)..","..math.floor(param2/16) end
+        planet.icon = table.concat({
+            "(palette.png^[sheet:16x16:"..turn_to_dimensions(planet.depth_filler == 0 and planet.param2_stone or planet.param2_filler).."^[hardlight:skybox_planet_land"..prand:next(1, 4)..".png)",
+            planet.water_level and "^(skybox_planet_water.png^[multiply:"..minetest.colorspec_to_colorstring(planet.mapgen_water_top and {r=224, g=224, b=255} or minetest.registered_nodes[planet.mapgen_water].post_effect_color).."^[mask:skybox_planet_continent"..prand:next(1, 4)..".png)" or "",
+            "^(skybox_planet_atmosphere.png^[colorize:"..minetest.colorspec_to_colorstring({r=col.x, g=col.y, b=col.z})..":alpha^[opacity:"..(alpha*255)..")"
+        })
     end
 end)
 
