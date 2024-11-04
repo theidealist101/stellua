@@ -111,22 +111,25 @@ minetest.register_on_mods_loaded(function()
         local fog = planet.atmo_stat*0.33333
         local fog_dist = 250-fog*180
         planet.fog_dist = fog_dist
-        local fog_table = {fog_distance=fog_dist, fog_start=math.max(1-50/fog_dist, 0)}
         local b = luamap.remap(planet.heat_stat, 100, 500, 255, 0)
         local total = prand:next(255, 384)-b
         local r = prand:next(0, total)
         local col = SKY_COL*alpha*(1-fog)+vector.new(math.min(r, 255), math.min(total-r, 255), b)*fog
-        planet.stars = {day_opacity=1-alpha}
         planet.sun = {visible=true, scale=star.scale/planet.dist}
 
-        function planet.sky(timeofday)
-            local newcol = col*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
+        function planet.sky(timeofday, height)
+            local newcol = col*height*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
+            local fdist = 250-fog*180*height
             return {
                 type = "plain",
                 base_color = {r=newcol.x, g=newcol.y, b=newcol.z},
-                fog = fog_table,
+                fog = {fog_distance=fdist, fog_start=math.max(1-50/fdist, 0)},
                 clouds = false --clouds are currently bugged
             }
+        end
+
+        function planet.stars(height)
+            return {day_opacity=1-alpha*height}
         end
 
         --noise maps

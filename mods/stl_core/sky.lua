@@ -27,7 +27,7 @@ minetest.register_entity("stl_core:skybox", {
         if not self.player:is_valid() then self.object:remove() return end
         local pos = self.player:get_pos()
         pos.y = pos.y+self.player:get_properties().eye_height
-        if vector.distance(self.object:get_pos(), pos) > 3 then self.object:remove() return end
+        if vector.distance(self.object:get_pos(), pos) > 90 then self.object:remove() return end
         local planet = stellua.planets[stellua.get_planet_index(pos.y)]
         self.object:set_pos(pos)
         self.object:set_velocity(self.player:get_velocity())
@@ -35,7 +35,7 @@ minetest.register_entity("stl_core:skybox", {
         self.object:set_rotation(rot)
         local dist = 160*(planet.fog_dist)
         local scale = dist*(self.star and 0.005 or 0.1*stellua.planets[self.planet].scale/vector.distance(stellua.planets[self.planet].pos, planet.pos))
-        self.object:set_properties({visual_size={x=scale, y=scale, z=dist+200-scale}})
+        self.object:set_properties({visual_size={x=scale, y=scale, z=dist+400-scale*0.5}})
     end
 })
 
@@ -53,15 +53,17 @@ minetest.register_globalstep(function()
             player:set_stars({day_opacity=1})
         else
             local planet = stellua.planets[index]
-            player:set_sky(planet.sky(minetest.get_timeofday()))
+            local pos = player:get_pos()
+            pos.y = pos.y+player:get_properties().eye_height
+            local height = math.min(math.max(((planet.water_level or planet.level)-pos.y)*0.004+1, 0), 1)
+
+            player:set_sky(planet.sky(minetest.get_timeofday(), height))
             player:set_sun(planet.sun)
-            player:set_stars(planet.stars)
+            player:set_stars(planet.stars(height))
             player:set_clouds({height=(planet.water_level or planet.level)+120})
             player:set_physics_override({gravity=planet.gravity, speed=planet.walk_speed})
 
-            local pos = player:get_pos()
-            pos.y = pos.y+player:get_properties().eye_height
-            for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 4)) do
+            for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 100)) do
                 local entity = obj:get_luaentity()
                 if entity and entity.name == "stl_core:skybox" and entity.player == player then return end
             end
