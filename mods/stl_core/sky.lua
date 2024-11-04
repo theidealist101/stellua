@@ -33,9 +33,9 @@ minetest.register_entity("stl_core:skybox", {
         self.object:set_velocity(self.player:get_velocity())
         local rot = vector.dir_to_rotation(vector.rotate_around_axis(self.star and stellua.stars[self.star].pos-stellua.stars[planet.star].pos or stellua.planets[self.planet].pos-planet.pos, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
         self.object:set_rotation(rot)
-        local dist = 160*(planet.fog_dist)
+        local dist = 160*(planet.fog_dist-10)
         local scale = dist*(self.star and 0.005 or 0.1*stellua.planets[self.planet].scale/vector.distance(stellua.planets[self.planet].pos, planet.pos))
-        self.object:set_properties({visual_size={x=scale, y=scale, z=dist+400-scale*0.5}})
+        self.object:set_properties({visual_size={x=scale, y=scale, z=dist-scale*0.5}})
     end
 })
 

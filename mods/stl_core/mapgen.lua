@@ -109,7 +109,7 @@ minetest.register_on_mods_loaded(function()
         --sky stuffs
         local alpha = math.min(planet.atmo_stat, 1)
         local fog = planet.atmo_stat*0.33333
-        local fog_dist = 250-fog*180
+        local fog_dist = math.min(250-fog*180, 200)
         planet.fog_dist = fog_dist
         local b = luamap.remap(planet.heat_stat, 100, 500, 255, 0)
         local total = prand:next(255, 384)-b
@@ -119,7 +119,7 @@ minetest.register_on_mods_loaded(function()
 
         function planet.sky(timeofday, height)
             local newcol = col*height*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
-            local fdist = 250-fog*180*height
+            local fdist = math.min(250-fog*180*height, 200)
             return {
                 type = "plain",
                 base_color = {r=newcol.x, g=newcol.y, b=newcol.z},
