@@ -1,6 +1,6 @@
 stellua = {}
 
---shut up vs code
+--Shut up VS code
 table.insert_all = table.insert_all
 table.indexof = table.indexof
 math.round = math.round
@@ -12,6 +12,34 @@ dofile(modpath.."nodes.lua")
 dofile(modpath.."mapgen.lua")
 dofile(modpath.."sky.lua")
 
+--Spawn player in a good place
+local start_planet
+
+minetest.register_on_mods_loaded(function()
+    for i, planet in ipairs(stellua.planets) do
+        if 250 <= planet.heat_stat and planet.heat_stat <= 350 and planet.scale < 1.1
+        and 0.5 <= planet.atmo_stat and planet.atmo_stat <= 2 then --more to be added later
+            start_planet = i
+        end
+    end
+    if not start_planet then --try again with less strict requirements
+        for i, planet in ipairs(stellua.planets) do
+            if 150 <= planet.heat_stat and planet.heat_stat <= 400
+            and planet.scale < 1.1 and 0.5 <= planet.atmo_stat then
+                start_planet = i
+            end
+        end
+    end
+    if not start_planet then --give up
+        start_planet = 1
+    end
+end)
+
+minetest.register_on_newplayer(function(player)
+    player:set_pos(vector.new(0, stellua.get_planet_level(start_planet)+150, 0))
+end)
+
+--A few useful commands
 minetest.register_chatcommand("planet", {
     params = "",
     description = "Get info about the current planet",
