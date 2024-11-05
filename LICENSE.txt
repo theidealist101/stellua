@@ -24,6 +24,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_benzene_snow.png <- default_grass.png
 - default_coal_block.png
 - stl_core_ash.png <- default_clay.png
+- stl_core_shrub3.png <- default_fern_1.png
+- stl_core_moss4.png <- default_moss.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -36,8 +38,11 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_filler6.png <- default_dirt.png
 - stl_core_filler7.png <- default_sand.png
 - stl_core_filler8.png <- default_gravel.png
-- stl_core_bush1.png <- mcl_flowers_tallgrass.png
-- stl_core_bush2.png <- mcl_flowers_fern.png
+- stl_core_shrub1.png <- mcl_flowers_tallgrass.png
+- stl_core_shrub2.png <- mcl_flowers_fern.png
 - mcl_core_ice_packed.png
 - stl_core_ammonia_snow.png <- default_snow.png
-- mcl_core_grass_block_top.png
+- stl_core_moss1.png <- mcl_core_grass_block_top.png
+- stl_core_shrub4.png <- default_dry_shrub.png
+- stl_core_moss2.png <- mcl_lush_caves_moss_block.png
+- stl_core_moss3.png <- mcl_lush_caves_moss.png

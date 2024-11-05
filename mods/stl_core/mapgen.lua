@@ -261,13 +261,24 @@ minetest.register_on_mods_loaded(function()
             })
             minetest.register_decoration({
                 deco_type = "simple",
-                place_on = {planet.mapgen_stone, planet.mapgen_filler},
+                place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
                 fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
                 y_min = level-500,
                 y_max = level+499,
                 decoration = "stl_core:grass"..prand:next(1, 8),
                 param2 = get_nearby_param2(prand, param2_grass, 2)
             })
+            if planet.life_stat > 0.5 then
+                minetest.register_decoration({
+                    deco_type = "simple",
+                    place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
+                    fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
+                    y_min = level-500,
+                    y_max = level+499,
+                    decoration = "stl_core:shrub"..prand:next(1, 4),
+                    param2 = get_nearby_param2(prand, param2_grass)
+                })
+            end
             if planet.life_stat > 1 then
                 minetest.register_decoration({
                     deco_type = "simple",
@@ -275,7 +286,7 @@ minetest.register_on_mods_loaded(function()
                     fill_ratio = (planet.life_stat-1)*0.4+prand:next(1, 20)*0.1,
                     y_min = level-500,
                     y_max = level+499,
-                    decoration = "stl_core:moss",
+                    decoration = "stl_core:moss"..prand:next(1, 4),
                     param2 = get_nearby_param2(prand, param2_grass)
                 })
             end

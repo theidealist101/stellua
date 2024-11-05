@@ -13,7 +13,7 @@ minetest.override_item("", {
 --Basic stone variations used by all planets
 for i = 1, 8 do
     minetest.register_node("stl_core:stone"..i, {
-        description = "Stone "..i,
+        description = "Stone",
         tiles = {"stl_core_stone"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
@@ -24,7 +24,7 @@ end
 --Filler nodes
 for i = 1, 8 do
     minetest.register_node("stl_core:filler"..i, {
-        description = "Filler "..i,
+        description = "Earth",
         tiles = {"stl_core_filler"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
@@ -35,7 +35,7 @@ end
 --Tall grass decorations
 for i = 1, 8 do
     minetest.register_node("stl_core:grass"..i, {
-        description = "Grass "..i,
+        description = "Grass",
         drawtype = "plantlike",
         tiles = {"stl_core_grass"..i..".png"},
         use_texture_alpha = "clip",
@@ -249,18 +249,36 @@ register_snow("stl_core:charred_earth", {
 })
 
 --Some more life stuff
-minetest.register_node("stl_core:moss", {
-    description = "Moss",
-    drawtype = "nodebox",
-    node_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
-    tiles = {"mcl_core_grass_block_top.png"},
-    paramtype = "light",
-    sunlight_propagates = true,
-    paramtype2 = "color",
-    palette = "palette_foliage.png",
-    walkable = false,
-    buildable_to = true,
-    floodable = true,
-    groups = {snappy=1, falling_node=1},
-    drop = {}
-})
+for i = 1, 4 do
+    minetest.register_node("stl_core:moss"..i, {
+        description = "Moss",
+        drawtype = "nodebox",
+        node_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
+        tiles = {"stl_core_moss"..i..".png"},
+        paramtype = "light",
+        sunlight_propagates = true,
+        paramtype2 = "color",
+        palette = "palette_foliage.png",
+        walkable = false,
+        buildable_to = true,
+        floodable = true,
+        groups = {snappy=1, falling_node=1}
+    })
+end
+
+for i = 1, 4 do
+    minetest.register_node("stl_core:shrub"..i, {
+        description = "Shrub",
+        drawtype = "plantlike",
+        tiles = {"stl_core_shrub"..i..".png"},
+        inventory_image = "stl_core_shrub"..i..".png",
+        selection_box = {type="fixed", fixed={-0.25, -0.5, -0.25, 0.25, 0.125, 0.25}},
+        paramtype = "light",
+        sunlight_propagates = true,
+        paramtype2 = "color",
+        palette = "palette_foliage.png",
+        walkable = false,
+        waving = 1,
+        groups = {snappy=1, attached_node=1}
+    })
+end
