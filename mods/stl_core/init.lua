@@ -11,6 +11,7 @@ dofile(modpath.."names.lua")
 dofile(modpath.."nodes.lua")
 dofile(modpath.."mapgen.lua")
 dofile(modpath.."sky.lua")
+dofile(modpath.."crafts.lua")
 
 --Spawn player in a good place
 local start_planet

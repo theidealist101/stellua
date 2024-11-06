@@ -32,6 +32,9 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_dirt.png <- default_dirt.png
 - stl_core_stick.png <- default_stick.png
 - stl_core_pebble.png <- default_clay_lump.png
+- default_tool_stonepick.png
+- default_tool_stoneaxe.png
+- default_tool_stoneshovel.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

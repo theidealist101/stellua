@@ -1,15 +1,3 @@
---Override hand so it can break stuff
-minetest.override_item("", {
-    tool_capabilities = {
-        full_punch_interval = 1,
-        groupcaps = {
-            cracky = {times={2}},
-            crumbly = {times={1, 2}},
-            snappy = {times={0.5}}
-        }
-    }
-})
-
 --Basic resources dropped from environment nodes
 minetest.register_craftitem("stl_core:stick", {
     description = "Stick",
@@ -50,9 +38,7 @@ for i = 1, 8 do
         tiles = {"stl_core_stone"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {cracky=2},
-        drop = {},
-        after_dig_node = drop_with_color("stl_core:pebble 4")
+        groups = {cracky=2}
     })
 end
 
@@ -301,7 +287,7 @@ minetest.register_node("stl_core:gravel", {
     walkable = false,
     buildable_to = true,
     floodable = true,
-    groups = {snappy=1, falling_node=1},
+    groups = {crumbly=2, falling_node=1},
     drop = {},
     after_dig_node = drop_with_color("stl_core:pebble")
 })

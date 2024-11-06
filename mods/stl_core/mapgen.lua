@@ -291,7 +291,7 @@ minetest.register_on_mods_loaded(function()
                 })
             end
         end
-        
+
         if planet.life_stat < 1 then
             minetest.register_decoration({
                 deco_type = "simple",
