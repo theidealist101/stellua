@@ -10,6 +10,39 @@ minetest.override_item("", {
     }
 })
 
+--Basic resources dropped from environment nodes
+minetest.register_craftitem("stl_core:stick", {
+    description = "Stick",
+    inventory_image = "stl_core_stick.png",
+    palette = "palette_foliage.png"
+})
+
+minetest.register_craftitem("stl_core:pebble", {
+    description = "Pebble",
+    inventory_image = "stl_core_pebble.png",
+    palette = "palette.png"
+})
+
+minetest.register_craftitem("stl_core:moss", {
+    description = "Moss",
+    inventory_image = "stl_core_moss.png",
+    palette = "palette_foliage.png"
+})
+
+--Get function for use in after_dig_node to drop a colored item
+local function drop_with_color(item, chance)
+    item = ItemStack(item)
+    chance = chance or 1
+    return function (pos, node, meta, user)
+        if math.random() >= chance then return end
+        item:get_meta():set_int("palette_index", node.param2)
+        local left = user:get_inventory():add_item("main", item)
+        if not left:is_empty() then
+            minetest.add_item(pos, left)
+        end
+    end
+end
+
 --Basic stone variations used by all planets
 for i = 1, 8 do
     minetest.register_node("stl_core:stone"..i, {
@@ -17,7 +50,9 @@ for i = 1, 8 do
         tiles = {"stl_core_stone"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {cracky=2}
+        groups = {cracky=2},
+        drop = {},
+        after_dig_node = drop_with_color("stl_core:pebble 4")
     })
 end
 
@@ -139,6 +174,7 @@ local function register_snow(name, defs)
     defs.start_point = defs.start_point or 0
     defs.melt_point = defs.melt_point or 1000
     table.insert(stellua.registered_snows, {name, defs})
+
     minetest.register_node(name, {
         description = defs.description,
         drawtype = "nodebox",
@@ -153,7 +189,12 @@ local function register_snow(name, defs)
         walkable = false,
         buildable_to = true,
         floodable = true,
-        drop = {}
+        drop = name.."_ball"
+    })
+
+    minetest.register_craftitem(name.."_ball", {
+        description = defs.description,
+        inventory_image = defs.tiles.."^[mask:stl_core_ball.png"
     })
 end
 
@@ -262,7 +303,9 @@ for i = 1, 4 do
         walkable = false,
         buildable_to = true,
         floodable = true,
-        groups = {snappy=1, falling_node=1}
+        groups = {snappy=1, falling_node=1},
+        drop = {},
+        after_dig_node = drop_with_color("stl_core:moss")
     })
 end
 
@@ -279,6 +322,8 @@ for i = 1, 4 do
         palette = "palette_foliage.png",
         walkable = false,
         waving = 1,
-        groups = {snappy=1, attached_node=1}
+        groups = {snappy=1, attached_node=1},
+        drop = {},
+        after_dig_node = drop_with_color("stl_core:stick", 0.4)
     })
 end

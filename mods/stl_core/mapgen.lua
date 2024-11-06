@@ -279,7 +279,7 @@ minetest.register_on_mods_loaded(function()
                     param2 = get_nearby_param2(prand, param2_grass)
                 })
             end
-            if planet.life_stat > 1 then
+            if planet.life_stat > 1.5 then
                 minetest.register_decoration({
                     deco_type = "simple",
                     place_on = {planet.mapgen_filler},

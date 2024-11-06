@@ -1,5 +1,8 @@
 === MEDIA ===
 
+All textures not mentioned below are copyright (C) 2024 theidealist, and are under CC BY-SA 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
+
 The following textures are borrowed from Minetest Game and are under CC BY-SA 3.0:
 
 - stl_core_stone1.png <- default_stone.png
@@ -26,6 +29,9 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_ash.png <- default_clay.png
 - stl_core_shrub3.png <- default_fern_1.png
 - stl_core_moss4.png <- default_moss.png
+- stl_core_dirt.png <- default_dirt.png
+- stl_core_stick.png <- default_stick.png
+- stl_core_pebble.png <- default_clay_lump.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -46,3 +52,4 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_shrub4.png <- default_dry_shrub.png
 - stl_core_moss2.png <- mcl_lush_caves_moss_block.png
 - stl_core_moss3.png <- mcl_lush_caves_moss.png
+- stl_core_moss.png <- mcl_core_grass_block_top.png

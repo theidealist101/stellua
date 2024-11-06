@@ -5,6 +5,7 @@
         "dump",
         "vector",
         "stellua",
-        "unpack"
+        "unpack",
+        "ItemStack"
     ]
 }
