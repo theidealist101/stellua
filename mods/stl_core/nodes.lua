@@ -289,6 +289,23 @@ register_snow("stl_core:charred_earth", {
     start_point = 410
 })
 
+minetest.register_node("stl_core:gravel", {
+    description = "Gravel",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}},
+    tiles = {"stl_core_gravel.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    paramtype2 = "color",
+    palette = "palette.png",
+    walkable = false,
+    buildable_to = true,
+    floodable = true,
+    groups = {snappy=1, falling_node=1},
+    drop = {},
+    after_dig_node = drop_with_color("stl_core:pebble")
+})
+
 --Some more life stuff
 for i = 1, 4 do
     minetest.register_node("stl_core:moss"..i, {
