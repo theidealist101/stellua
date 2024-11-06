@@ -69,6 +69,8 @@ end
 
 local SKY_COL = vector.new(97, 181, 245)
 
+local ORES_COMMON = {"copper", "titanium"}
+
 --Set up planets and attributes on first load
 minetest.register_on_mods_loaded(function()
     local rand = PcgRandom(minetest.get_mapgen_setting("seed"))
@@ -303,6 +305,29 @@ minetest.register_on_mods_loaded(function()
                 param2 = get_nearby_param2(prand, planet.param2_stone-32, 2)
             })
         end
+
+        --ores
+        planet.ore_common = ORES_COMMON[prand:next(1, #ORES_COMMON)]
+        local count_common = prand:next(16, 32)
+
+        minetest.register_ore({
+            ore_type = "blob",
+            ore = planet.mapgen_stone.."_with_"..planet.ore_common,
+            ore_param2 = planet.param2_stone,
+            wherein = {planet.mapgen_stone},
+            clust_scarcity = prand:next(8, 16)^3,
+            clust_num = count_common,
+            clust_size = math.ceil(math.sqrt(count_common))*2,
+            y_min = level-150,
+            y_max = level+499,
+            noise_params = {
+                offset = 0,
+                scale = 0.5,
+                spread = {x=10, y=10, z=10},
+                seed = planet.seed,
+                octaves = 3
+            }
+        })
 
         --the funny icon on maps or in the sky
         local turn_to_dimensions = function(param2) return (param2%16)..","..math.floor(param2/16) end

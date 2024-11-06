@@ -58,7 +58,7 @@ minetest.register_tool("stl_core:stone_pick", {
     tool_capabilities = {
         full_punch_interval = 1.2,
         groupcaps = {
-            cracky = {times={1, 2}, uses=100}
+            cracky = {times={1, 2, 4}, uses=100}
         }
     }
 })

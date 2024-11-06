@@ -340,3 +340,36 @@ for i = 1, 4 do
         after_dig_node = drop_with_color("stl_core:stick", 0.4)
     })
 end
+
+--Ores
+for i = 1, 8 do
+    minetest.register_node("stl_core:stone"..i.."_with_copper", {
+        description = "Stone with Copper",
+        tiles = {"stl_core_stone"..i..".png"},
+        overlay_tiles = {"default_mineral_copper.png"},
+        paramtype2 = "color",
+        palette = "palette.png",
+        groups = {cracky=3},
+        drop = "stl_core:copper"
+    })
+
+    minetest.register_node("stl_core:stone"..i.."_with_titanium", {
+        description = "Stone with Titanium",
+        tiles = {"stl_core_stone"..i..".png"},
+        overlay_tiles = {"default_mineral_tin.png"},
+        paramtype2 = "color",
+        palette = "palette.png",
+        groups = {cracky=3},
+        drop = "stl_core:titanium"
+    })
+end
+
+minetest.register_craftitem("stl_core:copper", {
+    description = "Copper",
+    inventory_image = "default_copper_lump.png"
+})
+
+minetest.register_craftitem("stl_core:titanium", {
+    description = "Titanium",
+    inventory_image = "default_tin_lump.png"
+})
