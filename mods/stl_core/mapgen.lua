@@ -318,7 +318,7 @@ minetest.register_on_mods_loaded(function()
             clust_scarcity = prand:next(8, 16)^3,
             clust_num = count_common,
             clust_size = math.ceil(math.sqrt(count_common))*2,
-            y_min = level-150,
+            y_min = level-500,
             y_max = level+499,
             noise_params = {
                 offset = 0,
