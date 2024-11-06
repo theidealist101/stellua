@@ -18,7 +18,7 @@ local start_planet
 
 minetest.register_on_mods_loaded(function()
     for i, planet in ipairs(stellua.planets) do
-        if 250 <= planet.heat_stat and planet.heat_stat <= 350 and planet.scale < 1.1
+        if 200 < planet.heat_stat and planet.heat_stat < 350 and planet.scale < 1.1
         and 0.5 <= planet.atmo_stat and planet.atmo_stat <= 2 and planet.life_stat > 0.5 then --more to be added later
             start_planet = i
         end

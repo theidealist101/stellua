@@ -2,7 +2,8 @@ minetest.register_node("stl_decor:stone_brick", {
     description = "Stone Brick",
     tiles = {"stl_decor_stone_brick.png"},
     paramtype2 = "color",
-    palette = "palette.png"
+    palette = "palette.png",
+    groups = {cracky=2}
 })
 
 minetest.register_craft({
@@ -19,7 +20,8 @@ minetest.register_node("stl_decor:filler_brick", {
     description = "Earth Brick",
     tiles = {"stl_decor_filler_brick.png"},
     paramtype2 = "color",
-    palette = "palette.png"
+    palette = "palette.png",
+    groups = {cracky=1}
 })
 
 for i = 1, 8 do
