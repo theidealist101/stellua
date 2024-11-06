@@ -39,6 +39,12 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - default_mineral_tin.png
 - default_copper_lump.png
 - default_tin_lump.png
+- default_tool_bronzepick.png
+- default_tool_bronzeaxe.png
+- default_tool_bronzeshovel.png
+- default_tool_steelpick.png
+- default_tool_steelaxe.png
+- default_tool_steelshovel.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

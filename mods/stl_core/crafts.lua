@@ -111,3 +111,123 @@ minetest.register_craft({
         {"", "stl_core:stick"}
     }
 })
+
+minetest.register_tool("stl_core:copper_pick", {
+    description = "Copper Pick",
+    inventory_image = "default_tool_bronzepick.png",
+    tool_capabilities = {
+        full_punch_interval = 1,
+        groupcaps = {
+            cracky = {times={0.5, 1, 2}, uses=100}
+        }
+    }
+})
+
+minetest.register_tool("stl_core:copper_shovel", {
+    description = "Copper Shovel",
+    inventory_image = "default_tool_bronzeshovel.png",
+    tool_capabilities = {
+        full_punch_interval = 1,
+        groupcaps = {
+            crumbly = {times={0.25, 0.5}, uses=100}
+        }
+    }
+})
+
+minetest.register_tool("stl_core:copper_axe", {
+    description = "Copper Axe",
+    inventory_image = "default_tool_bronzeaxe.png",
+    tool_capabilities = {
+        full_punch_interval = 1.2,
+        groupcaps = {
+            snappy = {times={0.1}, uses=100}
+        }
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:copper_pick",
+    recipe = {
+        {"stl_core:copper", "stl_core:copper", "stl_core:copper"},
+        {"", "stl_core:stick", ""},
+        {"", "stl_core:stick", ""}
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:copper_shovel",
+    recipe = {
+        {"stl_core:copper"},
+        {"stl_core:stick"},
+        {"stl_core:stick"}
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:copper_axe",
+    recipe = {
+        {"stl_core:copper", "stl_core:copper"},
+        {"stl_core:copper", "stl_core:stick"},
+        {"", "stl_core:stick"}
+    }
+})
+
+minetest.register_tool("stl_core:titanium_pick", {
+    description = "Titanium Pick",
+    inventory_image = "default_tool_steelpick.png",
+    tool_capabilities = {
+        full_punch_interval = 1.2,
+        groupcaps = {
+            cracky = {times={0.8, 1.6, 3.2}, uses=180}
+        }
+    }
+})
+
+minetest.register_tool("stl_core:titanium_shovel", {
+    description = "Titanium Shovel",
+    inventory_image = "default_tool_steelshovel.png",
+    tool_capabilities = {
+        full_punch_interval = 1.2,
+        groupcaps = {
+            crumbly = {times={0.4, 0.8}, uses=180}
+        }
+    }
+})
+
+minetest.register_tool("stl_core:titanium_axe", {
+    description = "Titanium Axe",
+    inventory_image = "default_tool_steelaxe.png",
+    tool_capabilities = {
+        full_punch_interval = 1.5,
+        groupcaps = {
+            snappy = {times={0.2}, uses=180}
+        }
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:titanium_pick",
+    recipe = {
+        {"stl_core:titanium", "stl_core:titanium", "stl_core:titanium"},
+        {"", "stl_core:stick", ""},
+        {"", "stl_core:stick", ""}
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:titanium_shovel",
+    recipe = {
+        {"stl_core:titanium"},
+        {"stl_core:stick"},
+        {"stl_core:stick"}
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:titanium_axe",
+    recipe = {
+        {"stl_core:titanium", "stl_core:titanium"},
+        {"stl_core:titanium", "stl_core:stick"},
+        {"", "stl_core:stick"}
+    }
+})
