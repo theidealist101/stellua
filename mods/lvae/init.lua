@@ -3,9 +3,9 @@ local get_drawtype = dofile(PATH .. "/drawtypes.lua")
 local interactions = dofile(PATH .. "/interact.lua")
 
 minetest.register_entity("lvae:node", {
-	on_activate = function(self, _, dtime)
+	initial_properties = {static_save=false},
+	on_activate = function(self)
 		self.object:set_armor_groups({immortal = 1, punch_operable = 0})
-		return dtime ~= 0 and self.object:remove()
 	end,
 	on_rightclick = interactions.place,
 	on_punch = interactions.dig,
