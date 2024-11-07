@@ -237,3 +237,44 @@ minetest.register_craft({
         {"", "stl_core:stick"}
     }
 })
+
+--Resource blocks for metals and stuff
+minetest.register_node("stl_core:copper_block", {
+    description = "Copper Block",
+    tiles = {"default_copper_block.png"},
+    groups = {cracky=3, spaceship=1}
+})
+
+minetest.register_node("stl_core:titanium_block", {
+    description = "Titanium Block",
+    tiles = {"default_tin_block.png"},
+    groups = {cracky=3, spaceship=1}
+})
+
+minetest.register_craft({
+    output = "stl_core:copper_block",
+    recipe = {
+        {"stl_core:copper", "stl_core:copper"},
+        {"stl_core:copper", "stl_core:copper"}
+    }
+})
+
+minetest.register_craft({
+    output = "stl_core:titanium_block",
+    recipe = {
+        {"stl_core:titanium", "stl_core:titanium"},
+        {"stl_core:titanium", "stl_core:titanium"}
+    }
+})
+
+minetest.register_craft({
+    type = "shapeless",
+    output = "stl_core:copper 4",
+    recipe = {"stl_core:copper_block"}
+})
+
+minetest.register_craft({
+    type = "shapeless",
+    output = "stl_core:titanium 4",
+    recipe = {"stl_core:titanium_block"}
+})
