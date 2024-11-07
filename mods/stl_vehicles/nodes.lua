@@ -12,7 +12,8 @@ minetest.register_node("stl_vehicles:seat", {
     paramtype = "light",
     sunlight_propagates = true,
     paramtype2 = "4dir",
-    groups = {cracky=1, spaceship=1}
+    walkable = false,
+    groups = {cracky=1, spaceship=1, seat=1}
 })
 
 --The fuel tank, required to power the thrusters or engines of a vehicle

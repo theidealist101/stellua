@@ -41,5 +41,5 @@ minetest.register_node("stl_decor:glass", {
     tiles = {"default_glass.png"},
     paramtype = "light",
     sunlight_propagates = true,
-    groups = {cracky=1}
+    groups = {cracky=1, spaceship=1}
 })
