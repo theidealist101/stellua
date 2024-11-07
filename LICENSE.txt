@@ -59,6 +59,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_decor_filler_brick.png <- default_brick.png
 - default_copper_block.png
 - default_tin_block.png
+- wool_black.png
+- default_glass.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

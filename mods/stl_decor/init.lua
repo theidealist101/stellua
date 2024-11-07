@@ -34,3 +34,12 @@ for i = 1, 8 do
     })
     stellua.register_color_craft("stl_decor:filler_brick", "stl_core:filler"..i)
 end
+
+minetest.register_node("stl_decor:glass", {
+    description = "Glass",
+    drawtype = "glasslike",
+    tiles = {"default_glass.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    groups = {cracky=1}
+})
