@@ -23,6 +23,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - default_lava_flowing_animated.png
 - stl_core_methane_source_animated.png <- default_lava_source_animated.png
 - stl_core_methane_flowing_animated.png <- default_lava_flowing_animated.png
+- stl_core_petroleum_source_animated.png <- default_lava_source_animated.png
+- stl_core_petroleum_flowing_animated.png <- default_lava_flowing_animated.png
 - default_snow.png
 - stl_core_benzene_snow.png <- default_grass.png
 - default_coal_block.png

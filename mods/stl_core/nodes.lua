@@ -231,7 +231,7 @@ register_snow("stl_core:ammonia_snow", {
 register_water("stl_core:methane", {
     description = "Methane",
     tiles = "stl_core_methane",
-    tiles_opacity = 128,
+    --tiles_opacity = 128, --not supported by lvae
     tint = {a=128, r=0, g=5, b=0},
     liquid_viscosity = 0, --remember this wants to be a gas
     liquid_renewable = false,
@@ -249,7 +249,7 @@ register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
 
 register_water("stl_core:petroleum", {
     description = "Petroleum",
-    tiles = "stl_core_methane",
+    tiles = "stl_core_petroleum",
     tint = {a=250, r=0, g=5, b=0},
     liquid_viscosity = 7,
     liquid_renewable = false,
