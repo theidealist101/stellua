@@ -1,0 +1,6 @@
+# the program generates lots of models from nodeboxes, these should be ignored
+models/*.obj
+
+# but not the handmade models used for certain drawtypes
+!models/plantlike.obj
+!models/signlike.obj
