@@ -11,7 +11,7 @@ minetest.register_node("stl_vehicles:seat", {
     }},
     paramtype = "light",
     sunlight_propagates = true,
-    paramtype2 = "4dir",
+    paramtype2 = "facedir", --lvae doesn't like 4dir
     walkable = false,
     groups = {cracky=1, spaceship=1, seat=1}
 })
