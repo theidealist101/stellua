@@ -117,11 +117,17 @@ minetest.register_globalstep(function()
                 stellua.land_vehicle(vehicle)
             else
                 local vel = vehicle:get_velocity()
+                local rot = vector.new(0, player:get_look_horizontal(), 0)
                 if control.jump then vel.y = vel.y+1 end
                 if control.sneak then vel.y = vel.y-1 end
+                if control.up then vel = vel+vector.rotate(vector.new(0, 0, 1), rot) end
+                if control.down then vel = vel-vector.rotate(vector.new(0, 0, 1), rot) end
+                if control.left then vel = vel-vector.rotate(vector.new(1, 0, 0), rot) end
+                if control.right then vel = vel+vector.rotate(vector.new(1, 0, 0), rot) end
                 vel = vector.normalize(vel)*math.max(vector.length(vel)-0.5, 0)
-                vel.y = math.min(math.max(vel.y, -4), 10)
+                vel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(vector.length(vel), 4)+vector.new(0, math.min(math.max(vel.y, -4), 10), 0)
                 vehicle:set_velocity(vel)
+                vehicle:set_rotation(rot)
             end
         end
     end
