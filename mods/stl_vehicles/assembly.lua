@@ -36,6 +36,8 @@ function stellua.detach_vehicle(pos)
     local minp, maxp
     for _, p in ipairs(stellua.assemble_vehicle(vector.round(pos)) or {}) do
         lvae:set_node(p-pos, minetest.get_node(p))
+        local node = lvae.data[lvae.area:indexp(p-pos)].entity.object
+        node:set_pos(node:get_pos()+vector.new(0, 0.5, 0))
         minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
@@ -105,7 +107,7 @@ minetest.register_globalstep(function()
                 player:set_pos(pos+0.5*UP)
             --make vehicle launch on jump
             elseif control.jump then
-                player:set_attach(stellua.detach_vehicle(pos-vector.new(0, 0.5, 0)).object)
+                player:set_attach(stellua.detach_vehicle(pos).object)
             end
         end
 
