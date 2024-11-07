@@ -1,3 +1,11 @@
+=== SOURCE CODE ===
+
+Stellua uses the following API mods by other authors, licensed as specified in their docs:
+
+- Luamap by MisterE and others
+- Sfinv by rubenwardy
+- LVAE by GreenXenith
+
 === MEDIA ===
 
 All textures not mentioned below are copyright (C) 2024 theidealist, and are under CC BY-SA 4.0
