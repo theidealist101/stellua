@@ -160,10 +160,12 @@ function stellua.generate_name(rand, type)
     for i = 1, length do
         if test(rand) < RARE_CHANCE then
             local new
+            local attempts = 0
             repeat
                 new = choice(rand, RARE_VOWELS)
-            until string.len(out) <= 0 or string.sub(out, -1) ~= string.sub(new, 1, 1) and not (table.indexof(NON_HIATUS, new) > 0 and (table.indexof(VOWELS, string.sub(out, -1)) > 0 or table.indexof(RARE_VOWELS, string.sub(out, -1)) > 0))
-            out = out..new
+                attempts = attempts+1
+            until string.len(out) <= 0 or attempts >= 100 or string.sub(out, -1) ~= string.sub(new, 1, 1) and not (table.indexof(NON_HIATUS, new) > 0 and (table.indexof(VOWELS, string.sub(out, -1)) > 0 or table.indexof(RARE_VOWELS, string.sub(out, -1)) > 0))
+            out = out..(attempts >= 100 and choice(rand, VOWELS) or new)
         else
             out = out..choice(rand, VOWELS)
         end
