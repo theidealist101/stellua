@@ -1,3 +1,29 @@
+--Override static saving functions for LVAE to allow saving more arbitrary data
+local lvae_defs = minetest.registered_entities["lvae:lvae"]
+
+local old_get_staticdata = lvae_defs.get_staticdata
+local old_on_activate = lvae_defs.on_activate
+--local old_on_step = lvae_defs.on_step
+
+function lvae_defs.get_staticdata(self)
+    return minetest.serialize({old_get_staticdata(self), self.player})
+end
+
+function lvae_defs.on_activate(self, staticdata, dtime)
+    if staticdata and staticdata ~= "" and not tonumber(staticdata) then
+        staticdata, self.player = unpack(minetest.deserialize(staticdata))
+    end
+    return old_on_activate(self, staticdata, dtime)
+end
+
+function lvae_defs.on_step(self, dtime)
+    local player = minetest.get_player_by_name(self.player)
+    if player and not player:get_attach() then
+        player:set_attach(self.object)
+    end
+    --return old_on_step(self, dtime)
+end
+
 --Assemble a vehicle from any node
 function stellua.assemble_vehicle(pos)
     local checking = {pos}
@@ -107,7 +133,9 @@ minetest.register_globalstep(function()
                 player:set_pos(pos+0.5*UP)
             --make vehicle launch on jump
             elseif control.jump then
-                player:set_attach(stellua.detach_vehicle(pos).object)
+                local ent = stellua.detach_vehicle(pos)
+                player:set_attach(ent.object)
+                ent.player = player:get_player_name()
             end
         end
 
