@@ -63,8 +63,6 @@ function stellua.detach_vehicle(pos)
     local minp, maxp
     for _, p in ipairs(stellua.assemble_vehicle(vector.round(pos)) or {}) do
         lvae:set_node(p-pos, minetest.get_node(p))
-        local node = lvae.data[lvae.area:indexp(p-pos)].entity.object
-        node:set_pos(node:get_pos()+vector.new(0, 0.5, 0))
         minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
@@ -102,9 +100,7 @@ minetest.register_on_mods_loaded(function()
                 if on_rightclick then on_rightclick(pos, node, user)
                 elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(user:get_pos()) then
                     local ship, seat = stellua.assemble_vehicle(pos)
-                    if seat then
-                        user:set_pos(seat-vector.new(0, 0.5, 0))
-                    end
+                    if seat then user:set_pos(seat) end
                 end
             end})
         end
