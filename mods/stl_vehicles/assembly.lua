@@ -12,6 +12,7 @@ end
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
         staticdata, self.player = unpack(minetest.deserialize(staticdata))
+        self.object:set_properties({physical=true})
     end
     return old_on_activate(self, staticdata, dtime)
 end
