@@ -9,7 +9,7 @@ minetest.register_node("stl_vehicles:seat", {
         {-0.5, -0.25, -0.5, -0.25, 0.125, 0},
         {0.25, -0.25, -0.5, 0.5, 0.125, 0}
     }},
-    collision_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, 0, 0.5}},
+    collision_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}},
     paramtype = "light",
     sunlight_propagates = true,
     paramtype2 = "facedir", --lvae doesn't like 4dir

@@ -25,6 +25,11 @@ function lvae_defs.on_step(self, dtime)
     --return old_on_step(self, dtime)
 end
 
+--Override placing and digging functions, we don't want that
+local lvae_node_defs = minetest.registered_entities["lvae:node"]
+lvae_node_defs.on_rightclick = nil
+lvae_node_defs.on_punch = nil
+
 --Assemble a vehicle from any node
 function stellua.assemble_vehicle(pos)
     local checking = {pos}
