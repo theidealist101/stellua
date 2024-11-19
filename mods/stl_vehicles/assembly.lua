@@ -36,6 +36,8 @@ function stellua.assemble_vehicle(pos)
     local checked = {minetest.hash_node_position(pos)}
     local out = {}
     local seat
+    local engines = {}
+    local power = 0
 
     while #checking > 0 and #out < 1000 do
         local p = table.remove(checking, 1)
@@ -56,17 +58,24 @@ function stellua.assemble_vehicle(pos)
             if minetest.get_item_group(nodename, "seat") > 0 then
                 if seat and seat ~= p then return else seat = p end
             end
+            local engine_power = minetest.get_item_group(nodename, "engine")
+            if engine_power > 0 then
+                table.insert(engines, p)
+                power = power+engine_power
+            end
         end
     end
 
-    if #out < 1000 and seat then return out, seat end
+    if #out < 1000 and seat then return out, seat, engines, power end
 end
 
 --Detach a vehicle and return the LVAE
 function stellua.detach_vehicle(pos)
     local lvae = LVAE(pos)
     local minp, maxp
-    for _, p in ipairs(stellua.assemble_vehicle(vector.round(pos)) or {}) do
+    local ship, seat, engines, power = stellua.assemble_vehicle(vector.round(pos))
+    lvae.power = power
+    for _, p in ipairs(ship or {}) do
         lvae:set_node(p-pos, minetest.get_node(p))
         minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
@@ -114,6 +123,9 @@ end)
 
 local UP = vector.new(0, 1, 0)
 
+local ACCEL = 0.5
+local FRICT = 0.2
+
 minetest.register_globalstep(function()
     for _, player in ipairs(minetest.get_connected_players()) do
         local pos = vector.round(player:get_pos())
@@ -150,15 +162,17 @@ minetest.register_globalstep(function()
             else
                 local vel = vehicle:get_velocity()
                 local rot = vector.new(0, player:get_look_horizontal(), 0)
-                if control.jump then vel.y = vel.y+1 end
-                if control.sneak then vel.y = vel.y-1 end
-                if control.up then vel = vel+vector.rotate(vector.new(0, 0, 1), rot) end
-                if control.down then vel = vel-vector.rotate(vector.new(0, 0, 1), rot) end
-                if control.left then vel = vel-vector.rotate(vector.new(1, 0, 0), rot) end
-                if control.right then vel = vel+vector.rotate(vector.new(1, 0, 0), rot) end
-                vel = vector.normalize(vel)*math.max(vector.length(vel)-0.5, 0)
-                vel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(vector.length(vel), 4)+vector.new(0, math.min(math.max(vel.y, -4), 10), 0)
-                vehicle:set_velocity(vel)
+                local power = vehicle:get_luaentity().power
+                if control.jump and control.sneak then vel.y = vel.y+ACCEL+power*0.1
+                elseif control.jump then vel.y = vel.y+ACCEL
+                elseif control.sneak then vel.y = vel.y-ACCEL end
+                if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
+                if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
+                if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+                if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+                local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(vector.length(vel)-FRICT, 0), 4)
+                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -4), 4+(control.jump and control.sneak and power or 0)), 0)
+                vehicle:set_velocity(xvel+yvel)
                 vehicle:set_rotation(rot)
             end
         end

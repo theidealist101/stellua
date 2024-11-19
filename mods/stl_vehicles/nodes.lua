@@ -27,11 +27,10 @@ minetest.register_node("stl_vehicles:rocket", {
     description = "Rocket Engine",
     drawtype = "nodebox",
     node_box = {type="fixed", fixed={
-        {-0.25, -0.5, -0.25, 0.25, 0, 0.25},
-        {-0.5, 0, -0.5, 0.5, 0.5, 0.5}
+        {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+        {-0.25, 0, -0.25, 0.25, 0.5, 0.25}
     }},
     paramtype = "light",
     sunlight_propagates = true,
-    paramtype2 = "wallmounted",
-    groups = {cracky=2, spaceship=1}
+    groups = {cracky=2, spaceship=2, engine=3}
 })
