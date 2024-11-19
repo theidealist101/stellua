@@ -18,7 +18,7 @@ function lvae_defs.on_activate(self, staticdata, dtime)
 end
 
 function lvae_defs.on_step(self, dtime)
-    local player = minetest.get_player_by_name(self.player)
+    local player = self.player and minetest.get_player_by_name(self.player)
     if player and not player:get_attach() then
         player:set_attach(self.object)
     end
