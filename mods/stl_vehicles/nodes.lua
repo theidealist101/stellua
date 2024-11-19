@@ -26,7 +26,7 @@ minetest.register_node("stl_vehicles:tank", {
 minetest.register_node("stl_vehicles:rocket", {
     description = "Rocket Engine",
     drawtype = "nodebox",
-    tiles = {"stl_core_rocket.png"},
+    tiles = {"stl_vehicles_rocket.png"},
     node_box = {type="fixed", fixed={
         {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
         {-0.25, 0, -0.25, 0.25, 0.5, 0.25}
@@ -35,3 +35,40 @@ minetest.register_node("stl_vehicles:rocket", {
     sunlight_propagates = true,
     groups = {cracky=2, spaceship=2, engine=3}
 })
+
+minetest.register_craft({
+    output = "stl_vehicles:rocket",
+    recipe = {
+        {"", "stl_core:titanium", "stl_core:titanium", ""},
+        {"", "stl_core:titanium", "stl_core:titanium", ""},
+        {"stl_core:titanium", "", "", "stl_core:titanium"},
+        {"stl_core:titanium", "", "", "stl_core:titanium"}
+    }
+})
+
+--Technology assembler for crafting rocket components
+minetest.register_node("stl_vehicles:assembler", {
+    description = "Technology Assembler",
+    drawtype = "mesh",
+    mesh = "technology_assembler.obj",
+    tiles = {"technology_assembler.png"},
+    collision_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, 0, 0.5}},
+    selection_box = {type="fixed", fixed={-0.5, -0.5, -0.5, 0.5, 0, 0.5}},
+    paramtype = "light",
+    sunlight_propagates = true,
+    on_rightclick = function (_, _, player)
+        minetest.show_formspec(player:get_player_name(), "stl_vehicles:assembly", sfinv.make_formspec(nil, {nav_titles={}}, [[
+            list[current_player;craft;0.75,0.25;4,4;]
+            list[current_player;craftpreview;5.75,1.75;1,1;]
+            image[4.75,1.75;1,1;sfinv_crafting_arrow.png]
+            listring[current_player;main]
+            listring[current_player;craft]
+        ]], true))
+    end
+})
+
+minetest.register_on_joinplayer(function(player)
+    local inv = player:get_inventory()
+    inv:set_size("craft", 16)
+    inv:set_width("craft", 4)
+end)
