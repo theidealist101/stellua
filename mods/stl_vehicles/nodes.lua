@@ -26,6 +26,7 @@ minetest.register_node("stl_vehicles:tank", {
 minetest.register_node("stl_vehicles:rocket", {
     description = "Rocket Engine",
     drawtype = "nodebox",
+    tiles = {"stl_core_rocket.png"},
     node_box = {type="fixed", fixed={
         {-0.5, -0.5, -0.5, 0.5, 0, 0.5},
         {-0.25, 0, -0.25, 0.25, 0.5, 0.25}
