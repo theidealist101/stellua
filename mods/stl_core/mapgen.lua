@@ -292,6 +292,21 @@ minetest.register_on_mods_loaded(function()
                     param2 = get_nearby_param2(prand, param2_grass)
                 })
             end
+            planet.param2_trees = {}
+            for _ = 1, math.floor(planet.life_stat*8-4) do
+                local treedef = stellua.make_treedef(prand)
+                minetest.register_decoration({
+                    deco_type = "lsystem",
+                    place_on = {planet.mapgen_filler},
+                    fill_ratio = prand:next(1, 20)*0.001,
+                    y_min = level-500,
+                    y_max = level+499,
+                    treedef = treedef
+                })
+                local p = get_nearby_param2(prand, param2_grass)
+                planet.param2_trees[minetest.get_content_id(treedef.trunk)] = p
+                planet.param2_trees[minetest.get_content_id(treedef.leaves)] = get_nearby_param2(prand, p, 2)
+            end
         end
 
         if planet.life_stat < 1 then
@@ -370,3 +385,30 @@ function luamap.logic(noises, x, y, z, seed)
     end
     return c_air, 0
 end
+
+minetest.register_on_generated(function(minp, maxp)
+    local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+	local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
+
+	local data = vm:get_data()
+	local param2_data = vm:get_param2_data()
+
+    for y = minp.y, maxp.y do
+        local index = get_planet_index(y)
+        if index then
+            local planet = planets[index]
+            if planet.param2_trees then
+                for x = minp.x, maxp.x do
+                    for z = minp.z, maxp.z do
+                        local vi = area:index(x, y, z)
+                        param2_data[vi] = planet.param2_trees[data[vi]] or param2_data[vi]
+                    end
+                end
+            end
+        end
+    end
+
+    vm:set_param2_data(param2_data)
+    vm:calc_lighting()
+	vm:write_to_map(data)
+end)

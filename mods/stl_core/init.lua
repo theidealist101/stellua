@@ -8,6 +8,7 @@ table.copy = table.copy
 
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."names.lua")
+dofile(modpath.."trees.lua")
 dofile(modpath.."nodes.lua")
 dofile(modpath.."mapgen.lua")
 dofile(modpath.."sky.lua")

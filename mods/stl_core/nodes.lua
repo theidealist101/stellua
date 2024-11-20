@@ -391,6 +391,8 @@ for i = 1, 4 do
         drawtype = "allfaces",
         tiles = {"stl_core_leaves"..i..".png"},
         use_texture_alpha = "clip",
+        paramtype = "light",
+        sunlight_propagates = true,
         paramtype2 = "color",
         palette = "palette_foliage.png",
         groups = {snappy=2}
