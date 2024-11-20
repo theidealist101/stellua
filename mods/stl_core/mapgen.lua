@@ -360,11 +360,14 @@ luamap.set_singlenode()
 --Some useful localisations for mapgen
 local get_planet_index = stellua.get_planet_index
 local c_air = minetest.CONTENT_AIR
+local c_void = minetest.get_content_id("stl_core:void")
+local c_bedrock = minetest.get_content_id("stl_core:bedrock")
 
 --The actual mapgen
 function luamap.logic(noises, x, y, z, seed)
     local index = get_planet_index(y)
-    if not index then return c_air, 0 end
+    if not index or (y-500)%1000 >= 750 then return c_void, 0 end
+    if (y-500)%1000 == 0 then return c_bedrock, 0 end
     local planet = planets[index]
     local noise = noises["planet"..index]
     local height = y-noise

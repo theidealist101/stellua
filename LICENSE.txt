@@ -109,3 +109,4 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_moss3.png <- mcl_lush_caves_moss.png
 - stl_core_moss.png <- mcl_core_grass_block_top.png
 - stl_core_gravel.png <- mcl_core_coarse_dirt.png
+- mcl_core_bedrock.png

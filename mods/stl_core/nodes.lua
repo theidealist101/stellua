@@ -1,3 +1,19 @@
+--Void blocks, used for air outside build limits
+minetest.register_node("stl_core:void", {
+    description = "Void",
+    drawtype = "airlike",
+    paramtype = "light",
+    sunlight_propagates = true,
+    walkable = false,
+    pointable = false
+})
+
+--Bedrock, used for bottom of worlds
+minetest.register_node("stl_core:bedrock", {
+    description = "Bedrock",
+    tiles = {"mcl_core_bedrock.png"}
+})
+
 --Basic resources dropped from environment nodes
 minetest.register_craftitem("stl_core:stick", {
     description = "Stick",
