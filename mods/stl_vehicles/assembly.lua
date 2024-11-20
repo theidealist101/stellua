@@ -95,14 +95,15 @@ function stellua.detach_vehicle(pos)
 end
 
 --Reattach a vehicle to the node grid and destroy the LVAE
-function stellua.land_vehicle(vehicle)
-    local pos = vehicle:get_pos()
-    for _, node in pairs(vehicle:get_luaentity().data) do
+function stellua.land_vehicle(vehicle, pos)
+    pos = pos or vehicle:get_pos()
+    if vehicle.get_luaentity then vehicle = vehicle:get_luaentity() end
+    for _, node in pairs(vehicle.data) do
         if node.entity then
             minetest.set_node(node.entity.pos+pos, node)
         end
     end
-    vehicle:get_luaentity():remove()
+    vehicle:remove()
 end
 
 --Make the player enter vehicles on rightclick
@@ -146,7 +147,7 @@ minetest.register_globalstep(function()
                 end
                 player:set_pos(pos+0.5*UP)
             --make vehicle launch on jump
-            elseif control.jump then
+            elseif control.jump and stellua.get_planet_index(pos.y) then
                 local ent = stellua.detach_vehicle(pos)
                 player:set_attach(ent.object)
                 ent.player = player:get_player_name()
@@ -156,9 +157,24 @@ minetest.register_globalstep(function()
         --allow player to control vehicle
         local vehicle = player:get_attach()
         if vehicle then
+            local y = vehicle:get_pos().y
+            local index = stellua.get_planet_index(y)
             if control.aux1 then
                 player:set_detach()
                 stellua.land_vehicle(vehicle)
+            elseif index and (y-500)%1000 >= 750 then
+                local planet = stellua.planets[index]
+                local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos)
+                if slot then
+                    local slotpos = stellua.get_slot_pos(slot)
+                    minetest.emerge_area(slotpos, slotpos)
+                    local ent = vehicle:get_luaentity()
+                    minetest.after(1, function()
+                        player:set_detach()
+                        stellua.land_vehicle(ent, slotpos)
+                        player:set_pos(slotpos)
+                    end)
+                end
             else
                 local vel = vehicle:get_velocity()
                 local rot = vector.new(0, player:get_look_horizontal(), 0)
