@@ -86,6 +86,7 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_leaves2.png <- default_leaves.png
 - stl_core_leaves3.png <- default_blueberry_bush_leaves.png
 - stl_core_leaves4.png <- default_aspen_leaves.png
+- stl_core_wood.png <- default_wood.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

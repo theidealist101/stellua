@@ -17,6 +17,14 @@ minetest.register_craftitem("stl_core:moss", {
     palette = "palette_foliage.png"
 })
 
+minetest.register_node("stl_core:wood", {
+    description = "Wood Planks",
+    tiles = {"stl_core_wood.png"},
+    paramtype2 = "color",
+    palette = "palette_foliage.png",
+    groups = {choppy=1}
+})
+
 --Get function for use in after_dig_node to drop a colored item
 local function drop_with_color(item, chance)
     item = ItemStack(item)
@@ -395,6 +403,8 @@ for i = 1, 4 do
         sunlight_propagates = true,
         paramtype2 = "color",
         palette = "palette_foliage.png",
-        groups = {snappy=2}
+        groups = {snappy=2},
+        drop = {},
+        after_dig_node = drop_with_color("stl_core:stick", 0.2)
     })
 end
