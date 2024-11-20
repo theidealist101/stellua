@@ -16,7 +16,7 @@ dofile(modpath.."sky.lua")
 dofile(modpath.."crafts.lua")
 
 --Spawn player in a good place
-local start_planet
+local start_planet, spawn
 
 minetest.register_on_mods_loaded(function()
     for i, planet in ipairs(stellua.planets) do
@@ -36,10 +36,25 @@ minetest.register_on_mods_loaded(function()
     if not start_planet then --give up
         start_planet = 1
     end
+
+    local np = table.copy(luamap.noises_2d["planet"..start_planet].np_vals)
+    local noise = minetest.get_perlin(np)
+    local water_level = stellua.planets[start_planet].water_level
+    for w = 0, 1000, 100 do
+        for x = -w, w do
+            for z = -w, w do
+                local height = noise:get_2d({x=x, y=z})
+                if not water_level or height >= water_level then
+                    spawn = vector.new(x, height, z)
+                    return
+                end
+            end
+        end
+    end
 end)
 
 minetest.register_on_newplayer(function(player)
-    player:set_pos(vector.new(0, stellua.get_planet_level(start_planet)+150, 0))
+    player:set_pos(spawn)
 end)
 
 --A few useful commands
