@@ -405,7 +405,7 @@ for i = 1, 2 do
         tiles = {"stl_core_log"..i.."_top.png", "stl_core_log"..i.."_top.png", "stl_core_log"..i..".png"},
         paramtype2 = "color",
         palette = "palette_foliage.png",
-        groups = {choppy=2}
+        groups = {choppy=2, tree=1}
     })
 end
 
@@ -419,7 +419,7 @@ for i = 1, 4 do
         sunlight_propagates = true,
         paramtype2 = "color",
         palette = "palette_foliage.png",
-        groups = {snappy=2},
+        groups = {snappy=2, tree=1},
         drop = {},
         after_dig_node = drop_with_color("stl_core:stick", 0.2)
     })

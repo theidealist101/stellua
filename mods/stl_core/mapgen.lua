@@ -364,11 +364,12 @@ local c_void = minetest.get_content_id("stl_core:void")
 local c_bedrock = minetest.get_content_id("stl_core:bedrock")
 
 --The actual mapgen
-function luamap.logic(noises, x, y, z, seed)
+function luamap.logic(noises, x, y, z, seed, cur, cur_param2)
     local index = get_planet_index(y)
     if not index or (y-500)%1000 >= 750 then return c_void, 0 end
     if (y-500)%1000 == 0 then return c_bedrock, 0 end
     local planet = planets[index]
+    if cur and cur ~= c_air then return cur, planet.param2_trees[cur] or cur_param2 end
     local noise = noises["planet"..index]
     local height = y-noise
     if planet.water_level then
@@ -415,3 +416,16 @@ minetest.register_on_generated(function(minp, maxp)
     vm:calc_lighting()
 	vm:write_to_map(data)
 end)
+
+minetest.register_abm({
+    interval = 1,
+    chance = 1,
+    nodenames = {"group:tree"},
+    action = function (pos, node)
+        if node.param2 ~= 0 then return end
+        local index = stellua.get_planet_index(pos.y)
+        if not index then return end
+        node.param2 = planets[index].param2_trees[minetest.get_content_id(node.name)]
+        minetest.swap_node(pos, node)
+    end
+})
