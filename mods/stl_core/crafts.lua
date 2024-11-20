@@ -5,7 +5,8 @@ minetest.override_item("", {
         groupcaps = {
             cracky = {times={2}},
             crumbly = {times={1, 2}},
-            snappy = {times={0.5}}
+            snappy = {times={0.5, 1}},
+            choppy = {times={1, 2}}
         }
     }
 })

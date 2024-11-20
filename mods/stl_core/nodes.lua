@@ -373,3 +373,26 @@ minetest.register_craftitem("stl_core:titanium", {
     description = "Titanium",
     inventory_image = "default_tin_lump.png"
 })
+
+--Plant pieces
+for i = 1, 2 do
+    minetest.register_node("stl_core:log"..i, {
+        description = "Log",
+        tiles = {"stl_core_log"..i.."_top.png", "stl_core_log"..i.."_top.png", "stl_core_log"..i..".png"},
+        paramtype2 = "color",
+        palette = "palette_foliage.png",
+        groups = {choppy=2}
+    })
+end
+
+for i = 1, 4 do
+    minetest.register_node("stl_core:leaves"..i, {
+        description = "Leaves",
+        drawtype = "allfaces",
+        tiles = {"stl_core_leaves"..i..".png"},
+        use_texture_alpha = "clip",
+        paramtype2 = "color",
+        palette = "palette_foliage.png",
+        groups = {snappy=2}
+    })
+end
