@@ -7,7 +7,6 @@
         "stellua",
         "unpack",
         "ItemStack",
-        "VoxelArea",
-        "PerlinNoise"
+        "VoxelArea"
     ]
 }
