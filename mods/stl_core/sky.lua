@@ -1,4 +1,5 @@
 local NORTH = vector.new(0, 0, -1)
+local UP = vector.new(0, 1, 0)
 
 --Skybox planet/star entity
 minetest.register_entity("stl_core:skybox", {
@@ -41,12 +42,24 @@ minetest.register_entity("stl_core:skybox", {
             fog_dist = 180
         else self.object:remove() return end
 
+        local dir, sf
+        if self.planet then
+            dir = stellua.planets[self.planet].pos-current_pos
+            sf = 0.1*stellua.planets[self.planet].scale/vector.distance(stellua.planets[self.planet].pos, current_pos)
+        elseif self.star == current_star then
+            dir = UP
+            sf = 0.1*stellua.stars[self.star].scale
+        else
+            dir = stellua.stars[self.star].pos-stellua.stars[current_star].pos
+            sf = 0.005
+        end
+
         self.object:set_pos(pos)
         self.object:set_velocity(self.player:get_velocity())
-        local rot = vector.dir_to_rotation(vector.rotate_around_axis(self.star and stellua.stars[self.star].pos-stellua.stars[current_star].pos or stellua.planets[self.planet].pos-current_pos, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
+        local rot = vector.dir_to_rotation(vector.rotate_around_axis(dir, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
         self.object:set_rotation(rot)
         local dist = 160*(fog_dist-10)
-        local scale = dist*(self.star and 0.005 or 0.1*stellua.planets[self.planet].scale/vector.distance(stellua.planets[self.planet].pos, current_pos))
+        local scale = dist*sf
         self.object:set_properties({visual_size={x=scale, y=scale, z=dist-scale*0.5}})
     end
 })
@@ -85,7 +98,7 @@ minetest.register_globalstep(function()
             if entity and entity.name == "stl_core:skybox" and entity.player == player then return end
         end
         for i, star in ipairs(stellua.stars) do
-            if i ~= current_star then
+            if i ~= current_star or not index then
                 local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
                 if obj then obj:get_luaentity():set_star(i) end
             end
