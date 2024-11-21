@@ -11,7 +11,7 @@ end
 --Quickly convert actual position to slot index
 function stellua.get_slot_index(pos)
     if pos.y < -500 or pos.y >= 500 then return end
-    pos = pos*0.001
+    pos = vector.round(pos*0.001)
     return pos.x+31+(pos.z+30)*61
 end
 
@@ -29,4 +29,9 @@ end
 function stellua.free_slot(index)
     slots[index] = nil
     storage:set_string("slots", minetest.serialize(slots))
+end
+
+--Get position of slot in-world
+function stellua.get_slot_info(index)
+    return unpack(slots[index])
 end

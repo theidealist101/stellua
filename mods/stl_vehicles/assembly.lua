@@ -138,13 +138,18 @@ minetest.register_globalstep(function()
                 while stellua.assemble_vehicle(pos) do
                     pos = vector.round(pos+dir)
                 end
-                while minetest.registered_nodes[minetest.get_node(pos).name].walkable
-                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable do
+                local initial_pos = pos
+                local attempts = 0
+                while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
+                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 1000 do
                     pos = pos+UP
+                    attempts = attempts+1
                 end
-                while not minetest.registered_nodes[minetest.get_node(pos).name].walkable do
+                while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 1000 do
                     pos = pos-UP
+                    attempts = attempts+1
                 end
+                if attempts >= 1000 then pos = initial_pos end
                 player:set_pos(pos+0.5*UP)
             --make vehicle launch on jump
             elseif control.jump and stellua.get_planet_index(pos.y) then
