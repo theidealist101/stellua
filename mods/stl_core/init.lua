@@ -39,7 +39,11 @@ minetest.register_on_mods_loaded(function()
 end)
 
 minetest.register_on_newplayer(function(player)
-    player:set_pos(vector.new(0, stellua.get_planet_level(start_planet)+150, 0))
+    local pos = vector.new(0, stellua.get_planet_level(start_planet)+10^stellua.planets[start_planet].scale+10, 0)
+    player:set_pos(pos+vector.new(0, 1.5, 0))
+    if stellua.detach_vehicle then
+        minetest.place_schematic(pos, modpath.."schems/starter_rocket.mts", "0", {}, true, "place_center_x, place_center_z")
+    end
 end)
 
 --A few useful commands
