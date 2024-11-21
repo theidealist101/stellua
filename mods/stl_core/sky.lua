@@ -32,13 +32,13 @@ minetest.register_entity("stl_core:skybox", {
 
         local index = stellua.get_planet_index(pos.y)
         local slot = stellua.get_slot_index(pos)
-        local current_star, current_pos, fog_dist
+        local current_star, current_pos, fog_dist, rot
         if index then
             local planet = stellua.planets[index]
             current_star, current_pos = planet.star, planet.pos
             fog_dist = planet.fog_dist
         elseif slot then
-            current_star, current_pos = stellua.get_slot_info(slot)
+            current_star, current_pos, rot = stellua.get_slot_info(slot)
             fog_dist = 180
         else self.object:remove() return end
 
@@ -54,9 +54,14 @@ minetest.register_entity("stl_core:skybox", {
             sf = 0.005
         end
 
+        if index then
+            rot = vector.dir_to_rotation(vector.rotate_around_axis(dir, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
+        else
+            rot = vector.dir_to_rotation(vector.rotate(dir, rot))
+        end
+
         self.object:set_pos(pos)
         self.object:set_velocity(self.player:get_velocity())
-        local rot = vector.dir_to_rotation(vector.rotate_around_axis(dir, NORTH, (minetest.get_timeofday()+0.5)*2*math.pi))
         self.object:set_rotation(rot)
         local dist = 160*(fog_dist-10)
         local scale = dist*sf

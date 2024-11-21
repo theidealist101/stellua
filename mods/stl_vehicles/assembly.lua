@@ -170,8 +170,8 @@ minetest.register_globalstep(function()
                 stellua.land_vehicle(vehicle)
             elseif index and (y-500)%1000 >= 750 then
                 local planet = stellua.planets[index]
-                local dir = vector.rotate_around_axis(UP, NORTH, -(minetest.get_timeofday()+0.5)*2*math.pi)
-                local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos+0.15*planet.scale*dir, vector.dir_to_rotation(dir))
+                local rot = (minetest.get_timeofday()+0.5)*2*math.pi
+                local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
                 if slot then
                     local slotpos = stellua.get_slot_pos(slot)
                     minetest.emerge_area(slotpos, slotpos)
