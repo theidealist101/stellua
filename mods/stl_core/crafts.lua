@@ -205,7 +205,7 @@ minetest.register_tool("stl_core:copper_pick", {
     tool_capabilities = {
         full_punch_interval = 1,
         groupcaps = {
-            cracky = {times={0.5, 1, 2}, uses=100}
+            cracky = {times={0.5, 1, 2, 3}, uses=100}
         }
     }
 })
@@ -266,7 +266,7 @@ minetest.register_tool("stl_core:titanium_pick", {
     tool_capabilities = {
         full_punch_interval = 1.2,
         groupcaps = {
-            cracky = {times={0.8, 1.6, 3.2}, uses=180}
+            cracky = {times={0.8, 1.6, 3.2, 4.8}, uses=180}
         }
     }
 })

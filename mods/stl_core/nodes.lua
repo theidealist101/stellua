@@ -62,7 +62,7 @@ for i = 1, 8 do
         tiles = {"stl_core_stone"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {cracky=2, stone=1},
+        groups = {cracky=2, stone=1, ground=1},
         drop = {},
         after_dig_node = drop_with_color("stl_core:cobble")
     })
@@ -83,7 +83,7 @@ for i = 1, 8 do
         tiles = {"stl_core_filler"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {crumbly=2, filler=1}
+        groups = {crumbly=2, filler=1, ground=1}
     })
 end
 

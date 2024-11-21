@@ -67,6 +67,42 @@ local function get_nearby_param2(rand, param2, dist)
     return y*16+x
 end
 
+--Register structures to be placed
+stellua.registered_structures = {}
+
+function stellua.register_structure(defs)
+    defs.offset = defs.offset or 0
+    table.insert(stellua.registered_structures, defs)
+end
+
+--Go about placing the structures
+minetest.register_node("stl_core:structure_spawner", {
+    description = "Structure Spawner",
+    drawtype = "airlike"
+})
+
+minetest.register_on_mods_loaded(function()
+    minetest.register_decoration({
+        deco_type = "simple",
+        place_on = {"group:ground"},
+        fill_ratio = 0.00002,
+        decoration = "stl_core:structure_spawner",
+        param2 = 1,
+        param2_max = #stellua.registered_structures
+    })
+end)
+
+minetest.register_abm({
+    interval = 1,
+    chance = 1,
+    nodenames = {"stl_core:structure_spawner"},
+    action = function (pos, node)
+        local defs = stellua.registered_structures[node.param2]
+        pos.y = pos.y+defs.offset
+        minetest.place_schematic(pos, defs.schematic, "0", {}, true, "place_center_x, place_center_z")
+    end
+})
+
 local SKY_COL = vector.new(97, 181, 245)
 
 local ORES_COMMON = {"copper", "titanium"}
@@ -369,7 +405,7 @@ function luamap.logic(noises, x, y, z, seed, cur, cur_param2)
     if not index or (y-500)%1000 >= 750 then return c_void, 0 end
     if (y-500)%1000 == 0 then return c_bedrock, 0 end
     local planet = planets[index]
-    if cur and cur ~= c_air then return cur, planet.param2_trees[cur] or cur_param2 end
+    if cur and cur ~= c_air then return cur, planet.param2_trees and planet.param2_trees[cur] or cur_param2 end
     local noise = noises["planet"..index]
     local height = y-noise
     if planet.water_level then
