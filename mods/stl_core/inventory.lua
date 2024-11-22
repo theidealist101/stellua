@@ -76,3 +76,22 @@ sfinv.register_page("stl_core:planets", {
         end
     end
 })
+
+sfinv.register_page("stl_core:controls", {
+    title = "Controls",
+    get = function (self, player, context)
+        return sfinv.make_formspec(player, context, "textarea[0.5,0.2;7.9,10;;"..minetest.formspec_escape([[
+Since I'm running late for this game jam thing and I don't have time to make the full in-game tutorial I wanted to, here's the controls for this demo:
+
+- Normal controls for moving around.
+
+- Interact with any node in a vehicle to enter it; only certain nodes can connect to vehicles, and all but the seat itself can be obtained, though some may require a special crafting workbench.
+
+- Inside a landed vehicle, press Aux1 to leave it in the direction you're facing, or jump while in the seat to take off.
+
+- In a flying vehicle with engines, press jump and sneak at the same time to launch; the more engines you have, the faster it goes.
+
+- Fly up out of the atmosphere to enter space, where you can use the menu to go to other planets and find more stuff!
+        ]])..";]", false)
+    end
+})
