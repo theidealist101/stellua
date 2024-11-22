@@ -103,6 +103,7 @@ function stellua.land_vehicle(vehicle, pos)
             minetest.set_node(node.entity.pos+pos, node)
         end
     end
+    if vehicle.sound then minetest.sound_fade(vehicle.sound, 1, 0) end
     vehicle:remove()
 end
 
@@ -115,7 +116,10 @@ minetest.register_on_mods_loaded(function()
                 if on_rightclick then on_rightclick(pos, node, user)
                 elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(user:get_pos()) then
                     local ship, seat = stellua.assemble_vehicle(pos)
-                    if seat then user:set_pos(seat) end
+                    if seat then
+                        user:set_pos(seat)
+                        minetest.sound_play({name="doors_steel_door_close", gain=0.2}, {pos=seat}, true)
+                    end
                 end
             end})
         end
@@ -154,12 +158,16 @@ minetest.register_globalstep(function()
                     if stellua.get_planet_index(initial_pos.y) then pos = nil
                     else pos = initial_pos end
                 end
-                if pos then player:set_pos(pos+0.5*UP) end
+                if pos then
+                    player:set_pos(pos+0.5*UP)
+                    minetest.sound_play({name="doors_steel_door_close", gain=0.2}, {pos=pos}, true)
+                end
             --make vehicle launch on jump
             elseif control.jump and stellua.get_planet_index(pos.y) then
                 local ent = stellua.detach_vehicle(pos)
                 player:set_attach(ent.object)
                 ent.player = player:get_player_name()
+                minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=pos}, true)
             end
         end
 
@@ -170,6 +178,7 @@ minetest.register_globalstep(function()
             local index = stellua.get_planet_index(y)
             if control.aux1 then
                 player:set_detach()
+                minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
             elseif index and (y-500)%1000 >= 700 then
                 local planet = stellua.planets[index]
@@ -187,7 +196,8 @@ minetest.register_globalstep(function()
                 local vel = vehicle:get_velocity()
                 local rot = vector.new(0, player:get_look_horizontal(), 0)
                 local power = vehicle:get_luaentity().power
-                if control.jump and control.sneak then vel.y = vel.y+ACCEL+power*0.1
+                local launch = control.jump and control.sneak
+                if launch then vel.y = vel.y+ACCEL+power*0.1
                 elseif control.jump then vel.y = vel.y+ACCEL
                 elseif control.sneak then vel.y = vel.y-ACCEL end
                 if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
@@ -195,9 +205,21 @@ minetest.register_globalstep(function()
                 if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
                 if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
                 local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(math.hypot(vel.x, vel.z)-FRICT, 0), 8)
-                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(control.jump and control.sneak and power or 0)), 0)
+                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(launch and power or 0)), 0)
                 vehicle:set_velocity(xvel+yvel)
                 vehicle:set_rotation(rot)
+
+                --deal with sounds
+                local ent = vehicle:get_luaentity()
+                if launch and ent.launch ~= true then
+                    ent.launch = true
+                    if ent.sound then minetest.sound_fade(ent.sound, 1, 0) end
+                    ent.sound = minetest.sound_play({name="065110_seamless-rocket-booster-roar-amp-crackle-42487", gain=1}, {loop=true, object=vehicle})
+                elseif ent.launch ~= false and not launch then
+                    ent.launch = false
+                    if ent.sound then minetest.sound_fade(ent.sound, 1, 0) end
+                    ent.sound = minetest.sound_play({name="motor-loop-83480", gain=0.5}, {loop=true, object=vehicle})
+                end
             end
         end
     end
