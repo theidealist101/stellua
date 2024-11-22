@@ -290,6 +290,21 @@ minetest.register_on_mods_loaded(function()
         if planet.life_stat > 0 then
             local fill_ratio = planet.life_stat*0.2+prand:next(1, 12)*0.005
             local param2_grass = get_nearby_param2(prand, planet.param2_filler)
+            planet.param2_trees = {}
+            for _ = 1, math.floor(planet.life_stat*8-4) do
+                local treedef = stellua.make_treedef(prand)
+                minetest.register_decoration({
+                    deco_type = "lsystem",
+                    place_on = {planet.mapgen_filler},
+                    fill_ratio = prand:next(1, 20)*0.001,
+                    y_min = level-500,
+                    y_max = level+499,
+                    treedef = treedef
+                })
+                local p = get_nearby_param2(prand, param2_grass)
+                planet.param2_trees[minetest.get_content_id(treedef.trunk)] = p
+                planet.param2_trees[minetest.get_content_id(treedef.leaves)] = get_nearby_param2(prand, p, 2)
+            end
             minetest.register_decoration({
                 deco_type = "simple",
                 place_on = {planet.mapgen_filler},
@@ -329,21 +344,6 @@ minetest.register_on_mods_loaded(function()
                     decoration = "stl_core:moss"..prand:next(1, 4),
                     param2 = get_nearby_param2(prand, param2_grass)
                 })
-            end
-            planet.param2_trees = {}
-            for _ = 1, math.floor(planet.life_stat*8-4) do
-                local treedef = stellua.make_treedef(prand)
-                minetest.register_decoration({
-                    deco_type = "lsystem",
-                    place_on = {planet.mapgen_filler},
-                    fill_ratio = prand:next(1, 20)*0.001,
-                    y_min = level-500,
-                    y_max = level+499,
-                    treedef = treedef
-                })
-                local p = get_nearby_param2(prand, param2_grass)
-                planet.param2_trees[minetest.get_content_id(treedef.trunk)] = p
-                planet.param2_trees[minetest.get_content_id(treedef.leaves)] = get_nearby_param2(prand, p, 2)
             end
         end
 
