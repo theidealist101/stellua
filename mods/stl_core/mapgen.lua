@@ -242,6 +242,7 @@ minetest.register_on_mods_loaded(function()
 
                     if defs.snow then
                         local snow_defs = minetest.registered_nodes[defs.snow]
+                        planet.snow_type1 = defs.snow
                         minetest.register_decoration({
                             deco_type = "simple",
                             place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
@@ -271,6 +272,7 @@ minetest.register_on_mods_loaded(function()
         if #snow_options > 0 then
             local snow, defs = unpack(snow_options[prand:next(1, #snow_options)])
             if snow ~= 0 then
+                planet.snow_type2 = snow
                 minetest.register_decoration({
                     deco_type = "simple",
                     place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
