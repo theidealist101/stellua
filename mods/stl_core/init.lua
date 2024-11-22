@@ -5,6 +5,7 @@ table.insert_all = table.insert_all
 table.indexof = table.indexof
 math.round = math.round
 table.copy = table.copy
+math.hypot = math.hypot
 
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."slots.lua")

@@ -142,16 +142,19 @@ minetest.register_globalstep(function()
                 local initial_pos = pos
                 local attempts = 0
                 while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
-                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 1000 do
+                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
                     pos = pos+UP
                     attempts = attempts+1
                 end
-                while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 1000 do
+                while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 8 do
                     pos = pos-UP
                     attempts = attempts+1
                 end
-                if attempts >= 1000 then pos = initial_pos end
-                player:set_pos(pos+0.5*UP)
+                if attempts >= 8 then
+                    if stellua.get_planet_index(initial_pos.y) then pos = nil
+                    else pos = initial_pos end
+                end
+                if pos then player:set_pos(pos+0.5*UP) end
             --make vehicle launch on jump
             elseif control.jump and stellua.get_planet_index(pos.y) then
                 local ent = stellua.detach_vehicle(pos)
@@ -191,8 +194,8 @@ minetest.register_globalstep(function()
                 if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
                 if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
                 if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
-                local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(vector.length(vel)-FRICT, 0), 4)
-                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -4), 4+(control.jump and control.sneak and power or 0)), 0)
+                local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(math.hypot(vel.x, vel.z)-FRICT, 0), 8)
+                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(control.jump and control.sneak and power or 0)), 0)
                 vehicle:set_velocity(xvel+yvel)
                 vehicle:set_rotation(rot)
             end
