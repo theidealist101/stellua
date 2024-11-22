@@ -149,7 +149,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
-        sounds = stellua.node_sound_water_defaults()
+        sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })
 
     minetest.register_node(name.."_flowing", {
@@ -178,7 +178,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
-        sounds = stellua.node_sound_water_defaults()
+        sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })
 
     if defs.frozen_tiles then
