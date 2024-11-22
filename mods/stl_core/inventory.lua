@@ -89,7 +89,7 @@ Since I'm running late for this game jam thing and I don't have time to make the
 
 - Inside a landed vehicle, press Aux1 to leave it in the direction you're facing, or jump while in the seat to take off.
 
-- In a flying vehicle with engines, press jump and sneak at the same time to launch; the more engines you have, the faster it goes.
+- In a flying vehicle with engines, press Aux1 to land in place, or jump and sneak at the same time to launch upwards - the more engines you have, the faster it goes.
 
 - Fly up out of the atmosphere to enter space, where you can use the menu to go to other planets and find more stuff!
         ]])..";]", false)
