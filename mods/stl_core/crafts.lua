@@ -325,13 +325,15 @@ minetest.register_craft({
 minetest.register_node("stl_core:copper_block", {
     description = "Copper Block",
     tiles = {"default_copper_block.png"},
-    groups = {cracky=3, spaceship=1}
+    groups = {cracky=3, spaceship=1},
+    sounds = stellua.node_sound_metal_defaults()
 })
 
 minetest.register_node("stl_core:titanium_block", {
     description = "Titanium Block",
     tiles = {"default_tin_block.png"},
-    groups = {cracky=3, spaceship=1}
+    groups = {cracky=3, spaceship=1},
+    sounds = stellua.node_sound_metal_defaults()
 })
 
 minetest.register_craft({

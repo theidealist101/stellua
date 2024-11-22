@@ -3,7 +3,8 @@ minetest.register_node("stl_decor:stone_brick", {
     tiles = {"stl_decor_stone_brick.png"},
     paramtype2 = "color",
     palette = "palette.png",
-    groups = {cracky=2}
+    groups = {cracky=2},
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 minetest.register_craft({
@@ -21,7 +22,8 @@ minetest.register_node("stl_decor:filler_brick", {
     tiles = {"stl_decor_filler_brick.png"},
     paramtype2 = "color",
     palette = "palette.png",
-    groups = {cracky=1}
+    groups = {cracky=1},
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 for i = 1, 8 do
@@ -41,7 +43,8 @@ minetest.register_node("stl_decor:glass", {
     tiles = {"default_glass.png"},
     paramtype = "light",
     sunlight_propagates = true,
-    groups = {cracky=1, spaceship=1}
+    groups = {cracky=1, spaceship=1},
+    sounds = stellua.node_sound_glass_defaults()
 })
 
 for i = 1, 5 do

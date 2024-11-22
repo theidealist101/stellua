@@ -11,7 +11,8 @@ minetest.register_node("stl_core:void", {
 --Bedrock, used for bottom of worlds
 minetest.register_node("stl_core:bedrock", {
     description = "Bedrock",
-    tiles = {"mcl_core_bedrock.png"}
+    tiles = {"mcl_core_bedrock.png"},
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 --Basic resources dropped from environment nodes
@@ -38,7 +39,8 @@ minetest.register_node("stl_core:wood", {
     tiles = {"stl_core_wood.png"},
     paramtype2 = "color",
     palette = "palette_foliage.png",
-    groups = {choppy=1}
+    groups = {choppy=1},
+    sounds = stellua.node_sound_wood_defaults()
 })
 
 --Get function for use in after_dig_node to drop a colored item
@@ -64,7 +66,8 @@ for i = 1, 8 do
         palette = "palette.png",
         groups = {cracky=2, stone=1, ground=1},
         drop = {},
-        after_dig_node = drop_with_color("stl_core:cobble")
+        after_dig_node = drop_with_color("stl_core:cobble"),
+        sounds = stellua.node_sound_stone_defaults()
     })
 end
 
@@ -73,7 +76,8 @@ minetest.register_node("stl_core:cobble", {
     tiles = {"stl_core_stone2.png"},
     paramtype2 = "color",
     palette = "palette.png",
-    groups = {cracky=2, stone=1}
+    groups = {cracky=2, stone=1},
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 --Filler nodes
@@ -83,7 +87,8 @@ for i = 1, 8 do
         tiles = {"stl_core_filler"..i..".png"},
         paramtype2 = "color",
         palette = "palette.png",
-        groups = {crumbly=2, filler=1, ground=1}
+        groups = {crumbly=2, filler=1, ground=1},
+        sounds = stellua.node_sound_dirt_defaults()
     })
 end
 
@@ -143,7 +148,8 @@ local function register_water(name, defs)
         damage_per_second = defs.damage_per_second,
         waving = 3,
         melt_point = defs.melt_point,
-        boil_point = defs.boil_point
+        boil_point = defs.boil_point,
+        sounds = stellua.node_sound_water_defaults()
     })
 
     minetest.register_node(name.."_flowing", {
@@ -171,7 +177,8 @@ local function register_water(name, defs)
         damage_per_second = defs.damage_per_second,
         waving = 3,
         melt_point = defs.melt_point,
-        boil_point = defs.boil_point
+        boil_point = defs.boil_point,
+        sounds = stellua.node_sound_water_defaults()
     })
 
     if defs.frozen_tiles then
@@ -185,7 +192,8 @@ local function register_water(name, defs)
             liquid_alternative_source = name.."_source",
             melt_point = defs.melt_point,
             boil_point = defs.boil_point,
-            groups = {cracky=1, slippery=3}
+            groups = {cracky=1, slippery=3},
+            sounds = stellua.node_sound_ice_defaults()
         })
     end
 end
@@ -209,7 +217,8 @@ local function register_snow(name, defs)
         walkable = false,
         buildable_to = true,
         floodable = true,
-        drop = name.."_ball"
+        drop = name.."_ball",
+        sounds = stellua.node_sound_snow_defaults()
     })
 
     minetest.register_craftitem(name.."_ball", {
@@ -323,7 +332,8 @@ minetest.register_node("stl_core:gravel", {
     floodable = true,
     groups = {crumbly=2, falling_node=1},
     drop = {},
-    after_dig_node = drop_with_color("stl_core:pebble")
+    after_dig_node = drop_with_color("stl_core:pebble"),
+    sounds = stellua.node_sound_gravel_defaults()
 })
 
 --Some more life stuff
@@ -342,7 +352,8 @@ for i = 1, 4 do
         floodable = true,
         groups = {snappy=1, falling_node=1},
         drop = {},
-        after_dig_node = drop_with_color("stl_core:moss")
+        after_dig_node = drop_with_color("stl_core:moss"),
+        sounds = stellua.node_sound_snow_defaults()
     })
 end
 
@@ -361,7 +372,8 @@ for i = 1, 4 do
         waving = 1,
         groups = {snappy=1, attached_node=1},
         drop = {},
-        after_dig_node = drop_with_color("stl_core:stick", 0.4)
+        after_dig_node = drop_with_color("stl_core:stick", 0.4),
+        sounds = stellua.node_sound_leaves_defaults()
     })
 end
 
@@ -374,7 +386,8 @@ for i = 1, 8 do
         paramtype2 = "color",
         palette = "palette.png",
         groups = {cracky=3},
-        drop = "stl_core:copper"
+        drop = "stl_core:copper",
+        sounds = stellua.node_sound_stone_defaults()
     })
 
     minetest.register_node("stl_core:stone"..i.."_with_titanium", {
@@ -384,7 +397,8 @@ for i = 1, 8 do
         paramtype2 = "color",
         palette = "palette.png",
         groups = {cracky=3},
-        drop = "stl_core:titanium"
+        drop = "stl_core:titanium",
+        sounds = stellua.node_sound_stone_defaults()
     })
 end
 
@@ -405,7 +419,8 @@ for i = 1, 2 do
         tiles = {"stl_core_log"..i.."_top.png", "stl_core_log"..i.."_top.png", "stl_core_log"..i..".png"},
         paramtype2 = "color",
         palette = "palette_foliage.png",
-        groups = {choppy=2, tree=1}
+        groups = {choppy=2, tree=1},
+        sounds = stellua.node_sound_wood_defaults()
     })
 end
 
@@ -421,7 +436,8 @@ for i = 1, 4 do
         palette = "palette_foliage.png",
         groups = {snappy=2, tree=1},
         drop = {},
-        after_dig_node = drop_with_color("stl_core:stick", 0.2)
+        after_dig_node = drop_with_color("stl_core:stick", 0.2),
+        sounds = stellua.node_sound_leaves_defaults()
     })
 end
 
@@ -443,6 +459,7 @@ for i, val in ipairs(quartz_types) do
         paramtype = "light",
         sunlight_propagates = true,
         color = val[2],
-        groups = {cracky=1}
+        groups = {cracky=1},
+        sounds = stellua.node_sound_glass_defaults()
     })
 end

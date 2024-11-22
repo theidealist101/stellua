@@ -8,6 +8,7 @@ table.copy = table.copy
 math.hypot = math.hypot
 
 local modpath = minetest.get_modpath("stl_core").."/"
+dofile(modpath.."sounds.lua")
 dofile(modpath.."slots.lua")
 dofile(modpath.."names.lua")
 dofile(modpath.."trees.lua")

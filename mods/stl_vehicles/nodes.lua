@@ -13,13 +13,15 @@ minetest.register_node("stl_vehicles:seat", {
     paramtype = "light",
     sunlight_propagates = true,
     paramtype2 = "facedir", --lvae doesn't like 4dir
-    groups = {cracky=1, spaceship=1, seat=1}
+    groups = {cracky=1, spaceship=1, seat=1},
+    sounds = stellua.node_sound_wood_defaults()
 })
 
 --The fuel tank, required to power the thrusters or engines of a vehicle
 minetest.register_node("stl_vehicles:tank", {
     description = "Fuel Tank",
-    groups = {cracky=2, spaceship=1}
+    groups = {cracky=2, spaceship=1},
+    sounds = stellua.node_sound_metal_defaults()
 })
 
 --The rocket engine, for launching spaceships
@@ -33,7 +35,8 @@ minetest.register_node("stl_vehicles:rocket", {
     }},
     paramtype = "light",
     sunlight_propagates = true,
-    groups = {cracky=2, spaceship=2, engine=3}
+    groups = {cracky=2, spaceship=2, engine=3},
+    sounds = stellua.node_sound_metal_defaults()
 })
 
 minetest.register_craft({
@@ -64,7 +67,8 @@ minetest.register_node("stl_vehicles:assembler", {
             listring[current_player;main]
             listring[current_player;craft]
         ]], true))
-    end
+    end,
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 minetest.register_on_joinplayer(function(player)
