@@ -1,5 +1,13 @@
 === SOURCE CODE ===
 
+Stellua uses the following API mods by other authors, licensed as specified in their docs:
+
+- Luamap by MisterE and others
+- Sfinv by rubenwardy
+- LVAE by GreenXenith
+
+All code in other mods is under GNU GPL v3.0:
+
 Stellua
 Copyright (C) 2024 theidealist (theidealistmusic@gmail.com)
 
@@ -15,12 +23,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-Stellua uses the following API mods by other authors, licensed as specified in their docs:
-
-- Luamap by MisterE and others
-- Sfinv by rubenwardy
-- LVAE by GreenXenith
 
 All three are under the MIT license, as are any modifications made to them directly by theidealist.
 
