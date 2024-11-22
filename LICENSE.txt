@@ -119,6 +119,6 @@ All sounds not mentioned come directly from Minetest Game and are under CC BY-SA
 The following sounds are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - default_water_footstep.(1-3).ogg
 
-The following sounds are derived from sound effects under the Pixabay content license (see https://pixabay.com/service/terms/):
-- motor-loop-83480.ogg
-- 065110_seamless-rocket-booster-roar-amp-crackle-42487.ogg
+The following sounds are derived from sound effects from freesound.org and are under CC0:
+- 242740__marlonhj__engine.ogg
+- 534856__m_cel__jet-engine.ogg

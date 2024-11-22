@@ -6,12 +6,12 @@ local old_on_activate = lvae_defs.on_activate
 --local old_on_step = lvae_defs.on_step
 
 function lvae_defs.get_staticdata(self)
-    return minetest.serialize({old_get_staticdata(self), self.player})
+    return minetest.serialize({old_get_staticdata(self), self.player, self.power})
 end
 
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
-        staticdata, self.player = unpack(minetest.deserialize(staticdata))
+        staticdata, self.player, self.power = unpack(minetest.deserialize(staticdata))
         self.object:set_properties({physical=true})
     end
     return old_on_activate(self, staticdata, dtime)
@@ -103,7 +103,7 @@ function stellua.land_vehicle(vehicle, pos)
             minetest.set_node(node.entity.pos+pos, node)
         end
     end
-    if vehicle.sound then minetest.sound_fade(vehicle.sound, 1, 0) end
+    if vehicle.sound then minetest.sound_fade(vehicle.sound, 5, 0) end
     vehicle:remove()
 end
 
@@ -213,12 +213,12 @@ minetest.register_globalstep(function()
                 local ent = vehicle:get_luaentity()
                 if launch and ent.launch ~= true then
                     ent.launch = true
-                    if ent.sound then minetest.sound_fade(ent.sound, 1, 0) end
-                    ent.sound = minetest.sound_play({name="065110_seamless-rocket-booster-roar-amp-crackle-42487", gain=1}, {loop=true, object=vehicle})
+                    if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
+                    ent.sound = minetest.sound_play({name="534856__m_cel__jet-engine", gain=0.5}, {loop=true, object=vehicle, fade=5})
                 elseif ent.launch ~= false and not launch then
                     ent.launch = false
-                    if ent.sound then minetest.sound_fade(ent.sound, 1, 0) end
-                    ent.sound = minetest.sound_play({name="motor-loop-83480", gain=0.5}, {loop=true, object=vehicle})
+                    if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
+                    ent.sound = minetest.sound_play({name="242740__marlonhj__engine", gain=0.1}, {loop=true, object=vehicle, fade=5})
                 end
             end
         end
