@@ -255,6 +255,45 @@ minetest.register_on_mods_loaded(function()
                         })
                     end
                 end
+
+                if prand:next(0, 2) > 0 then
+                    planet.quartz = "stl_core:quartz"..prand:next(1, 5)
+                    minetest.register_decoration({
+                        deco_type = "simple",
+                        place_on = {planet.mapgen_stone, planet.mapgen_seabed, planet.mapgen_beach, planet.mapgen_filler},
+                        fill_ratio = prand:next(1, 500)*0.0001+0.05,
+                        y_min = level-500,
+                        y_max = planet.water_level-8,
+                        flags = "force_placement",
+                        --[[treedef = {
+                            axiom = "aaaaaaaa",
+                            rules_a = "[ccccccccccccccccccccccccdddbbbbb]",
+                            rules_b = "T",
+                            rules_c = "/",
+                            rules_d = "&",
+                            trunk = planet.quartz,
+                            leaves = "air",
+                            angle = 30,
+                            iterations = 5,
+                            trunk_type = "crossed",
+                            thin_branches = false,
+                            fruit_chance = 0,
+                            seed = prand:next()
+                        },]]
+                        noise_params = {
+                            offset = -0.3,
+                            scale = 0.5,
+                            spread = {x=100, y=100, z=100},
+                            seed = prand:next(),
+                            octaves = 3,
+                            persistence = 0.5,
+                            lacunarity = 2.0,
+                        },
+                        decoration = planet.quartz,
+                        height = 1,
+                        height_max = 6
+                    })
+                end
             end
         end
 

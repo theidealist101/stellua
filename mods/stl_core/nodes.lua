@@ -424,3 +424,25 @@ for i = 1, 4 do
         after_dig_node = drop_with_color("stl_core:stick", 0.2)
     })
 end
+
+--Quartz crystals found underwater
+local quartz_types = {
+    {"Amethyst", "#c040ff"},
+    {"Citrine", "#ffc040"},
+    {"Clear Quartz", "#ffffff"},
+    {"Rose Quartz", "#ff80c0"},
+    {"Aventurine", "#40ffc0"}
+}
+
+for i, val in ipairs(quartz_types) do
+    minetest.register_node("stl_core:quartz"..i, {
+        description = val[1],
+        drawtype = "glasslike",
+        tiles = {"stl_core_quartz.png^[opacity:192"},
+        use_texture_alpha = "blend",
+        paramtype = "light",
+        sunlight_propagates = true,
+        color = val[2],
+        groups = {cracky=1}
+    })
+end
