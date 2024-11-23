@@ -33,5 +33,6 @@ end
 
 --Get position of slot in-world
 function stellua.get_slot_info(index)
+    if not slots[index] then return end
     return unpack(slots[index])
 end
