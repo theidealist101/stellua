@@ -48,7 +48,7 @@ sfinv.register_page("stl_core:planets", {
     on_player_receive_fields = function (self, player, context, fields)
         if fields.back then
             context.planet = context.planet and context.planet > 0 and -stellua.planets[context.planet].star or 0
-            minetest.show_formspec(player:get_player_name(), "", sfinv.get_formspec(player, context))
+            sfinv.set_page(player, "stl_core:planets")
             return
         end
         if fields.tp then
@@ -63,14 +63,14 @@ sfinv.register_page("stl_core:planets", {
         for i = 1, 60 do
             if fields["planet"..i] then
                 context.planet = i
-                minetest.show_formspec(player:get_player_name(), "", sfinv.get_formspec(player, context))
+                sfinv.set_page(player, "stl_core:planets")
                 return
             end
         end
         for i = 1, 16 do
             if fields["star"..i] then
                 context.planet = -i
-                minetest.show_formspec(player:get_player_name(), "", sfinv.get_formspec(player, context))
+                sfinv.set_page(player, "stl_core:planets")
                 return
             end
         end
