@@ -155,8 +155,9 @@ minetest.register_globalstep(function()
                     attempts = attempts+1
                 end
                 if attempts >= 8 then
-                    if stellua.get_planet_index(initial_pos.y) then pos = nil
-                    else pos = initial_pos end
+                    --if stellua.get_planet_index(initial_pos.y) then pos = nil
+                    --else pos = initial_pos end
+                    pos = nil
                 end
                 if pos then
                     player:set_pos(pos+0.5*UP)
@@ -180,6 +181,7 @@ minetest.register_globalstep(function()
                 player:set_detach()
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
+                stellua.set_respawn(player, pos)
             elseif index and (y-500)%1000 >= 700 then
                 local planet = stellua.planets[index]
                 local rot = (minetest.get_timeofday()+0.5)*2*math.pi
@@ -191,6 +193,7 @@ minetest.register_globalstep(function()
                     player:set_detach()
                     stellua.land_vehicle(ent, slotpos)
                     player:set_pos(slotpos)
+                    stellua.set_respawn(player, slotpos)
                 end
             else
                 local vel = vehicle:get_velocity()
