@@ -41,6 +41,7 @@ minetest.register_entity("stl_core:skybox", {
             current_star, current_pos, rot = stellua.get_slot_info(slot)
             fog_dist = 180
         else self.object:remove() return end
+        if not current_star then self.object:remove() return end
 
         local dir, sf
         if self.planet then
