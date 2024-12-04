@@ -121,9 +121,11 @@ function stellua.land_vehicle(vehicle, pos)
     end
     for _, val in ipairs(vehicle.tanks) do
         local p, inv = unpack(val)
-        --minetest.get_meta(pos+p):get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
-        --minetest.remove_detached_inventory(inv)
-        --not working right now lol
+        if minetest.get_inventory({type="detached", name=inv}) then
+            minetest.get_meta(pos+p):get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
+            minetest.remove_detached_inventory(inv)
+        end
+        --not working right now when you leave and rejoin lol
     end
     if vehicle.sound then minetest.sound_fade(vehicle.sound, 5, 0) end
     vehicle:remove()
