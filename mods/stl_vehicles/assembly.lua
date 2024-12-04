@@ -164,32 +164,32 @@ minetest.register_globalstep(function()
         local pos = vector.round(player:get_pos())
         local control = player:get_player_control()
         if (control.aux1 or control.jump) and stellua.assemble_vehicle(pos) then
+
             --make player exit on aux1
             if control.aux1 then
+                --move forward until out of the vehicle
                 local dir = player:get_look_dir()
                 while stellua.assemble_vehicle(pos) do
                     pos = vector.round(pos+dir)
                 end
-                --local initial_pos = pos
                 local attempts = 0
+                --go up until there's space
                 while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
                 or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
                     pos = pos+UP
                     attempts = attempts+1
                 end
+                --go down until there's something to stand on
                 while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 8 do
                     pos = pos-UP
                     attempts = attempts+1
                 end
-                if attempts >= 8 then
-                    --if stellua.get_planet_index(initial_pos.y) then pos = nil
-                    --else pos = initial_pos end
-                    pos = nil
-                end
-                if pos then
+                --if we could find a valid position then do it
+                if attempts < 8 then
                     player:set_pos(pos+0.5*UP)
                     minetest.sound_play({name="doors_steel_door_close", gain=0.2}, {pos=pos}, true)
                 end
+
             --make vehicle launch on jump
             elseif control.jump and stellua.get_planet_index(pos.y) then
                 local ent = stellua.detach_vehicle(pos)
@@ -204,17 +204,23 @@ minetest.register_globalstep(function()
         if vehicle then
             local y = vehicle:get_pos().y
             local index = stellua.get_planet_index(y)
+
+            --land vehicle with aux1
             if control.aux1 then
                 player:set_detach()
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
                 stellua.set_respawn(player, pos)
+
+            --load up slot if above y=200
             elseif index and (y-500)%1000 >= 700 then
                 local planet = stellua.planets[index]
                 local rot = (minetest.get_timeofday()+0.5)*2*math.pi
                 local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
                 local slotpos = stellua.get_slot_pos(slot)
                 minetest.emerge_area(slotpos, slotpos)
+
+                --move to slot if above y=250
                 if (y-500)%1000 >= 750 then
                     local ent = vehicle:get_luaentity()
                     player:set_detach()
@@ -222,18 +228,25 @@ minetest.register_globalstep(function()
                     player:set_pos(slotpos)
                     stellua.set_respawn(player, slotpos)
                 end
-            else
+            end
+
+            if not control.aux1 and (y-500)%1000 < 750 then
                 local vel = vehicle:get_velocity()
                 local rot = vector.new(0, player:get_look_horizontal(), 0)
                 local power = vehicle:get_luaentity().power
+
+                --handle controls
                 local launch = control.jump and control.sneak
-                if launch then vel.y = vel.y+ACCEL+power*0.1
+                if launch then
+                    vel.y = vel.y+ACCEL+power*0.1
                 elseif control.jump then vel.y = vel.y+ACCEL
                 elseif control.sneak then vel.y = vel.y-ACCEL end
                 if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
                 if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
                 if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
                 if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+
+                --calculate velocity and apply
                 local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(math.hypot(vel.x, vel.z)-FRICT, 0), 8)
                 local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(launch and power or 0)), 0)
                 vehicle:set_velocity(xvel+yvel)
