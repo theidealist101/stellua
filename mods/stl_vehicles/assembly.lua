@@ -86,8 +86,9 @@ function stellua.detach_vehicle(pos)
     lvae.tanks = {}
     for _, p in ipairs(tanks or {}) do
         local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
-        inv:set_lists(minetest.get_meta(p):get_inventory():get_lists())
-        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count})
+        local meta = minetest.get_meta(p)
+        inv:set_lists(meta:get_inventory():get_lists())
+        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_int("fuel")})
         inv_count = inv_count+1
         storage:set_int("inv_count", inv_count)
     end
@@ -120,9 +121,11 @@ function stellua.land_vehicle(vehicle, pos)
         end
     end
     for _, val in ipairs(vehicle.tanks) do
-        local p, inv = unpack(val)
+        local p, inv, fuel = unpack(val)
+        local meta = minetest.get_meta(pos+p)
+        meta:set_int("fuel", fuel)
         if minetest.get_inventory({type="detached", name=inv}) then
-            minetest.get_meta(pos+p):get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
+            meta:get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
             minetest.remove_detached_inventory(inv)
         end
         --not working right now when you leave and rejoin lol
