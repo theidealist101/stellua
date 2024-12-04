@@ -139,7 +139,6 @@ end
 local function get_fuel(tanks, amount)
     for _, val in ipairs(tanks) do
         local p, invname, fuel = unpack(val)
-        minetest.log(dump(fuel))
         if fuel >= amount then val[3] = fuel-amount return true end
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv and not inv:is_empty("main") then
