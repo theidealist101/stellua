@@ -20,8 +20,19 @@ minetest.register_node("stl_vehicles:seat", {
 --The fuel tank, required to power the thrusters or engines of a vehicle
 minetest.register_node("stl_vehicles:tank", {
     description = "Fuel Tank",
+    tiles = {"stl_vehicles_tank_top.png", "stl_vehicles_tank_top.png", "stl_vehicles_tank.png"},
     groups = {cracky=2, spaceship=1},
     sounds = stellua.node_sound_metal_defaults()
+})
+
+minetest.register_craft({
+    output = "stl_vehicles:tank",
+    recipe = {
+        {"stl_core:titanium", "stl_core:titanium", "stl_core:titanium", "stl_core:titanium"},
+        {"stl_core:titanium", "", "", "stl_core:titanium"},
+        {"stl_core:titanium", "", "", "stl_core:titanium"},
+        {"stl_core:titanium", "stl_core:titanium", "stl_core:titanium", "stl_core:titanium"}
+    }
 })
 
 --The rocket engine, for launching spaceships

@@ -46,7 +46,7 @@ minetest.register_on_newplayer(function(player)
     player:set_pos(pos+vector.new(0, 1.5, 0))
     stellua.set_respawn(player, pos+vector.new(0, 1, 0))
     if stellua.detach_vehicle then
-        minetest.place_schematic(pos, modpath.."schems/starter_rocket.mts", "0", {["stl_vehicles:tank"]="stl_core:copper_block"}, true, "place_center_x, place_center_z")
+        minetest.place_schematic(pos, modpath.."schems/starter_rocket.mts", "0", {}, true, "place_center_x, place_center_z")
     end
 end)
 
