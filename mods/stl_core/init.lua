@@ -54,7 +54,7 @@ end)
 --Make player respawn in their spaceship on death
 function stellua.set_respawn(player, pos)
     player:get_meta():set_string("respawn", minetest.serialize(pos))
-    minetest.chat_send_player(player:get_player_name(), "Set respawn")
+    minetest.chat_send_player(player:get_player_name(), "Respawn point set!")
 end
 
 minetest.register_on_respawnplayer(function(player)
