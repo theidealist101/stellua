@@ -225,7 +225,8 @@ local function register_snow(name, defs)
 
     minetest.register_craftitem(name.."_ball", {
         description = defs.description,
-        inventory_image = defs.tiles.."^[mask:stl_core_ball.png"
+        inventory_image = defs.tiles.."^[mask:stl_core_ball.png",
+        groups = defs.groups
     })
 end
 

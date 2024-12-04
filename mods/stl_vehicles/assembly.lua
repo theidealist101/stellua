@@ -88,7 +88,7 @@ function stellua.detach_vehicle(pos)
         local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
         local meta = minetest.get_meta(p)
         inv:set_lists(meta:get_inventory():get_lists())
-        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_int("fuel")})
+        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_float("fuel")})
         inv_count = inv_count+1
         storage:set_int("inv_count", inv_count)
     end
@@ -121,17 +121,39 @@ function stellua.land_vehicle(vehicle, pos)
         end
     end
     for _, val in ipairs(vehicle.tanks) do
-        local p, inv, fuel = unpack(val)
+        local p, invname, fuel = unpack(val)
         local meta = minetest.get_meta(pos+p)
-        meta:set_int("fuel", fuel)
-        if minetest.get_inventory({type="detached", name=inv}) then
-            meta:get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
-            minetest.remove_detached_inventory(inv)
+        meta:set_float("fuel", fuel)
+        local inv = minetest.get_inventory({type="detached", name=invname})
+        if inv then
+            meta:get_inventory():set_lists(inv:get_lists())
+            minetest.remove_detached_inventory(invname)
         end
         --not working right now when you leave and rejoin lol
     end
     if vehicle.sound then minetest.sound_fade(vehicle.sound, 5, 0) end
     vehicle:remove()
+end
+
+--Try to get fuel from the stored data on vehicle fuel tanks
+local function get_fuel(tanks, amount)
+    for _, val in ipairs(tanks) do
+        local p, invname, fuel = unpack(val)
+        minetest.log(dump(fuel))
+        if fuel >= amount then val[3] = fuel-amount return true end
+        local inv = minetest.get_inventory({type="detached", name=invname})
+        if inv and not inv:is_empty("main") then
+            for i, itemstack in ipairs(inv:get_list("main")) do
+                while not itemstack:is_empty() do
+                    fuel = fuel+minetest.get_item_group(itemstack:get_name(), "fuel")
+                    itemstack:take_item()
+                    inv:set_stack("main", i, itemstack)
+                    if fuel >= amount then val[3] = fuel-amount return true end
+                end
+            end
+        end
+    end
+    return false
 end
 
 --Make the player enter vehicles on rightclick
@@ -159,7 +181,7 @@ local NORTH = vector.new(0, 0, -1)
 local ACCEL = 0.5
 local FRICT = 0.2
 
-minetest.register_globalstep(function()
+minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
         local pos = vector.round(player:get_pos())
         local control = player:get_player_control()
@@ -236,9 +258,8 @@ minetest.register_globalstep(function()
                 local power = vehicle:get_luaentity().power
 
                 --handle controls
-                local launch = control.jump and control.sneak
-                if launch then
-                    vel.y = vel.y+ACCEL+power*0.1
+                local launch = control.jump and control.sneak and get_fuel(vehicle:get_luaentity().tanks, dtime*power)
+                if launch then vel.y = vel.y+ACCEL+power*0.1
                 elseif control.jump then vel.y = vel.y+ACCEL
                 elseif control.sneak then vel.y = vel.y-ACCEL end
                 if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
