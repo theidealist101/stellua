@@ -137,22 +137,24 @@ end
 
 --Try to get fuel from the stored data on vehicle fuel tanks
 local function get_fuel(tanks, amount)
+    local ignite = false
     for _, val in ipairs(tanks) do
         local p, invname, fuel = unpack(val)
-        if fuel >= amount then val[3] = fuel-amount return true end
+        if fuel >= amount then val[3] = fuel-amount return true, ignite end
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv and not inv:is_empty("main") then
             for i, itemstack in ipairs(inv:get_list("main")) do
                 while not itemstack:is_empty() do
+                    ignite = true
                     fuel = fuel+minetest.get_item_group(itemstack:get_name(), "fuel")
                     itemstack:take_item()
                     inv:set_stack("main", i, itemstack)
-                    if fuel >= amount then val[3] = fuel-amount return true end
+                    if fuel >= amount then val[3] = fuel-amount return true, ignite end
                 end
             end
         end
     end
-    return false
+    return false, ignite
 end
 
 --Make the player enter vehicles on rightclick
@@ -253,14 +255,22 @@ minetest.register_globalstep(function(dtime)
 
             if not control.aux1 and (y-500)%1000 < 750 then
                 local vel = vehicle:get_velocity()
-                local rot = vector.new(0, player:get_look_horizontal(), 0)
                 local power = vehicle:get_luaentity().power
 
-                --handle controls
-                local launch = control.jump and control.sneak and get_fuel(vehicle:get_luaentity().tanks, dtime*power)
-                if launch then vel.y = vel.y+ACCEL+power*0.1
-                elseif control.jump then vel.y = vel.y+ACCEL
-                elseif control.sneak then vel.y = vel.y-ACCEL end
+                --handle launching
+                local launch = control.jump and control.sneak
+                if launch then
+                    local fuel, ignite = get_fuel(vehicle:get_luaentity().tanks, dtime*power)
+                    if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
+                    if fuel then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
+                end
+                if not launch then
+                    if control.jump then vel.y = vel.y+ACCEL
+                    elseif control.sneak then vel.y = vel.y-ACCEL end
+                end
+
+                --handle other controls
+                local rot = vector.new(0, player:get_look_horizontal(), 0)
                 if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
                 if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
                 if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
