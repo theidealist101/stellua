@@ -19,7 +19,8 @@ minetest.register_node("stl_core:bedrock", {
 minetest.register_craftitem("stl_core:stick", {
     description = "Stick",
     inventory_image = "stl_core_stick.png",
-    palette = "palette_foliage.png"
+    palette = "palette_foliage.png",
+    groups = {fuel=1},
 })
 
 minetest.register_craftitem("stl_core:pebble", {
@@ -31,7 +32,8 @@ minetest.register_craftitem("stl_core:pebble", {
 minetest.register_craftitem("stl_core:moss", {
     description = "Moss",
     inventory_image = "stl_core_moss.png",
-    palette = "palette_foliage.png"
+    palette = "palette_foliage.png",
+    groups = {fuel=10}
 })
 
 minetest.register_node("stl_core:wood", {
@@ -39,7 +41,7 @@ minetest.register_node("stl_core:wood", {
     tiles = {"stl_core_wood.png"},
     paramtype2 = "color",
     palette = "palette_foliage.png",
-    groups = {choppy=1},
+    groups = {choppy=1, fuel=4},
     sounds = stellua.node_sound_wood_defaults()
 })
 
@@ -315,7 +317,8 @@ register_snow("stl_core:ash", {
 register_snow("stl_core:charred_earth", {
     description = "Charred Earth",
     tiles = "default_coal_block.png",
-    start_point = 410
+    start_point = 410,
+    groups = {fuel=20}
 })
 
 minetest.register_node("stl_core:gravel", {
@@ -419,7 +422,7 @@ for i = 1, 2 do
         tiles = {"stl_core_log"..i.."_top.png", "stl_core_log"..i.."_top.png", "stl_core_log"..i..".png"},
         paramtype2 = "color",
         palette = "palette_foliage.png",
-        groups = {choppy=2, tree=1},
+        groups = {choppy=2, tree=1, fuel=16},
         sounds = stellua.node_sound_wood_defaults()
     })
 end

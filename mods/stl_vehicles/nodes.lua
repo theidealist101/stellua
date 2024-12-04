@@ -27,6 +27,9 @@ minetest.register_node("stl_vehicles:tank", {
         local meta = minetest.get_meta(pos)
         meta:get_inventory():set_size("main", 16)
         meta:set_string("formspec", sfinv.make_formspec(nil, {nav_titles={}}, "list[context;main;3,1.5;2,2]", true))
+    end,
+    allow_metadata_inventory_put = function (_, _, _, itemstack)
+        return minetest.get_item_group(itemstack:get_name(), "fuel") > 0 and 1000000 or 0
     end
 })
 
