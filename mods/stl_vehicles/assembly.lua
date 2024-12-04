@@ -185,6 +185,7 @@ local FRICT = 0.2
 minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
         local pos = vector.round(player:get_pos())
+        local index = stellua.get_planet_index(pos.y)
         local control = player:get_player_control()
         if (control.aux1 or control.jump) and stellua.assemble_vehicle(pos) then
 
@@ -195,26 +196,31 @@ minetest.register_globalstep(function(dtime)
                 while stellua.assemble_vehicle(pos) do
                     pos = vector.round(pos+dir)
                 end
+
+                --if in outer space, skip placement
                 local attempts = 0
-                --go up until there's space
-                while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
-                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
-                    pos = pos+UP
-                    attempts = attempts+1
+                if index then
+                    --go up until there's space
+                    while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
+                    or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
+                        pos = pos+UP
+                        attempts = attempts+1
+                    end
+                    --go down until there's something to stand on
+                    while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 8 do
+                        pos = pos-UP
+                        attempts = attempts+1
+                    end
                 end
-                --go down until there's something to stand on
-                while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 8 do
-                    pos = pos-UP
-                    attempts = attempts+1
-                end
+
                 --if we could find a valid position then do it
-                if attempts < 8 then
+                if attempts < 8 or not index then
                     player:set_pos(pos+0.5*UP)
                     minetest.sound_play({name="doors_steel_door_close", gain=0.2}, {pos=pos}, true)
                 end
 
             --make vehicle launch on jump
-            elseif control.jump and stellua.get_planet_index(pos.y) then
+            elseif control.jump and index then
                 local ent = stellua.detach_vehicle(pos)
                 player:set_attach(ent.object)
                 ent.player = player:get_player_name()
@@ -226,7 +232,6 @@ minetest.register_globalstep(function(dtime)
         local vehicle = player:get_attach()
         if vehicle then
             local y = vehicle:get_pos().y
-            local index = stellua.get_planet_index(y)
 
             --land vehicle with aux1
             if control.aux1 then

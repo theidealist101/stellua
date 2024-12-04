@@ -84,6 +84,7 @@ minetest.register_globalstep(function()
             })
             player:set_sun({visible=false})
             player:set_stars({day_opacity=1})
+            player:set_physics_override({gravity=0, speed=1})
             local slot = stellua.get_slot_index(pos)
             current_star = slot and stellua.get_slot_info(slot)
         else
