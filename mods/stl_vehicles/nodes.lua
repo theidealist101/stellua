@@ -21,8 +21,13 @@ minetest.register_node("stl_vehicles:seat", {
 minetest.register_node("stl_vehicles:tank", {
     description = "Fuel Tank",
     tiles = {"stl_vehicles_tank_top.png", "stl_vehicles_tank_top.png", "stl_vehicles_tank.png"},
-    groups = {cracky=2, spaceship=1},
-    sounds = stellua.node_sound_metal_defaults()
+    groups = {cracky=2, spaceship=1, tank=1},
+    sounds = stellua.node_sound_metal_defaults(),
+    on_construct = function (pos)
+        local meta = minetest.get_meta(pos)
+        meta:get_inventory():set_size("main", 16)
+        meta:set_string("formspec", sfinv.make_formspec(nil, {nav_titles={}}, "list[context;main;3,1.5;2,2]", true))
+    end
 })
 
 minetest.register_craft({

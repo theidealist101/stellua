@@ -1,3 +1,7 @@
+--Remember the next inventory id
+local storage = minetest.get_mod_storage()
+local inv_count = storage:get_int("inv_count")
+
 --Override static saving functions for LVAE to allow saving more arbitrary data
 local lvae_defs = minetest.registered_entities["lvae:lvae"]
 
@@ -6,12 +10,12 @@ local old_on_activate = lvae_defs.on_activate
 --local old_on_step = lvae_defs.on_step
 
 function lvae_defs.get_staticdata(self)
-    return minetest.serialize({old_get_staticdata(self), self.player, self.power})
+    return minetest.serialize({old_get_staticdata(self), self.player, self.power, self.tanks})
 end
 
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
-        staticdata, self.player, self.power = unpack(minetest.deserialize(staticdata))
+        staticdata, self.player, self.power, self.tanks = unpack(minetest.deserialize(staticdata))
         self.object:set_properties({physical=true})
     end
     return old_on_activate(self, staticdata, dtime)
@@ -37,6 +41,7 @@ function stellua.assemble_vehicle(pos)
     local out = {}
     local seat
     local engines = {}
+    local tanks = {}
     local power = 0
 
     while #checking > 0 and #out < 1000 do
@@ -58,6 +63,9 @@ function stellua.assemble_vehicle(pos)
             if minetest.get_item_group(nodename, "seat") > 0 then
                 if seat and seat ~= p then return else seat = p end
             end
+            if minetest.get_item_group(nodename, "tank") > 0 then
+                table.insert(tanks, p)
+            end
             local engine_power = minetest.get_item_group(nodename, "engine")
             if engine_power > 0 then
                 table.insert(engines, p)
@@ -66,15 +74,23 @@ function stellua.assemble_vehicle(pos)
         end
     end
 
-    if #out < 1000 and seat then return out, seat, engines, power end
+    if #out < 1000 and seat then return out, seat, engines, power, tanks end
 end
 
 --Detach a vehicle and return the LVAE
 function stellua.detach_vehicle(pos)
     local lvae = LVAE(pos)
     local minp, maxp
-    local ship, seat, engines, power = stellua.assemble_vehicle(vector.round(pos))
+    local ship, seat, engines, power, tanks = stellua.assemble_vehicle(vector.round(pos))
     lvae.power = power
+    lvae.tanks = {}
+    for _, p in ipairs(tanks or {}) do
+        local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
+        inv:set_lists(minetest.get_meta(p):get_inventory():get_lists())
+        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count})
+        inv_count = inv_count+1
+        storage:set_int("inv_count", inv_count)
+    end
     for _, p in ipairs(ship or {}) do
         lvae:set_node(p-pos, minetest.get_node(p))
         minetest.remove_node(p)
@@ -102,6 +118,12 @@ function stellua.land_vehicle(vehicle, pos)
         if node.entity then
             minetest.set_node(node.entity.pos+pos, node)
         end
+    end
+    for _, val in ipairs(vehicle.tanks) do
+        local p, inv = unpack(val)
+        --minetest.get_meta(pos+p):get_inventory():set_lists(minetest.get_inventory({type="detached", name=inv}):get_lists())
+        --minetest.remove_detached_inventory(inv)
+        --not working right now lol
     end
     if vehicle.sound then minetest.sound_fade(vehicle.sound, 5, 0) end
     vehicle:remove()
@@ -143,7 +165,7 @@ minetest.register_globalstep(function()
                 while stellua.assemble_vehicle(pos) do
                     pos = vector.round(pos+dir)
                 end
-                local initial_pos = pos
+                --local initial_pos = pos
                 local attempts = 0
                 while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
                 or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
