@@ -64,7 +64,11 @@ minetest.register_node("stl_precursor:gate", {
 })
 
 --Some rooms to spawn around randomly on the surface
-stellua.register_structure({
+minetest.register_decoration({
+    deco_type = "schematic",
+    place_on = "group:ground",
+    fill_ratio = 0.000002,
+    place_offset_y = -2,
     schematic = modpath.."schems/precursor_assembler_room.mts",
-    offset = -2
+    flags = "place_center_x, place_center_z, force_placement, all_floors"
 })

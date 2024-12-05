@@ -67,42 +67,6 @@ local function get_nearby_param2(rand, param2, dist)
     return y*16+x
 end
 
---Register structures to be placed
-stellua.registered_structures = {}
-
-function stellua.register_structure(defs)
-    defs.offset = defs.offset or 0
-    table.insert(stellua.registered_structures, defs)
-end
-
---Go about placing the structures
-minetest.register_node("stl_core:structure_spawner", {
-    description = "Structure Spawner",
-    drawtype = "airlike"
-})
-
-minetest.register_on_mods_loaded(function()
-    minetest.register_decoration({
-        deco_type = "simple",
-        place_on = {"group:ground"},
-        fill_ratio = 0.00002,
-        decoration = "stl_core:structure_spawner",
-        param2 = 1,
-        param2_max = #stellua.registered_structures
-    })
-end)
-
-minetest.register_abm({
-    interval = 1,
-    chance = 1,
-    nodenames = {"stl_core:structure_spawner"},
-    action = function (pos, node)
-        local defs = stellua.registered_structures[node.param2]
-        pos.y = pos.y+defs.offset
-        minetest.place_schematic(pos, defs.schematic, "0", {}, true, "place_center_x, place_center_z")
-    end
-})
-
 --Register noise functions
 local noises2d, noises3d = {}, {}
 
