@@ -1,6 +1,5 @@
 local stellua = minetest.ipc_get("stellua")
 local planets, noises2d, noises3d = stellua.planets, stellua.noises2d, stellua.noises3d
-minetest.log(dump(stellua))
 
 --Some useful localisations for mapgen
 local get_planet_index = stellua.get_planet_index
