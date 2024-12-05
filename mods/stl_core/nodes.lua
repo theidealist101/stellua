@@ -431,13 +431,14 @@ end
 for i = 1, 8 do
     minetest.register_node("stl_core:leaves"..i, {
         description = "Leaves",
-        drawtype = "allfaces",
+        drawtype = "allfaces_optional",
         tiles = {"stl_core_leaves"..i..".png"},
         use_texture_alpha = "clip",
         paramtype = "light",
         sunlight_propagates = true,
         paramtype2 = "color",
         palette = "palette_foliage.png",
+        waving = 2,
         groups = {snappy=2, tree=1},
         drop = {},
         after_dig_node = drop_with_color("stl_core:stick", 0.2),
