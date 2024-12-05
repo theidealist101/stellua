@@ -261,7 +261,6 @@ minetest.register_on_mods_loaded(function()
                     minetest.register_decoration({
                         deco_type = "simple",
                         place_on = {planet.mapgen_stone, planet.mapgen_seabed, planet.mapgen_beach, planet.mapgen_filler},
-                        fill_ratio = prand:next(1, 500)*0.0001+0.05,
                         y_min = level-500,
                         y_max = planet.water_level-8,
                         flags = "force_placement",
@@ -297,34 +296,6 @@ minetest.register_on_mods_loaded(function()
             end
         end
 
-        local snow_options = {{0, 0}}
-        for _ = 1, 20 do table.insert(snow_options, {0, 0}) end
-        for _, val in pairs(stellua.registered_snows) do
-            local name, defs = unpack(val)
-            if planet.heat_stat < defs.melt_point and planet.heat_stat > defs.start_point then
-                for _ = 1, (defs.weight or 1)*10 do
-                    table.insert(snow_options, {name, defs})
-                end
-            end
-        end
-
-        if #snow_options > 0 then
-            local snow, defs = unpack(snow_options[prand:next(1, #snow_options)])
-            if snow ~= 0 then
-                planet.snow_type2 = snow
-                minetest.register_decoration({
-                    deco_type = "simple",
-                    place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
-                    fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.01+0.5,
-                    y_min = level-500,
-                    y_max = level+499,
-                    decoration = snow,
-                    param2 = 8,
-                    param2_max = 16
-                })
-            end
-        end
-
         --foliage
         if planet.life_stat > 0 then
             local fill_ratio = planet.life_stat*0.2+prand:next(1, 12)*0.005
@@ -332,13 +303,22 @@ minetest.register_on_mods_loaded(function()
             planet.param2_trees = {}
             for _ = 1, math.floor(planet.life_stat*8-4) do
                 local treedef = stellua.make_treedef(prand)
+                local s = spread*prand:next(1, 10)*0.2
                 minetest.register_decoration({
                     deco_type = "lsystem",
                     place_on = {planet.mapgen_filler},
-                    fill_ratio = prand:next(1, 20)*0.0001,
                     y_min = level-500,
                     y_max = level+499,
-                    treedef = treedef
+                    treedef = treedef,
+                    noise_params = {
+                        offset = 0,
+                        scale = prand:next(1, 50)*0.0001,
+                        spread = {x=s, y=s, z=s},
+                        seed = prand:next(),
+                        octaves = 3,
+                        persistence = 0.5,
+                        lacunarity = 2.0,
+                    },
                 })
                 local p = get_nearby_param2(prand, param2_grass)
                 planet.param2_trees[minetest.get_content_id(treedef.trunk)] = p
@@ -396,6 +376,35 @@ minetest.register_on_mods_loaded(function()
                 decoration = "stl_core:gravel",
                 param2 = get_nearby_param2(prand, planet.param2_stone-32, 2)
             })
+        end
+
+        --snow
+        local snow_options = {{0, 0}}
+        for _ = 1, 20 do table.insert(snow_options, {0, 0}) end
+        for _, val in pairs(stellua.registered_snows) do
+            local name, defs = unpack(val)
+            if planet.heat_stat < defs.melt_point and planet.heat_stat > defs.start_point then
+                for _ = 1, (defs.weight or 1)*10 do
+                    table.insert(snow_options, {name, defs})
+                end
+            end
+        end
+
+        if #snow_options > 0 then
+            local snow, defs = unpack(snow_options[prand:next(1, #snow_options)])
+            if snow ~= 0 then
+                planet.snow_type2 = snow
+                minetest.register_decoration({
+                    deco_type = "simple",
+                    place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
+                    fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.01+0.5,
+                    y_min = level-500,
+                    y_max = level+499,
+                    decoration = snow,
+                    param2 = 8,
+                    param2_max = 16
+                })
+            end
         end
 
         --ores
