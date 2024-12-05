@@ -89,6 +89,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_leaves3.png <- default_blueberry_bush_leaves.png
 - stl_core_leaves4.png <- default_aspen_leaves.png
 - stl_core_wood.png <- default_wood.png
+- stl_core_log3(_top).png <- default_pine_tree(_top).png
+- stl_core_log4(_top).png <- default_acacia_tree(_top).png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -113,6 +115,14 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_gravel.png <- mcl_core_coarse_dirt.png
 - mcl_core_bedrock.png
 - stl_core_quartz.png <- mcl_nether_quartz_block_side.png
+- stl_core_log5(_top).png <- default_tree(_top).png
+- stl_core_log6(_top).png <- default_acacia_tree(_top).png
+- stl_core_log7(_top).png <- mcl_core_log_spruce(_top).png
+- stl_core_log8(_top).png <- mcl_core_log_big_oak(_top).png
+- stl_core_leaves5.png <- mcl_core_leaves_spruce.png
+- stl_core_leaves6.png <- mcl_core_leaves_birch.png
+- stl_core_leaves7.png <- mcl_core_leaves_big_oak.png
+- stl_core_leaves8.png <- default_leaves.png
 
 All sounds not mentioned come directly from Minetest Game and are under CC BY-SA 3.0
 

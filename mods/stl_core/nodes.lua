@@ -417,7 +417,7 @@ minetest.register_craftitem("stl_core:titanium", {
 })
 
 --Plant pieces
-for i = 1, 2 do
+for i = 1, 8 do
     minetest.register_node("stl_core:log"..i, {
         description = "Log",
         tiles = {"stl_core_log"..i.."_top.png", "stl_core_log"..i.."_top.png", "stl_core_log"..i..".png"},
@@ -428,7 +428,7 @@ for i = 1, 2 do
     })
 end
 
-for i = 1, 4 do
+for i = 1, 8 do
     minetest.register_node("stl_core:leaves"..i, {
         description = "Leaves",
         drawtype = "allfaces",
