@@ -463,6 +463,7 @@ for i, val in ipairs(quartz_types) do
         use_texture_alpha = "blend",
         paramtype = "light",
         sunlight_propagates = true,
+        light_source = 8,
         color = val[2],
         groups = {cracky=1},
         sounds = stellua.node_sound_glass_defaults()
