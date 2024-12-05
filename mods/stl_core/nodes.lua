@@ -478,6 +478,6 @@ minetest.register_node("stl_core:uranium", {
     paramtype = "light",
     sunlight_propagates = true,
     light_source = 12,
-    groups = {cracky=4},
+    groups = {cracky=4, fissile=1},
     sounds = stellua.node_sound_glass_defaults()
 })

@@ -48,7 +48,20 @@ local questline = {
         end
     },
     {
-        text = "Launch into orbit by holding both sneak and jump simultaneously.",
+        text = "No impulse engine detected, launching without an impulse engine is not recommended as you will not be able to travel to other planets. Recalibrating.\nImpulse power requires a nuclear power source. Find a cave and search for fissile elements underground.",
+        cond = function (player)
+            local inv = player:get_inventory()
+            for _, itemstack in ipairs(inv:get_list("main")) do
+                if not itemstack:is_empty() and minetest.get_item_group(itemstack:get_name(), "fissile") > 0 then return true end
+            end
+        end
+    },
+    {
+        text = "Crafting spaceship parts requires advanced crafting equipment. Once you have collected a suitable amount of fissile material, seek out a technology assembler. These may be found in precursor buildings.",
+        cond = function(player) return minetest.get_node(vector.round(player:get_pos())).name == "stl_precursor:gate" end
+    },
+    {
+        text = "Launch into orbit in the rocket by holding both sneak and jump simultaneously.",
         cond = function(player) return stellua.get_slot_index(player:get_pos()) end
     },
     {
