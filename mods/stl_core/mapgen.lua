@@ -172,20 +172,6 @@ minetest.register_on_mods_loaded(function()
             }
         })
 
-        register_noise3d("cavern"..i, {
-            y_min = level-500,
-            y_max = level+499,
-            noise_params = {
-                offset = -1,
-                scale = 1,
-                spread = {x=spread, y=spread, z=spread},
-                seed = prand:next(),
-                octaves = math.round(3+scale),
-                persistence = 0.5,
-                lacunarity = 2
-            }
-        })
-
         --specifics of terrain
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
@@ -242,7 +228,7 @@ minetest.register_on_mods_loaded(function()
                             deco_type = "simple",
                             place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
                             fill_ratio = math.min(snow_defs.melt_point-planet.heat_stat+1, planet.heat_stat-snow_defs.start_point+1)*0.01+0.5,
-                            y_min = level-500,
+                            y_min = planet.water_level,
                             y_max = level+499,
                             decoration = defs.snow,
                             param2 = 8,
@@ -256,7 +242,7 @@ minetest.register_on_mods_loaded(function()
                     minetest.register_decoration({
                         deco_type = "simple",
                         place_on = {planet.mapgen_stone, planet.mapgen_seabed, planet.mapgen_beach, planet.mapgen_filler},
-                        y_min = level-500,
+                        y_min = level-99,
                         y_max = planet.water_level-8,
                         flags = "force_placement",
                         noise_params = {
@@ -276,6 +262,8 @@ minetest.register_on_mods_loaded(function()
             end
         end
 
+        local cutoff = planet.water_level or level-99
+
         --foliage
         if planet.life_stat > 0 then
             local fill_ratio = planet.life_stat*0.2+prand:next(1, 12)*0.005
@@ -287,7 +275,7 @@ minetest.register_on_mods_loaded(function()
                 minetest.register_decoration({
                     deco_type = "lsystem",
                     place_on = {planet.mapgen_filler},
-                    y_min = level-500,
+                    y_min = cutoff,
                     y_max = level+499,
                     treedef = treedef,
                     noise_params = {
@@ -308,7 +296,7 @@ minetest.register_on_mods_loaded(function()
                 deco_type = "simple",
                 place_on = {planet.mapgen_filler},
                 fill_ratio = fill_ratio,
-                y_min = level-500,
+                y_min = cutoff,
                 y_max = level+499,
                 decoration = "stl_core:grass"..prand:next(1, 8),
                 param2 = param2_grass
@@ -317,7 +305,7 @@ minetest.register_on_mods_loaded(function()
                 deco_type = "simple",
                 place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
                 fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
-                y_min = level-500,
+                y_min = cutoff,
                 y_max = level+499,
                 decoration = "stl_core:grass"..prand:next(1, 8),
                 param2 = get_nearby_param2(prand, param2_grass, 2)
@@ -327,7 +315,7 @@ minetest.register_on_mods_loaded(function()
                     deco_type = "simple",
                     place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
                     fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
-                    y_min = level-500,
+                    y_min = cutoff,
                     y_max = level+499,
                     decoration = "stl_core:shrub"..prand:next(1, 4),
                     param2 = get_nearby_param2(prand, param2_grass)
@@ -338,7 +326,7 @@ minetest.register_on_mods_loaded(function()
                     deco_type = "simple",
                     place_on = {planet.mapgen_filler},
                     fill_ratio = (planet.life_stat-1)*0.4+prand:next(1, 20)*0.1,
-                    y_min = level-500,
+                    y_min = cutoff,
                     y_max = level+499,
                     decoration = "stl_core:moss"..prand:next(1, 4),
                     param2 = get_nearby_param2(prand, param2_grass)
@@ -378,7 +366,7 @@ minetest.register_on_mods_loaded(function()
                     deco_type = "simple",
                     place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
                     fill_ratio = math.min(defs.melt_point-planet.heat_stat+1, planet.heat_stat-defs.start_point+1)*0.01+0.5,
-                    y_min = level-500,
+                    y_min = cutoff,
                     y_max = level+499,
                     decoration = snow,
                     param2 = 8,

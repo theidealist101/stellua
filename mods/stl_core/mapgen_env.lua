@@ -42,6 +42,7 @@ local function logic(noise, cavern_noise, planet, y)
 end
 
 local data, param2_data = {}, {}
+local min = math.min
 
 minetest.register_on_generated(function(_, minp, maxp)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
@@ -94,11 +95,11 @@ minetest.register_on_generated(function(_, minp, maxp)
 
             --prepare the noises
             local planet_noise = noises2d["planet"..index]
-            local cavern_noise = noises3d["cavern"..index]
 
             for z = minp.z, maxp.z do
                 local vi = area:index(minp.x, y, z)
                 local ni = sl*(z-minp.z)+1
+                local ni3d = sl*sl*(z-minp.z)+sl*(y-minp.y)+1
                 for x = minp.x, maxp.x do
 
                     --take care of stuff overlapping from previously generated chunks
@@ -108,12 +109,13 @@ minetest.register_on_generated(function(_, minp, maxp)
                     else
 
                         --calculate it from noises and stuff
-                        data[vi], param2_data[vi] = logic(planet_noise.data[ni], -1, planet, y) --cavern_noise.data[ni3d]
+                        data[vi], param2_data[vi] = logic(planet_noise.data[ni], -1, planet, y)
                     end
 
                     --increment stuff
                     vi = vi+1
                     ni = ni+1
+                    ni3d = ni3d+1
                 end
             end
         end
