@@ -172,20 +172,23 @@ minetest.register_on_mods_loaded(function()
             }
         })
 
-        for j = 1, 2 do
-            register_noise3d("cave"..j.."_"..i, {
-                y_min = level-500,
-                y_max = level+499,
-                noise_params = {
-                    offset = 0,
-                    scale = 1,
-                    spread = {x=spread*0.3, y=spread*0.3, z=spread*0.3},
-                    seed = seed+j,
-                    octaves = 3,
-                    persistence = 0.5,
-                    lacunarity = 2
-                }
-            })
+        if planet.life_stat < 0.5 or prand:next(1, 3) ~= 1 then
+            planet.caves = true
+            for j = 1, 2 do
+                register_noise3d("cave"..j.."_"..i, {
+                    y_min = level-500,
+                    y_max = level+499,
+                    noise_params = {
+                        offset = 0,
+                        scale = prand:next(5, 10),
+                        spread = {x=spread*0.3, y=spread*0.3, z=spread*0.3},
+                        seed = seed+j,
+                        octaves = 3,
+                        persistence = 0.5,
+                        lacunarity = 2
+                    }
+                })
+            end
         end
 
         --specifics of terrain

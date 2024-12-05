@@ -112,7 +112,7 @@ minetest.register_on_generated(function(_, minp, maxp)
 
                         --calculate it from noises and stuff
                         local planet_val = planet_noise.data[ni]
-                        local cave_val = abs(cave_noise1.data[ni3d])+abs(cave_noise2.data[ni3d]) < 0.15
+                        local cave_val = cave_noise1 and abs(cave_noise1.data[ni3d])+abs(cave_noise2.data[ni3d]) < 1
                         data[vi], param2_data[vi] = logic(planet_val, cave_val, planet, y)
                     end
 
