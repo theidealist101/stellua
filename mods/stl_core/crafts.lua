@@ -59,7 +59,7 @@ stellua.register_color_craft("stl_core:pebble", "stl_core:cobble")
 stellua.register_color_craft("stl_core:cobble", "stl_core:pebble")
 
 --Craft logs into wood and wood into sticks
-for i = 1, 2 do
+for i = 1, 8 do
     minetest.register_craft({
         type = "shapeless",
         output = "stl_core:wood 4",
