@@ -53,8 +53,8 @@ end
 --Get param2 in range depending on heat stat
 local function get_heat_param2(rand, heat)
     local y = rand:next(0, 15)
-    local minx = heat <= 300 and 0 or math.round(luamap.remap(heat, 300, 500, 0, 7))
-    local maxx = heat >= 300 and 15 or math.round(luamap.remap(heat, 100, 300, 15, 8))
+    local minx = heat <= 300 and 0 or math.round(stellua.remap(heat, 300, 500, 0, 7))
+    local maxx = heat >= 300 and 15 or math.round(stellua.remap(heat, 100, 300, 15, 8))
     return y*16+rand:next(minx, maxx)
 end
 
@@ -103,6 +103,23 @@ minetest.register_abm({
     end
 })
 
+--Register noise functions
+local noises2d, noises3d = {}, {}
+
+local function register_noise2d(name, defs)
+    defs.y_min = defs.y_min or -31000
+    defs.y_max = defs.y_max or 31000
+    defs.data = {}
+    noises2d[name] = defs
+end
+
+local function register_noise3d(name, defs)
+    defs.y_min = defs.y_min or -31000
+    defs.y_max = defs.y_max or 31000
+    defs.data = {}
+    noises3d[name] = defs
+end
+
 local SKY_COL = vector.new(97, 181, 245)
 
 local ORES_COMMON = {"copper", "titanium"}
@@ -149,14 +166,14 @@ minetest.register_on_mods_loaded(function()
         local fog = planet.atmo_stat*0.33333
         local fog_dist = math.min(250-fog*180, 200)
         planet.fog_dist = fog_dist
-        local b = luamap.remap(planet.heat_stat, 100, 500, 255, 0)
+        local b = stellua.remap(planet.heat_stat, 100, 500, 255, 0)
         local total = prand:next(255, 384)-b
         local r = prand:next(0, total)
         local col = SKY_COL*alpha*(1-fog)+vector.new(math.min(r, 255), math.min(total-r, 255), b)*fog
         planet.sun = {visible=true, scale=star.scale/planet.dist}
 
         function planet.sky(timeofday, height)
-            local newcol = col*height*math.min(math.max(luamap.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
+            local newcol = col*height*math.min(math.max(stellua.remap(timeofday < 0.5 and timeofday or 1-timeofday, 0.19, 0.23, 0.2, 1), 0.2), 1)
             local fdist = math.min(250-fog*180*height, 200)
             return {
                 type = "plain",
@@ -176,15 +193,29 @@ minetest.register_on_mods_loaded(function()
         planet.gravity = planet.scale^1.5
         planet.walk_speed = math.min(1/planet.gravity, 1)
         local spread = math.round(prand:next(100, 200)*scale)
-        luamap.register_noise("planet"..i, {
-            type = "2d",
-            ymin = level-500,
-            ymax = level+499,
-            np_vals = {
+
+        register_noise2d("planet"..i, {
+            y_min = level-500,
+            y_max = level+499,
+            noise_params = {
                 offset = level,
                 scale = 10^scale,
                 spread = {x=spread, y=spread, z=spread},
                 seed = seed,
+                octaves = math.round(3+scale),
+                persistence = 0.5,
+                lacunarity = 2
+            }
+        })
+
+        register_noise3d("cavern"..i, {
+            y_min = level-500,
+            y_max = level+499,
+            noise_params = {
+                offset = -1,
+                scale = 1,
+                spread = {x=spread, y=spread, z=spread},
+                seed = prand:next(),
                 octaves = math.round(3+scale),
                 persistence = 0.5,
                 lacunarity = 2
@@ -264,21 +295,6 @@ minetest.register_on_mods_loaded(function()
                         y_min = level-500,
                         y_max = planet.water_level-8,
                         flags = "force_placement",
-                        --[[treedef = {
-                            axiom = "aaaaaaaa",
-                            rules_a = "[ccccccccccccccccccccccccdddbbbbb]",
-                            rules_b = "T",
-                            rules_c = "/",
-                            rules_d = "&",
-                            trunk = planet.quartz,
-                            leaves = "air",
-                            angle = 30,
-                            iterations = 5,
-                            trunk_type = "crossed",
-                            thin_branches = false,
-                            fruit_chance = 0,
-                            seed = prand:next()
-                        },]]
                         noise_params = {
                             offset = -0.3,
                             scale = 0.5,
@@ -440,8 +456,10 @@ minetest.register_on_mods_loaded(function()
     end
 end)
 
---Make doubly sure we're in singlenode
-luamap.set_singlenode()
+--Make doubly sure we're in singlenode (this is also from Luamap)
+minetest.register_on_mapgen_init(function()
+    minetest.set_mapgen_params({mgname="singlenode"})
+end)
 
 --Some useful localisations for mapgen
 local get_planet_index = stellua.get_planet_index
@@ -450,57 +468,138 @@ local c_void = minetest.get_content_id("stl_core:void")
 local c_bedrock = minetest.get_content_id("stl_core:bedrock")
 
 --The actual mapgen
-function luamap.logic(noises, x, y, z, seed, cur, cur_param2)
-    local index = get_planet_index(y)
-    if not index or (y-500)%1000 >= 750 then return c_void, 0 end
-    if (y-500)%1000 == 0 then return c_bedrock, 0 end
-    local planet = planets[index]
-    if cur and cur ~= c_air then return cur, planet.param2_trees and planet.param2_trees[cur] or cur_param2 end
-    local noise = noises["planet"..index]
+local function logic(noise, cavern_noise, planet, y)
     local height = y-noise
-    if planet.water_level then
-        if noise <= planet.water_level-2 then
-            if height < -planet.depth_seabed then return planet.c_stone, planet.param2_stone
-            elseif height < 0 then return planet.c_seabed, planet.param2_seabed end
-        elseif noise <= planet.water_level+4 then
-            if height < -planet.depth_beach then return planet.c_stone, planet.param2_stone
-            elseif height < 0 then return planet.c_beach, planet.param2_beach end
+
+    --if in a cavern, we can skip the terrain
+    if cavern_noise < 0 then
+
+        --check if terrain might be underwater
+        if planet.water_level then
+            if noise <= planet.water_level-2 then --beneath sea level
+                if height < -planet.depth_seabed then return planet.c_stone, planet.param2_stone
+                elseif height < 0 then return planet.c_seabed, planet.param2_seabed end
+            elseif noise <= planet.water_level+4 then --within beach level
+                if height < -planet.depth_beach then return planet.c_stone, planet.param2_stone
+                elseif height < 0 then return planet.c_beach, planet.param2_beach end
+            end
         end
+
+        --otherwise terrain on land
+        if height < -planet.depth_filler then return planet.c_stone, planet.param2_stone
+        elseif height < 0 then return planet.c_filler, planet.param2_filler end
     end
-    if height < -planet.depth_filler then return planet.c_stone, planet.param2_stone
-    elseif height < 0 then return planet.c_filler, planet.param2_filler end
-    if planet.water_level and y-planet.water_level <= 0 then
+
+    --might still be the water in the ocean
+    if planet.water_level and y <= planet.water_level and height >= 0 then
         if planet.depth_water_top and y-planet.water_level > -planet.depth_water_top then return planet.c_water_top, 0
         else return planet.c_water, 0 end
     end
+
+    --if we've passed all those checks, it must be air
     return c_air, 0
 end
+
+local data, param2_data = {}, {}
 
 minetest.register_on_generated(function(minp, maxp)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
 
-	local data = vm:get_data()
-	local param2_data = vm:get_param2_data()
+	vm:get_data(data)
+	vm:get_param2_data(param2_data)
 
+    local sl = maxp.y-minp.y+1
+    local size2d = {x=sl, y=sl, z=1}
+    local size3d = {x=sl, y=sl, z=sl}
+    local minp2d = {x=minp.x, y=minp.z}
+
+    --figure out what planet we're on
+    local y_planets = {}
     for y = minp.y, maxp.y do
-        local index = get_planet_index(y)
-        if index then
-            local planet = planets[index]
-            if planet.param2_trees then
+        local i = get_planet_index(y)
+        y_planets[y] = {i, planets[i]}
+    end
+
+    --get noise values
+    for _, defs in pairs(noises2d) do
+        if maxp.y >= defs.y_min and minp.y <= defs.y_max then
+            defs.map = defs.map or minetest.get_perlin_map(defs.noise_params, size2d)
+            defs.map:get_2d_map_flat(minp2d, defs.data)
+        end
+    end
+    for _, defs in pairs(noises3d) do
+        if maxp.y >= defs.y_min and minp.y <= defs.y_max then
+            defs.map = defs.map or minetest.get_perlin_map(defs.noise_params, size3d)
+            defs.map:get_3d_map_flat(minp, defs.data)
+        end
+    end
+
+    --first pass: the actual terrain
+    for y = minp.y, maxp.y do
+        local index, planet = unpack(y_planets[y])
+        local rely = (y-500)%1000-500
+
+        --make sure out-of-bounds areas are void and bedrock
+        if not index or rely >= 250 then
+            for x = minp.x, maxp.x do for z = minp.z, maxp.z do
+                data[area:index(x, y, z)] = c_void
+            end end
+        elseif rely == -500 then
+            for x = minp.x, maxp.x do for z = minp.z, maxp.z do
+                data[area:index(x, y, z)] = c_bedrock
+            end end
+        else
+
+            --prepare the noises
+            local planet_noise = noises2d["planet"..index]
+            local cavern_noise = noises3d["cavern"..index]
+
+            for z = minp.z, maxp.z do
+                local vi = area:index(minp.x, y, z)
+                local ni = sl*(z-minp.z)+1
                 for x = minp.x, maxp.x do
-                    for z = minp.z, maxp.z do
-                        local vi = area:index(x, y, z)
-                        param2_data[vi] = planet.param2_trees[data[vi]] or param2_data[vi]
+
+                    --take care of stuff overlapping from previously generated chunks
+                    local cur = data[vi]
+                    if cur and cur ~= c_air then
+                        param2_data[vi] = planet.param2_trees and planet.param2_trees[cur] or param2_data[vi]
+                    else
+
+                        --calculate it from noises and stuff
+                        data[vi], param2_data[vi] = logic(planet_noise.data[ni], -1, planet, y) --cavern_noise.data[ni3d]
                     end
+
+                    --increment stuff
+                    vi = vi+1
+                    ni = ni+1
                 end
             end
         end
     end
 
+    vm:set_data(data)
+    vm:set_param2_data(param2_data)
+    minetest.generate_ores(vm)
+	minetest.generate_decorations(vm)
+    vm:get_param2_data(param2_data)
+
+    --second pass: make sure trees generated by lsystems have the correct colors
+    for y = minp.y, maxp.y do
+        local index, planet = unpack(y_planets[y])
+        if planet and planet.param2_trees then
+            for x = minp.x, maxp.x do for z = minp.z, maxp.z do
+                local vi = area:index(x, y, z)
+                local new_param2 = planet.param2_trees[data[vi]]
+                if new_param2 then param2_data[vi] = new_param2 end
+            end end
+        end
+    end
+
     vm:set_param2_data(param2_data)
     vm:calc_lighting()
-	vm:write_to_map(data)
+	vm:write_to_map()
+    vm:update_liquids()
 end)
 
 minetest.register_abm({

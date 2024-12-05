@@ -2,7 +2,6 @@
 
 Stellua uses the following API mods by other authors, licensed as specified in their docs:
 
-- Luamap by MisterE and others
 - Sfinv by rubenwardy
 - LVAE by GreenXenith
 

@@ -7,6 +7,11 @@ math.round = math.round
 table.copy = table.copy
 math.hypot = math.hypot
 
+--Got this from the old Luamap, it's very useful
+function stellua.remap(val, min_val, max_val, min_map, max_map)
+	return (val-min_val)/(max_val-min_val) * (max_map-min_map) + min_map
+end
+
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."sounds.lua")
 dofile(modpath.."slots.lua")
