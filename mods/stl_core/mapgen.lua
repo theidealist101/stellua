@@ -335,7 +335,7 @@ minetest.register_on_mods_loaded(function()
                 minetest.register_decoration({
                     deco_type = "lsystem",
                     place_on = {planet.mapgen_filler},
-                    fill_ratio = prand:next(1, 20)*0.001,
+                    fill_ratio = prand:next(1, 20)*0.0001,
                     y_min = level-500,
                     y_max = level+499,
                     treedef = treedef

@@ -1,9 +1,9 @@
-local MOVES = "GFFffTTABCDabcd+-&^/*"
+local MOVES = "FfffTTTABCDabcd++--&&^^//**"
 
 --Create random axiom recursively
 local function make_axiom(rand)
     local out = ""
-    for _ = 1, rand:next(1, 4) do
+    for _ = 1, rand:next(2, 10) do
         local char = rand:next(-2, string.len(MOVES))
         if char <= 0 then out = out.."["..make_axiom(rand).."]"
         else out = out..string.sub(MOVES, char, char) end
