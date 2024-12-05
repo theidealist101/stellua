@@ -67,7 +67,7 @@ minetest.register_node("stl_precursor:gate", {
 minetest.register_decoration({
     deco_type = "schematic",
     place_on = "group:ground",
-    fill_ratio = 0.000002,
+    fill_ratio = 0.0000005,
     place_offset_y = -2,
     schematic = modpath.."schems/precursor_assembler_room.mts",
     flags = "place_center_x, place_center_z, force_placement, all_floors"
