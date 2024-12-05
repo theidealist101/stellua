@@ -9,11 +9,11 @@ local c_void = minetest.get_content_id("stl_core:void")
 local c_bedrock = minetest.get_content_id("stl_core:bedrock")
 
 --The actual mapgen
-local function logic(noise, cavern_noise, planet, y)
+local function logic(noise, cavern, planet, y)
     local height = y-noise
 
     --if in a cavern, we can skip the terrain
-    if cavern_noise < 0 then
+    if not cavern then
 
         --check if terrain might be underwater
         if planet.water_level then
@@ -42,7 +42,7 @@ local function logic(noise, cavern_noise, planet, y)
 end
 
 local data, param2_data = {}, {}
-local min = math.min
+local abs = math.abs
 
 minetest.register_on_generated(function(_, minp, maxp)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
@@ -95,6 +95,8 @@ minetest.register_on_generated(function(_, minp, maxp)
 
             --prepare the noises
             local planet_noise = noises2d["planet"..index]
+            local cave_noise1 = noises3d["cave1_"..index]
+            local cave_noise2 = noises3d["cave2_"..index]
 
             for z = minp.z, maxp.z do
                 local vi = area:index(minp.x, y, z)
@@ -109,7 +111,9 @@ minetest.register_on_generated(function(_, minp, maxp)
                     else
 
                         --calculate it from noises and stuff
-                        data[vi], param2_data[vi] = logic(planet_noise.data[ni], -1, planet, y)
+                        local planet_val = planet_noise.data[ni]
+                        local cave_val = abs(cave_noise1.data[ni3d])+abs(cave_noise2.data[ni3d]) < 0.15
+                        data[vi], param2_data[vi] = logic(planet_val, cave_val, planet, y)
                     end
 
                     --increment stuff

@@ -172,6 +172,22 @@ minetest.register_on_mods_loaded(function()
             }
         })
 
+        for j = 1, 2 do
+            register_noise3d("cave"..j.."_"..i, {
+                y_min = level-500,
+                y_max = level+499,
+                noise_params = {
+                    offset = 0,
+                    scale = 1,
+                    spread = {x=spread*0.3, y=spread*0.3, z=spread*0.3},
+                    seed = seed+j,
+                    octaves = 3,
+                    persistence = 0.5,
+                    lacunarity = 2
+                }
+            })
+        end
+
         --specifics of terrain
         planet.mapgen_stone = "stl_core:stone"..prand:next(1, 8)
         planet.c_stone = minetest.get_content_id(planet.mapgen_stone)
