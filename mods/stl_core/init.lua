@@ -22,6 +22,7 @@ dofile(modpath.."mapgen.lua")
 dofile(modpath.."sky.lua")
 dofile(modpath.."crafts.lua")
 dofile(modpath.."inventory.lua")
+minetest.register_mapgen_script(modpath.."mapgen_env.lua")
 
 --Spawn player in a good place
 local start_planet
