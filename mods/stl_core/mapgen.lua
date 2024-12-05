@@ -417,6 +417,29 @@ minetest.register_on_mods_loaded(function()
             }
         })
 
+        if planet.caves and prand:next(1, 3) ~= 1 then
+            planet.crystal = "stl_core:uranium"
+            minetest.register_decoration({
+                deco_type = "simple",
+                place_on = {planet.mapgen_stone},
+                y_min = level-500,
+                y_max = level-150,
+                noise_params = {
+                    offset = -0.2,
+                    scale = 0.5,
+                    spread = {x=40, y=40, z=40},
+                    seed = prand:next(),
+                    octaves = 3,
+                    persistence = 0.5,
+                    lacunarity = 2.0,
+                },
+                flags = "all_floors",
+                decoration = planet.crystal,
+                height = 1,
+                height_max = 4
+            })
+        end
+
         --the funny icon on maps or in the sky
         local turn_to_dimensions = function(param2) return (param2%16)..","..math.floor(param2/16) end
         planet.icon = table.concat({

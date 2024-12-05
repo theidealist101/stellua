@@ -469,3 +469,15 @@ for i, val in ipairs(quartz_types) do
         sounds = stellua.node_sound_glass_defaults()
     })
 end
+
+minetest.register_node("stl_core:uranium", {
+    description = "Uranium",
+    drawtype = "glasslike",
+    tiles = {"stl_core_quartz.png^[opacity:192^[multiply:#c0ff80"},
+    use_texture_alpha = "blend",
+    paramtype = "light",
+    sunlight_propagates = true,
+    light_source = 12,
+    groups = {cracky=4},
+    sounds = stellua.node_sound_glass_defaults()
+})

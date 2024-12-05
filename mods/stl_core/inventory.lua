@@ -31,7 +31,7 @@ sfinv.register_page("stl_core:planets", {
                 (planet.depth_filler == 0 and "Surface" or planet.water_level and planet.depth_seabed == 0 and "Seabed" or "Underground").." "..planet.ore_common.." deposits"
             }
             if planet.caves then table.insert(info, "Narrow cave systems") end
-            for _, resource in ipairs({planet.snow_type1 or "", planet.snow_type2 ~= planet.snow_type1 and planet.snow_type2 or "", planet.life_stat > 1.5 and "stl_core:moss1" or "", planet.quartz or ""}) do
+            for _, resource in ipairs({planet.snow_type1 or "", planet.snow_type2 ~= planet.snow_type1 and planet.snow_type2 or "", planet.life_stat > 1.5 and "stl_core:moss1" or "", planet.quartz or "", planet.crystal or ""}) do
                 if resource ~= "" then table.insert(info, minetest.registered_nodes[resource].description) end
             end
             if planet.scale > 1.1 then table.insert(info, "WARNING: HIGH GRAVITY") end
