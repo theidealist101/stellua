@@ -95,6 +95,7 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - bucket_river_water.png
 - bucket_lava.png
 - stl_core_bucket_overlay.png <- bucket_lava.png
+- stl_core_bitumen.png <- default_coal_block.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -127,6 +128,7 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_leaves6.png <- mcl_core_leaves_birch.png
 - stl_core_leaves7.png <- mcl_core_leaves_big_oak.png
 - stl_core_leaves8.png <- default_leaves.png
+- mcl_blackstone_basalt_top.png
 
 All sounds not mentioned come directly from Minetest Game and are under CC BY-SA 3.0
 

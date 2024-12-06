@@ -158,7 +158,7 @@ local function register_water(name, defs)
         liquidtype = "source",
         liquid_alternative_source = name.."_source",
         liquid_alternative_flowing = name.."_flowing",
-        liquid_alternative_frozen = defs.frozen_tiles and name.."_frozen",
+        liquid_alternative_frozen = defs.frozen_tiles and name.."_frozen" or defs.frozen_node,
         liquid_alternative_bucket = name.."_bucket",
         liquid_viscosity = defs.liquid_viscosity or 0,
         liquid_renewable = defs.liquid_renewable,
@@ -319,6 +319,7 @@ register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
 register_water("stl_core:petroleum", {
     description = "Petroleum",
     tiles = "stl_core_petroleum",
+    frozen_node = "stl_core:bitumen",
     bucket_image = "bucket.png^(stl_core_bucket_overlay.png^[multiply:#000500)",
     tint = {a=250, r=0, g=5, b=0},
     liquid_viscosity = 7,
@@ -332,9 +333,26 @@ register_water("stl_core:petroleum", {
 
 minetest.override_item("stl_core:petroleum_bucket", {groups={fuel=200}, fuel_replacement="stl_core:empty_bucket"})
 
+minetest.register_node("stl_core:bitumen", {
+    description = "Bitumen",
+    drawtype = "glasslike",
+    tiles = {"stl_core_bitumen.png"},
+    liquid_alternative_source = "stl_core:petroleum_source",
+    walkable = false,
+    liquid_move_physics = true,
+    liquid_viscosity = 7,
+    post_effect_color = {a=255, r=0, g=0, b=0},
+    damage_per_second = 1,
+    melt_point = 360,
+    boil_point = 600,
+    groups = {crumbly=2, disable_jump=1},
+    sounds = stellua.node_sound_dirt_defaults()
+})
+
 register_water("stl_core:lava", {
     description = "Lava",
     tiles = "default_lava",
+    frozen_node = "stl_core:basalt",
     tint = {a=240, r=192, g=64, b=0},
     bucket_image = "bucket_lava.png",
     snow = "stl_core:charred_earth",
@@ -344,6 +362,16 @@ register_water("stl_core:lava", {
     damage_per_second = 2,
     melt_point = 400, --lol
     boil_point = 1000 --also lol
+})
+
+minetest.register_node("stl_core:basalt", {
+    description = "Basalt",
+    tiles = {"mcl_blackstone_basalt_top.png"},
+    liquid_alternative_source = "stl_core:lava_source",
+    melt_point = 400,
+    boil_point = 1000,
+    groups = {cracky=2},
+    sounds = stellua.node_sound_stone_defaults()
 })
 
 register_snow("stl_core:ash", {
