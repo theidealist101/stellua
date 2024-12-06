@@ -138,6 +138,7 @@ end
 
 --Try to get fuel from the stored data on vehicle fuel tanks
 function stellua.get_fuel(tanks, amount, group)
+    if amount == 0 then return true end
     group = group or "fuel"
     local ignite = false
     for _, val in ipairs(tanks) do

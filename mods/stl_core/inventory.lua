@@ -62,7 +62,7 @@ sfinv.register_page("stl_core:planets", {
             local planet = stellua.planets[context.planet]
             local star, spos = stellua.get_slot_info(slot)
             local cost = planet.star == star and vector.distance(planet.pos, spos) or 16*vector.distance(stellua.stars[planet.star].pos, stellua.stars[star].pos)
-            local fuel, ignite = stellua.get_fuel(ent.tanks, cost, "fissile")
+            local fuel, ignite = stellua.get_fuel(ent.tanks, math.round(cost+0.3), "fissile")
             if not fuel then
                 stellua.land_vehicle(ent, stellua.get_slot_pos(slot))
                 minetest.chat_send_player(player:get_player_name(), "Not enough impulse fuel!")
