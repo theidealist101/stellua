@@ -168,6 +168,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
+        groups = {water_source=1, water=1},
         sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })
 
@@ -197,6 +198,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
+        groups = {water=1},
         sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })
 
@@ -211,7 +213,7 @@ local function register_water(name, defs)
             liquid_alternative_source = name.."_source",
             melt_point = defs.melt_point,
             boil_point = defs.boil_point,
-            groups = {cracky=1, slippery=3},
+            groups = {cracky=1, slippery=3, ice=1},
             sounds = stellua.node_sound_ice_defaults()
         })
     end
@@ -343,8 +345,6 @@ minetest.register_node("stl_core:bitumen", {
     liquid_viscosity = 7,
     post_effect_color = {a=255, r=0, g=0, b=0},
     damage_per_second = 1,
-    melt_point = 360,
-    boil_point = 600,
     groups = {crumbly=2, disable_jump=1},
     sounds = stellua.node_sound_dirt_defaults()
 })
@@ -368,8 +368,6 @@ minetest.register_node("stl_core:basalt", {
     description = "Basalt",
     tiles = {"mcl_blackstone_basalt_top.png"},
     liquid_alternative_source = "stl_core:lava_source",
-    melt_point = 400,
-    boil_point = 1000,
     groups = {cracky=2},
     sounds = stellua.node_sound_stone_defaults()
 })
@@ -403,6 +401,37 @@ minetest.register_node("stl_core:gravel", {
     drop = {},
     after_dig_node = drop_with_color("stl_core:pebble"),
     sounds = stellua.node_sound_gravel_defaults()
+})
+
+--Make liquids freeze or evaporate depending on environment
+minetest.register_abm({
+    interval = 10,
+    chance = 10,
+    nodenames = {"group:water_source"},
+    neighbours = {"air"},
+    action = function (pos)
+        local index = stellua.get_planet_index(pos.y)
+        if not index then return end
+        local defs = minetest.registered_nodes[minetest.get_node(pos).name]
+        if defs and defs.melt_point >= stellua.planets[index].heat_stat then
+            minetest.set_node(pos, {name=defs.liquid_alternative_frozen})
+        end
+    end
+})
+
+minetest.register_abm({
+    interval = 10,
+    chance = 10,
+    nodenames = {"group:ice"},
+    neighbours = {"air"},
+    action = function (pos)
+        local index = stellua.get_planet_index(pos.y)
+        if not index then return end
+        local defs = minetest.registered_nodes[minetest.get_node(pos).name]
+        if defs and defs.melt_point < stellua.planets[index].heat_stat then
+            minetest.set_node(pos, {name=defs.liquid_alternative_source})
+        end
+    end
 })
 
 --Some more life stuff
