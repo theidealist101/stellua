@@ -61,6 +61,28 @@ local questline = {
         cond = function(player) return minetest.get_node(vector.round(player:get_pos())).name == "stl_precursor:gate" end
     },
     {
+        text = "Impulse engines are crafted with four pieces of fissile material in the centre and eight pieces of metal on top and bottom.",
+        cond = function (player)
+            local inv = player:get_inventory()
+            for _, itemstack in ipairs(inv:get_list("main")) do
+                if not itemstack:is_empty() and minetest.get_item_group(itemstack:get_name(), "impulse") > 0 then return true end
+            end
+        end
+    },
+    {
+        text = "Stellonaut™ spacecraft are fully customisable. Expand your rocket using metal blocks and glass from undersea quartz crystals; craft more rocket parts to augment its capabilities.\nPlace the impulse engine anywhere on the ship and insert plenty of fissile material into it.",
+        cond = function (player)
+            local _, _, _, _, tanks = stellua.assemble_vehicle(vector.round(player:get_pos()))
+            if not tanks then return end
+            for _, pos in ipairs(tanks) do
+                local inv = minetest.get_meta(pos):get_inventory()
+                for _, itemstack in ipairs(inv:get_list("main")) do
+                    if not itemstack:is_empty() and minetest.get_item_group(itemstack:get_name(), "fissile") > 0 then return true end
+                end
+            end
+        end
+    },
+    {
         text = "Launch into orbit in the rocket by holding both sneak and jump simultaneously.",
         cond = function(player) return stellua.get_slot_index(player:get_pos()) end
     },
@@ -69,7 +91,7 @@ local questline = {
         cond = function(player) return stellua.get_planet_index(player:get_pos().y) end
     },
     {
-        text = "Stellonaut™ spacecraft are fully customisable. Expand your rocket using metals mined from the earth and glass from undersea quartz crystals. Add more fuel tanks for larger capacity, or more rocket engines to launch faster. (Specialist crafting equipment may be required.)",
+        text = "Dozens of planets have been detected around you in multiple star systems. Go explore them all, see what wonders you can find. The universe is yours to command.",
         cond = function() return true end
     }
 }

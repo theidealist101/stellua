@@ -144,9 +144,10 @@ local function get_fuel(tanks, amount)
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv and not inv:is_empty("main") then
             for i, itemstack in ipairs(inv:get_list("main")) do
-                while not itemstack:is_empty() do
+                local new_fuel = minetest.get_item_group(itemstack:get_name(), "fuel")
+                while not itemstack:is_empty() and new_fuel > 0 do
                     ignite = true
-                    fuel = fuel+minetest.get_item_group(itemstack:get_name(), "fuel")
+                    fuel = fuel+new_fuel
                     itemstack:take_item()
                     inv:set_stack("main", i, itemstack)
                     if fuel >= amount then val[3] = fuel-amount return true, ignite end

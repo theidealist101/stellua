@@ -95,3 +95,35 @@ minetest.register_on_joinplayer(function(player)
     inv:set_size("craft", 16)
     inv:set_width("craft", 4)
 end)
+
+--Impulse engine for travelling between planets
+minetest.register_node("stl_vehicles:impulse_engine", {
+    description = "Impulse Engine",
+    drawtype = "nodebox",
+    tiles = {"stl_vehicles_impulse_engine_top.png", "stl_vehicles_impulse_engine_top.png", "stl_vehicles_impulse_engine.png"},
+    node_box = {type="fixed", fixed={
+        {-0.5, -0.5, -0.5, 0.5, -0.25, 0.5},
+        {-0.375, -0.25, -0.375, 0.375, 0.25, 0.375},
+        {-0.5, 0.25, -0.5, 0.5, 0.5, 0.5},
+    }},
+    groups = {cracky=3, spaceship=1, impulse=1, tank=1},
+    sounds = stellua.node_sound_metal_defaults(),
+    on_construct = function (pos)
+        local meta = minetest.get_meta(pos)
+        meta:get_inventory():set_size("main", 16)
+        meta:set_string("formspec", sfinv.make_formspec(nil, {nav_titles={}}, "list[context;main;3,1.5;2,2]", true))
+    end,
+    allow_metadata_inventory_put = function (_, _, _, itemstack)
+        return minetest.get_item_group(itemstack:get_name(), "fissile") > 0 and 1000000 or 0
+    end
+})
+
+minetest.register_craft({
+    output = "stl_vehicles:impulse_engine",
+    recipe = {
+        {"group:metal", "group:metal", "group:metal", "group:metal"},
+        {"", "group:fissile", "group:fissile", ""},
+        {"", "group:fissile", "group:fissile", ""},
+        {"group:metal", "group:metal", "group:metal", "group:metal"}
+    }
+})

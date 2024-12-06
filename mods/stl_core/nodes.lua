@@ -408,12 +408,14 @@ end
 
 minetest.register_craftitem("stl_core:copper", {
     description = "Copper",
-    inventory_image = "default_copper_lump.png"
+    inventory_image = "default_copper_lump.png",
+    groups = {metal=1}
 })
 
 minetest.register_craftitem("stl_core:titanium", {
     description = "Titanium",
-    inventory_image = "default_tin_lump.png"
+    inventory_image = "default_tin_lump.png",
+    groups = {metal=1}
 })
 
 --Plant pieces
