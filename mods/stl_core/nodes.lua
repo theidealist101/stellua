@@ -345,7 +345,7 @@ minetest.register_node("stl_core:bitumen", {
     liquid_viscosity = 7,
     post_effect_color = {a=255, r=0, g=0, b=0},
     damage_per_second = 1,
-    groups = {crumbly=2, disable_jump=1},
+    groups = {crumbly=2, disable_jump=1, fuel=100},
     sounds = stellua.node_sound_dirt_defaults()
 })
 
