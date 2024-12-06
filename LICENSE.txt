@@ -90,6 +90,11 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_wood.png <- default_wood.png
 - stl_core_log3(_top).png <- default_pine_tree(_top).png
 - stl_core_log4(_top).png <- default_acacia_tree(_top).png
+- bucket.png
+- bucket_water.png
+- bucket_river_water.png
+- bucket_lava.png
+- stl_core_bucket_overlay.png <- bucket_lava.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

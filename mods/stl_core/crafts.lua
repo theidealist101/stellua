@@ -76,6 +76,15 @@ minetest.register_craft({
 
 stellua.register_color_craft("stl_core:stick", "stl_core:wood")
 
+--Craft buckets from metal
+minetest.register_craft({
+    output = "stl_core:empty_bucket",
+    recipe = {
+        {"group:metal", "", "group:metal"},
+        {"", "group:metal", ""}
+    }
+})
+
 --Basic tools
 minetest.register_tool("stl_core:wood_pick", {
     description = "Wood Pick",

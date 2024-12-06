@@ -116,6 +116,22 @@ for i = 1, 8 do
     })
 end
 
+--Bucket for picking up liquids
+minetest.register_craftitem("stl_core:empty_bucket", {
+    description = "Empty Bucket",
+    inventory_image = "bucket.png",
+    stack_max = 1,
+    liquids_pointable = true,
+    on_place = function (itemstack, user, pointed)
+        local defs = minetest.registered_nodes[minetest.get_node(pointed.under).name]
+        if defs.liquid_alternative_bucket then
+            minetest.remove_node(pointed.under)
+            return ItemStack(defs.liquid_alternative_bucket)
+        end
+        if defs.on_rightclick then return defs.on_rightclick(pointed.under, minetest.get_node(pointed.under), user, itemstack, pointed) end
+    end
+})
+
 --Surface liquids
 stellua.registered_waters = {}
 stellua.registered_snows = {}
@@ -143,6 +159,7 @@ local function register_water(name, defs)
         liquid_alternative_source = name.."_source",
         liquid_alternative_flowing = name.."_flowing",
         liquid_alternative_frozen = defs.frozen_tiles and name.."_frozen",
+        liquid_alternative_bucket = name.."_bucket",
         liquid_viscosity = defs.liquid_viscosity or 0,
         liquid_renewable = defs.liquid_renewable,
         liquid_range = 8,
@@ -198,6 +215,18 @@ local function register_water(name, defs)
             sounds = stellua.node_sound_ice_defaults()
         })
     end
+
+    minetest.register_craftitem(name.."_bucket", {
+        description = defs.description.." Bucket",
+        inventory_image = defs.bucket_image,
+        stack_max = 1,
+        on_place = function (itemstack, user, pointed)
+            if minetest.registered_nodes[minetest.get_node(pointed.above).name].buildable_to then
+                minetest.set_node(pointed.above, {name=name.."_source"})
+                return ItemStack("stl_core:empty_bucket")
+            end
+        end
+    })
 end
 
 local function register_snow(name, defs)
@@ -234,6 +263,7 @@ register_water("stl_core:water", {
     description = "Water",
     tiles = "default_water",
     frozen_tiles = "default_ice.png^[opacity:225",
+    bucket_image = "bucket_water.png",
     snow = "stl_core:water_snow",
     tint = {a=192, r=40, g=70, b=120},
     melt_point = 273,
@@ -251,6 +281,7 @@ register_water("stl_core:ammonia_water", {
     description = "Ammonia Water",
     tiles = "default_river_water",
     frozen_tiles = "mcl_core_ice_packed.png^[opacity:225",
+    bucket_image = "bucket_river_water.png",
     snow = "stl_core:ammonia_snow",
     tint = {a=192, r=50, g=100, b=130},
     melt_point = 180,
@@ -267,7 +298,7 @@ register_snow("stl_core:ammonia_snow", {
 register_water("stl_core:methane", {
     description = "Methane",
     tiles = "stl_core_methane",
-    --tiles_opacity = 128, --not supported by lvae
+    bucket_image = "bucket.png^(stl_core_bucket_overlay.png^[multiply:#000500^[opacity:128)",
     tint = {a=128, r=0, g=5, b=0},
     liquid_viscosity = 0, --remember this wants to be a gas
     liquid_renewable = false,
@@ -286,6 +317,7 @@ register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
 register_water("stl_core:petroleum", {
     description = "Petroleum",
     tiles = "stl_core_petroleum",
+    bucket_image = "bucket.png^(stl_core_bucket_overlay.png^[multiply:#000500)",
     tint = {a=250, r=0, g=5, b=0},
     liquid_viscosity = 7,
     liquid_renewable = false,
@@ -300,6 +332,7 @@ register_water("stl_core:lava", {
     description = "Lava",
     tiles = "default_lava",
     tint = {a=240, r=192, g=64, b=0},
+    bucket_image = "bucket_lava.png",
     snow = "stl_core:charred_earth",
     liquid_viscosity = 7,
     liquid_renewable = false,
