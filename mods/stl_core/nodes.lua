@@ -421,20 +421,39 @@ minetest.register_abm({
     end
 })
 
-minetest.register_abm({
-    interval = 10,
-    chance = 10,
-    nodenames = {"group:ice"},
-    neighbours = {"air"},
-    action = function (pos)
-        local index = stellua.get_planet_index(pos.y)
-        if not index then return end
-        local defs = minetest.registered_nodes[minetest.get_node(pos).name]
-        if defs and defs.melt_point < stellua.planets[index].heat_stat then
-            minetest.set_node(pos, {name=defs.liquid_alternative_source})
+for _, val1 in ipairs(stellua.registered_waters) do
+    for _, val2 in ipairs(stellua.registered_waters) do
+        if val1 ~= val2 and val1[2].boil_point > val2[2].boil_point and not (
+            val1[1] == "stl_core:water" and val2[1] == "stl_core:ammonia_water" or
+            val2[1] == "stl_core:water" and val1[1] == "stl_core:ammonia_water"
+        ) then
+            local new_node = {name=val1[2].frozen_tiles and val1[1].."_frozen" or val1[2].frozen_node}
+            minetest.register_abm({
+                interval = 1,
+                chance = 1,
+                nodenames = {val1[1].."_source", val1[1].."_flowing"},
+                neighbors = {val2[1].."_source", val2[1].."_flowing"},
+                action = function(pos) minetest.set_node(pos, new_node) end
+            })
+            if val1[2].frozen_tiles then
+                local defs = minetest.registered_nodes[val1[1].."_frozen"]
+                minetest.register_abm({
+                    interval = 10,
+                    chance = 10,
+                    nodenames = {val1[1].."_frozen"},
+                    without_neighbors = {val2[1].."_source", val2[1].."_flowing"},
+                    action = function (pos)
+                        local index = stellua.get_planet_index(pos.y)
+                        if not index then return end
+                        if defs and defs.melt_point < stellua.planets[index].heat_stat then
+                            minetest.set_node(pos, {name=defs.liquid_alternative_source})
+                        end
+                    end
+                })
+            end
         end
     end
-})
+end
 
 --Some more life stuff
 for i = 1, 4 do
