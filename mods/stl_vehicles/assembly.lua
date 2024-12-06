@@ -146,11 +146,13 @@ function stellua.get_fuel(tanks, amount, group)
         if inv and not inv:is_empty("main") then
             for i, itemstack in ipairs(inv:get_list("main")) do
                 local new_fuel = minetest.get_item_group(itemstack:get_name(), group)
+                local replacement = itemstack:get_definition().fuel_replacement
                 while not itemstack:is_empty() and new_fuel > 0 do
                     ignite = true
                     fuel = fuel+new_fuel
                     itemstack:take_item()
                     inv:set_stack("main", i, itemstack)
+                    if replacement then inv:add_item("main", ItemStack(replacement)) end
                     if fuel >= amount then val[3] = fuel-amount return true, ignite end
                 end
             end

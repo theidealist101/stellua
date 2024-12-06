@@ -308,6 +308,8 @@ register_water("stl_core:methane", {
     weight = 1.5
 })
 
+minetest.override_item("stl_core:methane_bucket", {groups={fuel=120}, fuel_replacement="stl_core:empty_bucket"})
+
 register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
     description = "Benzene Snow",
     tiles = "stl_core_benzene_snow.png",
@@ -327,6 +329,8 @@ register_water("stl_core:petroleum", {
     boil_point = 600,
     weight = 0.5
 })
+
+minetest.override_item("stl_core:petroleum_bucket", {groups={fuel=200}, fuel_replacement="stl_core:empty_bucket"})
 
 register_water("stl_core:lava", {
     description = "Lava",
