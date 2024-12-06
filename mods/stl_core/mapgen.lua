@@ -177,7 +177,7 @@ minetest.register_on_mods_loaded(function()
             y_max = level+499,
             noise_params = {
                 offset = 0,
-                scale = 32,
+                scale = prand:next(32, 64),
                 spread = {x=400, y=400, z=400},
                 seed = seed,
                 octaves = math.round(3+scale),
