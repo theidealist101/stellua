@@ -41,7 +41,7 @@ local function logic(noise, cavern, planet, y)
 end
 
 local data, param2_data = {}, {}
-local abs = math.abs
+local min, abs = math.min, math.abs
 
 minetest.register_on_generated(function(_, minp, maxp)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
@@ -94,6 +94,7 @@ minetest.register_on_generated(function(_, minp, maxp)
 
             --prepare the noises
             local planet_noise = noises2d["planet"..index]
+            local river_noise = noises2d["river"..index]
             local cave_noise1 = noises3d["cave1_"..index]
             local cave_noise2 = noises3d["cave2_"..index]
 
@@ -111,6 +112,9 @@ minetest.register_on_generated(function(_, minp, maxp)
 
                         --calculate it from noises and stuff
                         local planet_val = planet_noise.data[ni]
+                        if planet.water_level then
+                            planet_val = min(planet_val, river_noise.data[ni]^2+planet.river_level)
+                        end
                         local cave_val = cave_noise1 and abs(cave_noise1.data[ni3d])+abs(cave_noise2.data[ni3d]) < 1
                         data[vi], param2_data[vi] = logic(planet_val, cave_val, planet, y)
                     end

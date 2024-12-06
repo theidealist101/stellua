@@ -172,6 +172,20 @@ minetest.register_on_mods_loaded(function()
             }
         })
 
+        register_noise2d("river"..i, {
+            y_min = level-500,
+            y_max = level+499,
+            noise_params = {
+                offset = 0,
+                scale = 32,
+                spread = {x=400, y=400, z=400},
+                seed = seed,
+                octaves = math.round(3+scale),
+                persistence = 0.5,
+                lacunarity = 2
+            }
+        })
+
         if planet.life_stat < 0.5 or prand:next(1, 3) ~= 1 then
             planet.caves = true
             for j = 1, 2 do
@@ -217,6 +231,7 @@ minetest.register_on_mods_loaded(function()
             local water, defs = unpack(water_options[prand:next(1, #water_options)])
             if water ~= 0 then
                 planet.water_level = level+prand:next(math.round(-0.5*10^scale), math.round(0.5*10^scale))
+                planet.river_level = planet.water_level-math.round(scale*2)
 
                 planet.mapgen_water = water.."_source"
                 planet.c_water = minetest.get_content_id(planet.mapgen_water)
