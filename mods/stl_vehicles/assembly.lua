@@ -88,7 +88,7 @@ function stellua.detach_vehicle(pos)
         local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
         local meta = minetest.get_meta(p)
         inv:set_lists(meta:get_inventory():get_lists())
-        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_float("fuel")})
+        table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_float("fuel"), meta:get_string("fuel_group")})
         inv_count = inv_count+1
         storage:set_int("inv_count", inv_count)
     end
@@ -124,6 +124,7 @@ function stellua.land_vehicle(vehicle, pos)
         local p, invname, fuel = unpack(val)
         local meta = minetest.get_meta(pos+p)
         meta:set_float("fuel", fuel)
+        meta:set_string("infotext", "Fuel: "..math.ceil(fuel))
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv then
             meta:get_inventory():set_lists(inv:get_lists())
@@ -140,20 +141,23 @@ function stellua.get_fuel(tanks, amount, group)
     group = group or "fuel"
     local ignite = false
     for _, val in ipairs(tanks) do
-        local p, invname, fuel = unpack(val)
-        if fuel >= amount then val[3] = fuel-amount return true, ignite end
-        local inv = minetest.get_inventory({type="detached", name=invname})
-        if inv and not inv:is_empty("main") then
-            for i, itemstack in ipairs(inv:get_list("main")) do
-                local new_fuel = minetest.get_item_group(itemstack:get_name(), group)
-                local replacement = itemstack:get_definition().fuel_replacement
-                while not itemstack:is_empty() and new_fuel > 0 do
-                    ignite = true
-                    fuel = fuel+new_fuel
-                    itemstack:take_item()
-                    inv:set_stack("main", i, itemstack)
-                    if replacement then inv:add_item("main", ItemStack(replacement)) end
-                    if fuel >= amount then val[3] = fuel-amount return true, ignite end
+        local p, invname, fuel, fuel_group = unpack(val)
+        minetest.log(fuel_group)
+        if fuel_group == group then
+            if fuel >= amount then val[3] = fuel-amount return true, ignite end
+            local inv = minetest.get_inventory({type="detached", name=invname})
+            if inv and not inv:is_empty("main") then
+                for i, itemstack in ipairs(inv:get_list("main")) do
+                    local new_fuel = minetest.get_item_group(itemstack:get_name(), group)
+                    local replacement = itemstack:get_definition().fuel_replacement
+                    while not itemstack:is_empty() and new_fuel > 0 do
+                        ignite = true
+                        fuel = fuel+new_fuel
+                        itemstack:take_item()
+                        inv:set_stack("main", i, itemstack)
+                        if replacement then inv:add_item("main", ItemStack(replacement)) end
+                        if fuel >= amount then val[3] = fuel-amount return true, ignite end
+                    end
                 end
             end
         end

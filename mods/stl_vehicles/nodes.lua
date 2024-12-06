@@ -27,6 +27,8 @@ minetest.register_node("stl_vehicles:tank", {
         local meta = minetest.get_meta(pos)
         meta:get_inventory():set_size("main", 16)
         meta:set_string("formspec", sfinv.make_formspec(nil, {nav_titles={}}, "list[context;main;3,1.5;2,2]", true))
+        meta:set_string("infotext", "Fuel: 0")
+        meta:set_string("fuel_group", "fuel")
     end,
     allow_metadata_inventory_put = function (_, _, _, itemstack)
         return minetest.get_item_group(itemstack:get_name(), "fuel") > 0 and 1000000 or 0
@@ -112,6 +114,8 @@ minetest.register_node("stl_vehicles:impulse_engine", {
         local meta = minetest.get_meta(pos)
         meta:get_inventory():set_size("main", 16)
         meta:set_string("formspec", sfinv.make_formspec(nil, {nav_titles={}}, "list[context;main;3,1.5;2,2]", true))
+        meta:set_string("infotext", "Fuel: 0")
+        meta:set_string("fuel_group", "fissile")
     end,
     allow_metadata_inventory_put = function (_, _, _, itemstack)
         return minetest.get_item_group(itemstack:get_name(), "fissile") > 0 and 1000000 or 0
