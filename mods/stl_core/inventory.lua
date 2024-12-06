@@ -42,7 +42,11 @@ sfinv.register_page("stl_core:planets", {
                 "image[5,0.5;3,3;"..planet.icon..";]",
                 "button[0,-0.15;1,1;back;<]"
             }
-            if slot then table.insert(out, "button[1,-0.15;2,1;tp;Go here]") end
+            if slot then
+                local star, pos = stellua.get_slot_info(slot)
+                local cost = planet.star == star and vector.distance(planet.pos, pos) or 16*vector.distance(stellua.stars[planet.star].pos, stellua.stars[star].pos)
+                table.insert(out, "button[1,-0.15;3,1;tp;Go here ("..math.round(cost+0.3).." Uranium)]")
+            end
         end
         return sfinv.make_formspec(player, context, table.concat(out), false)
     end,
@@ -53,13 +57,25 @@ sfinv.register_page("stl_core:planets", {
             return
         end
         if fields.tp then
+            local slot = stellua.get_slot_index(player:get_pos())
+            local ent = stellua.detach_vehicle(stellua.get_slot_pos(slot))
+            local planet = stellua.planets[context.planet]
+            local star, spos = stellua.get_slot_info(slot)
+            local cost = planet.star == star and vector.distance(planet.pos, spos) or 16*vector.distance(stellua.stars[planet.star].pos, stellua.stars[star].pos)
+            local fuel, ignite = stellua.get_fuel(ent.tanks, cost, "fissile")
+            if not fuel then
+                stellua.land_vehicle(ent, stellua.get_slot_pos(slot))
+                minetest.chat_send_player(player:get_player_name(), "Not enough impulse fuel!")
+                if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {pos=stellua.get_slot_pos(slot)}, true) end
+                return
+            end
             local pos = vector.new(0, stellua.get_planet_level(context.planet)+150, 0)
-            local ent = stellua.detach_vehicle(stellua.get_slot_pos(stellua.get_slot_index(player:get_pos())))
             ent.player = player:get_player_name()
             ent.object:set_pos(pos)
             player:set_pos(pos)
             context.planet = nil
             minetest.close_formspec(player:get_player_name(), "")
+            if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=ent.object}, true) end
         end
         for i = 1, 60 do
             if fields["planet"..i] then

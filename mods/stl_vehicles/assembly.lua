@@ -136,7 +136,8 @@ function stellua.land_vehicle(vehicle, pos)
 end
 
 --Try to get fuel from the stored data on vehicle fuel tanks
-local function get_fuel(tanks, amount)
+function stellua.get_fuel(tanks, amount, group)
+    group = group or "fuel"
     local ignite = false
     for _, val in ipairs(tanks) do
         local p, invname, fuel = unpack(val)
@@ -144,7 +145,7 @@ local function get_fuel(tanks, amount)
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv and not inv:is_empty("main") then
             for i, itemstack in ipairs(inv:get_list("main")) do
-                local new_fuel = minetest.get_item_group(itemstack:get_name(), "fuel")
+                local new_fuel = minetest.get_item_group(itemstack:get_name(), group)
                 while not itemstack:is_empty() and new_fuel > 0 do
                     ignite = true
                     fuel = fuel+new_fuel
@@ -266,7 +267,7 @@ minetest.register_globalstep(function(dtime)
                 --handle launching
                 local launch = control.jump and control.sneak
                 if launch then
-                    local fuel, ignite = get_fuel(vehicle:get_luaentity().tanks, dtime*power)
+                    local fuel, ignite = stellua.get_fuel(vehicle:get_luaentity().tanks, dtime*power)
                     if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
                     if fuel then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
                 end
