@@ -415,6 +415,8 @@ minetest.register_abm({
         local defs = minetest.registered_nodes[minetest.get_node(pos).name]
         if defs and defs.melt_point >= stellua.planets[index].heat_stat then
             minetest.set_node(pos, {name=defs.liquid_alternative_frozen})
+        elseif defs and defs.boil_point <= stellua.planets[index].heat_stat then
+            minetest.remove_node(pos)
         end
     end
 })
