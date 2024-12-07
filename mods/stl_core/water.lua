@@ -272,6 +272,29 @@ register_snow("stl_core:charred_earth", {
     groups = {fuel=20}
 })
 
+register_water("stl_core:acid", {
+    description = "Sulfuric Acid",
+    tiles = "stl_core_acid",
+    frozen_node = "stl_core:sulfur",
+    tint = {a=192, r=128, g=192, b=0},
+    bucket_image = "bucket.png^(stl_core_bucket_overlay.png^[multiply:#80c000)",
+    liquid_viscosity = 3,
+    liquid_renewable = false,
+    damage_per_second = 2,
+    melt_point = 310,
+    boil_point = 600,
+    temp = 450,
+    weight = 0.3
+})
+
+minetest.register_node("stl_core:sulfur", {
+    description = "Sulfur",
+    tiles = {"stl_core_sulfur.png"},
+    liquid_alternative_source = "stl_core:acid_source",
+    groups = {crumbly=2, fuel=30},
+    sounds = stellua.node_sound_dirt_defaults()
+})
+
 --Make liquids freeze or evaporate depending on environment
 minetest.register_abm({
     interval = 10,
