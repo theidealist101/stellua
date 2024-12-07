@@ -36,7 +36,7 @@ function stellua.get_temperature(pos)
     local index = stellua.get_planet_index(pos.y)
     if not index then return 0 end
 
-    --base temperature is the planet's heat stat, altered by height so that the top of the world is much colder and the bottom much hotter
+    --base temperature is the planet's heat stat, altered by height
     local out = stellua.planets[index].heat_stat*((500-pos.y)%1000)*0.002
 
     --if in a liquid then it tends towards that liquid's preferred temperature

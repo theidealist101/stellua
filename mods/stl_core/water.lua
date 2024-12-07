@@ -255,6 +255,9 @@ register_water("stl_core:lava", {
     generate_as_lava = true
 })
 
+minetest.override_item("stl_core:lava_source", {light_source=12})
+minetest.override_item("stl_core:lava_flowing", {light_source=12})
+
 minetest.register_node("stl_core:basalt", {
     description = "Basalt",
     tiles = {"mcl_blackstone_basalt_top.png"},
