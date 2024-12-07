@@ -143,7 +143,6 @@ function stellua.get_fuel(tanks, amount, group)
     local ignite = false
     for _, val in ipairs(tanks) do
         local p, invname, fuel, fuel_group = unpack(val)
-        minetest.log(fuel_group)
         if fuel_group == group then
             if fuel >= amount then val[3] = fuel-amount return true, ignite end
             local inv = minetest.get_inventory({type="detached", name=invname})

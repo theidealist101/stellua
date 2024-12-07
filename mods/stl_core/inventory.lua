@@ -35,6 +35,9 @@ sfinv.register_page("stl_core:planets", {
                 if resource ~= "" then table.insert(info, minetest.registered_nodes[resource].description) end
             end
             if planet.scale > 1.1 then table.insert(info, "WARNING: HIGH GRAVITY") end
+            if planet.atmo_stat < 0.5 then table.insert(info, "WARNING: LOW ATMOSPHERE") end
+            if planet.heat_stat < 200 then table.insert(info, "WARNING: VERY COLD") end
+            if planet.heat_stat > 400 then table.insert(info, "WARNING: VERY HOT") end
             out = {
                 "label[0,2;"..table.concat(info, "\n").."]",
                 "style_type[label;font_size=*3]",
