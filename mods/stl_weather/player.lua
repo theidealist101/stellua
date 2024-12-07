@@ -36,8 +36,8 @@ function stellua.get_temperature(pos)
     local index = stellua.get_planet_index(pos.y)
     if not index then return 0 end
 
-    --base temperature is the planet's heat stat
-    local out = stellua.planets[index].heat_stat
+    --base temperature is the planet's heat stat, altered by height so that the top of the world is much colder and the bottom much hotter
+    local out = stellua.planets[index].heat_stat*((500-pos.y)%1000)*0.002
 
     --if in a liquid then it tends towards that liquid's preferred temperature
     local defs = minetest.registered_nodes[minetest.get_node(pos).name]

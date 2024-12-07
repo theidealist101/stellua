@@ -311,9 +311,10 @@ minetest.register_abm({
         if not index then minetest.remove_node(pos) return end
         local defs = minetest.registered_nodes[minetest.get_node(pos).name]
         local planet = stellua.planets[index]
-        if defs and defs.melt_point >= planet.heat_stat then
+        local temp = planet.heat_stat*((500-pos.y)%1000)*0.002
+        if defs and defs.melt_point >= temp then
             minetest.set_node(pos, {name=defs.liquid_alternative_frozen})
-        elseif defs and (defs.boil_point <= planet.heat_stat or planet.atmo_stat < 0.5) then
+        elseif defs and (defs.boil_point <= temp or planet.atmo_stat < 0.5) then
             minetest.remove_node(pos)
         end
     end
@@ -340,7 +341,8 @@ for _, val1 in ipairs(stellua.registered_waters) do
                     action = function (pos)
                         local index = stellua.get_planet_index(pos.y)
                         if not index then return end
-                        if defs and defs.melt_point < stellua.planets[index].heat_stat then
+                        local temp = stellua.planets[index].heat_stat*((500-pos.y)%1000)*0.002
+                        if defs and defs.melt_point < temp then
                             minetest.set_node(pos, {name=defs.liquid_alternative_source})
                         end
                     end

@@ -300,7 +300,7 @@ minetest.register_on_mods_loaded(function()
         for _ = 1, 10 do table.insert(lava_options, {0, 0}) end
         for _, val in pairs(stellua.registered_waters) do
             local name, defs = unpack(val)
-            if defs.generate_as_lava and planet.heat_stat*1.9 > defs.melt_point then
+            if defs.generate_as_lava and planet.heat_stat*1.9 > defs.melt_point and planet.heat_stat*2 < defs.boil_point then
                 for _ = 1, (defs.weight or 1)*10 do
                     table.insert(lava_options, {name, defs})
                 end
