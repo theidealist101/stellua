@@ -418,7 +418,7 @@ minetest.register_on_mods_loaded(function()
             ore = planet.mapgen_stone.."_with_"..planet.ore_common,
             ore_param2 = planet.param2_stone,
             wherein = {planet.mapgen_stone},
-            clust_scarcity = prand:next(8, 16)^3,
+            clust_scarcity = prand:next(16, 32)^3,
             clust_num = count_common,
             clust_size = math.ceil(math.sqrt(count_common))*2,
             y_min = level-500,
