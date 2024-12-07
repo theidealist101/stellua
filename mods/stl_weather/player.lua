@@ -58,9 +58,9 @@ minetest.register_globalstep(function(dtime)
         local playertemp = meta:get_float("temp")
         local temp = player:get_attach() and 300 or stellua.get_temperature(vector.round(player:get_pos()))
         if temp < 270 or temp > 330 then
-            playertemp = math.min(math.max(playertemp+(temp-300)*0.005*dtime, -20), 20)
+            playertemp = math.min(math.max(playertemp+dtime*math.sign(temp-300)*((temp-300)*0.005)^2, -20), 20)
         else
-            playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-0.5*dtime, 0)
+            playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-dtime*0.5, 0)
         end
         meta:set_float("temp", playertemp)
         player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
