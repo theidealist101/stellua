@@ -50,6 +50,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
+        temp = defs.temp,
         groups = {water_source=1, water=1},
         sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })
@@ -80,6 +81,7 @@ local function register_water(name, defs)
         waving = 3,
         melt_point = defs.melt_point,
         boil_point = defs.boil_point,
+        temp = defs.temp,
         groups = {water=1},
         sounds = stellua.node_sound_water_defaults({footstep={name = "default_water_footstep", gain = 0.05}})
     })

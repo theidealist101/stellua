@@ -27,13 +27,25 @@ minetest.register_on_joinplayer(function(player)
     })
 end)
 
---Get temperature at position
+--Get temperature at position for the player's purposes
 function stellua.get_temperature(pos)
-    if stellua.assemble_vehicle(vector.round(pos)) then return 300 end
+    --always room temperature inside vehicles, at least for now
+    if stellua.assemble_vehicle(pos) then return 300 end
+
+    --absolute zero in the vastness of space because I say so
     local index = stellua.get_planet_index(pos.y)
     if not index then return 0 end
+
+    --base temperature is the planet's heat stat
+    local out = stellua.planets[index].heat_stat
+
+    --if in a liquid then it tends towards that liquid's preferred temperature
+    local defs = minetest.registered_nodes[minetest.get_node(pos).name]
+    if defs and defs.temp then out = (out+defs.temp)*0.5 end
+
     --insert any other temperature modifying things here (nearby nodes perhaps?)
-    return stellua.planets[index].heat_stat
+
+    return out
 end
 
 --Make player temperature increase or decrease depending on the planet
@@ -44,7 +56,7 @@ minetest.register_globalstep(function(dtime)
         local playername = player:get_player_name()
         local meta = player:get_meta()
         local playertemp = meta:get_float("temp")
-        local temp = stellua.get_temperature(player:get_pos())
+        local temp = player:get_attach() and 300 or stellua.get_temperature(vector.round(player:get_pos()))
         if temp < 270 or temp > 330 then
             playertemp = math.min(math.max(playertemp+(temp-300)*0.005*dtime, -20), 20)
         else
