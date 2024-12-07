@@ -296,6 +296,27 @@ minetest.register_on_mods_loaded(function()
             end
         end
 
+        local lava_options = {}
+        for _ = 1, 10 do table.insert(lava_options, {0, 0}) end
+        for _, val in pairs(stellua.registered_waters) do
+            local name, defs = unpack(val)
+            if defs.generate_as_lava and planet.heat_stat*1.9 > defs.melt_point then
+                for _ = 1, (defs.weight or 1)*10 do
+                    table.insert(lava_options, {name, defs})
+                end
+            end
+        end
+
+        if #lava_options > 0 then
+            local lava, defs = unpack(lava_options[prand:next(1, #lava_options)])
+            if lava ~= 0 then
+                planet.lava_level = level+prand:next(-480, -450)
+                planet.mapgen_lava = lava.."_source"
+                planet.c_lava = minetest.get_content_id(planet.mapgen_lava)
+                planet.lava_name = defs.description
+            end
+        end
+
         local cutoff = planet.water_level or level-99
 
         --foliage

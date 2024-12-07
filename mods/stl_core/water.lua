@@ -218,7 +218,8 @@ register_water("stl_core:petroleum", {
     melt_point = 360, --an excuse to make it less common
     boil_point = 600,
     weight = 0.5,
-    temp = 400
+    temp = 400,
+    generate_as_lava = true
 })
 
 minetest.override_item("stl_core:petroleum_bucket", {groups={fuel=200}, fuel_replacement="stl_core:empty_bucket"})
@@ -250,7 +251,8 @@ register_water("stl_core:lava", {
     damage_per_second = 2,
     melt_point = 400, --lol
     boil_point = 1000, --also lol
-    temp = 500
+    temp = 500,
+    generate_as_lava = true
 })
 
 minetest.register_node("stl_core:basalt", {
@@ -286,7 +288,8 @@ register_water("stl_core:acid", {
     melt_point = 310,
     boil_point = 600,
     temp = 450,
-    weight = 0.3
+    weight = 0.3,
+    generate_as_lava = true
 })
 
 minetest.register_node("stl_core:sulfur", {

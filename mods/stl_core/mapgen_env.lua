@@ -36,6 +36,9 @@ local function logic(noise, cavern, planet, y)
         else return planet.c_water, 0 end
     end
 
+    --or the lava at the bottom of the world
+    if planet.lava_level and y <= planet.lava_level then return planet.c_lava, 0 end
+
     --if we've passed all those checks, it must be air
     return c_air, 0
 end
