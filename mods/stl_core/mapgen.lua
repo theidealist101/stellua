@@ -315,6 +315,28 @@ minetest.register_on_mods_loaded(function()
                 planet.c_lava = minetest.get_content_id(planet.mapgen_lava)
                 planet.lava_name = defs.description
             end
+            local sulfur, sdefs = unpack(lava_options[prand:next(1, #lava_options)])
+            if sulfur ~= 0 then
+                planet.sulfur = sdefs.frozen_node
+                local count_sulfur = prand:next(16, 32)
+                minetest.register_ore({
+                    ore_type = "blob",
+                    ore = planet.sulfur,
+                    wherein = {planet.mapgen_stone},
+                    clust_scarcity = prand:next(4, 12)^3,
+                    clust_num = count_sulfur,
+                    clust_size = math.ceil(math.sqrt(count_sulfur))*2,
+                    y_min = level-500,
+                    y_max = (planet.lava_level or level-480)+10,
+                    noise_params = {
+                        offset = 0,
+                        scale = 0.5,
+                        spread = {x=10, y=10, z=10},
+                        seed = prand:next(),
+                        octaves = 3
+                    }
+                })
+            end
         end
 
         local cutoff = planet.water_level or level-99
