@@ -27,6 +27,15 @@ minetest.register_on_joinplayer(function(player)
     })
 end)
 
+--Get temperature at position
+function stellua.get_temperature(pos)
+    if stellua.assemble_vehicle(vector.round(pos)) then return 300 end
+    local index = stellua.get_planet_index(pos.y)
+    if not index then return 0 end
+    --insert any other temperature modifying things here (nearby nodes perhaps?)
+    return stellua.planets[index].heat_stat
+end
+
 --Make player temperature increase or decrease depending on the planet
 local elapsed = {}
 
@@ -35,13 +44,11 @@ minetest.register_globalstep(function(dtime)
         local playername = player:get_player_name()
         local meta = player:get_meta()
         local playertemp = meta:get_float("temp")
-        local index = stellua.get_planet_index(player:get_pos().y)
-        local temp = index and stellua.planets[index].heat_stat or 300
-        --insert any other temperature modifying things here (nearby nodes perhaps? check whether in a base or rocket?)
+        local temp = stellua.get_temperature(player:get_pos())
         if temp < 270 or temp > 330 then
             playertemp = math.min(math.max(playertemp+(temp-300)*0.005*dtime, -20), 20)
         else
-            playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-0.15*dtime, 0)
+            playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-0.5*dtime, 0)
         end
         meta:set_float("temp", playertemp)
         player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
