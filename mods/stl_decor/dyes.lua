@@ -43,3 +43,11 @@ end
 
 stellua.register_dyed_node("stl_decor:stained_glass", "stl_decor:glass", "Stained Glass")
 stellua.register_dyed_node("stl_decor:stained_wood", "stl_core:wood", "Stained Wood")
+
+minetest.register_decoration({
+    deco_type = "simple",
+    place_on = {"group:filler"},
+    fill_ratio = 0.001,
+    decoration = "stl_decor:flower",
+    param2_max = 255
+})
