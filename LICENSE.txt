@@ -98,6 +98,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_core_bitumen.png <- default_coal_block.png
 - stl_core_acid_source_animated.png <- default_river_water_source_animated.png
 - stl_core_acid_flowing_animated.png <- default_river_water_flowing_animated.png
+- stl_decor_flower.png <- flowers_geranium.png
+- dye_white.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
