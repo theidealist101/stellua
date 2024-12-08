@@ -38,6 +38,11 @@ function stellua.register_dyed_node(name, node, desc)
         output = name,
         recipe = {node, "stl_decor:dye"}
     })
+    minetest.register_craft({
+        type = "shapeless",
+        output = name,
+        recipe = {name, "stl_decor:dye"}
+    })
     stellua.register_color_craft(name, "stl_decor:dye")
 end
 
