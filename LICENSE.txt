@@ -132,6 +132,9 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_core_leaves8.png <- default_leaves.png
 - mcl_blackstone_basalt_top.png
 - stl_core_sulfur.png <- mcl_amethyst_calcite_block.png
+- stl_decor_crate_top.png <- mcl_barrels_barrel_top.png
+- stl_decor_crate_bottom.png <- mcl_barrels_barrel_bottom.png
+- stl_decor_crate_side.png <- mcl_barrels_barrel_side.png
 
 All sounds not mentioned come directly from Minetest Game and are under CC BY-SA 3.0
 
