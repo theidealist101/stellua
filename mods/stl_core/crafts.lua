@@ -18,12 +18,12 @@ function stellua.register_color_craft(output, recipe)
     table.insert(stellua.registered_color_crafts, {output, recipe})
 end
 
-local function on_craft(itemstack, player, craft_grid)
+local function on_craft(itemstack, _, craft_grid)
     for _, val in ipairs(stellua.registered_color_crafts) do
         local output, recipe = unpack(val)
         if itemstack:get_name() == output then
             local col
-            for i, ing in ipairs(craft_grid) do
+            for _, ing in ipairs(craft_grid) do
                 if ing:get_name() == recipe then
                     local newcol = ing:get_meta():get_int("palette_index")
                     if not col then col = newcol elseif col ~= newcol then return ItemStack("") end

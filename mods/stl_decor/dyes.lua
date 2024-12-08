@@ -76,3 +76,31 @@ stellua.register_on_planet_generated(function (planet)
         })
     end
 end)
+
+minetest.register_craft({
+    type = "shapeless",
+    output = "stl_decor:dye 2",
+    recipe = {"stl_decor:dye", "stl_decor:dye"}
+})
+
+local function on_craft(itemstack, _, craft_grid)
+    if itemstack:get_name() == "stl_decor:dye" then
+        local x = {}
+        local y = 0
+        for _, ing in ipairs(craft_grid) do
+            if ing:get_name() == "stl_decor:dye" then
+                local c = ing:get_meta():get_int("palette_index")
+                table.insert(x, c%16)
+                y = y+math.floor(c/16)
+            elseif not ing:is_empty() then return end
+        end
+        if #x ~= 2 then return end
+        if x[1] > x[2] then x = {x[2], x[1]} end
+        if math.abs(16+x[1]-x[2]) < math.abs(x[1]-x[2]) then x[1] = x[1]+16 end
+        itemstack:get_meta():set_int("palette_index", math.round((x[1]+x[2])*0.5)%16+16*math.round(y*0.5))
+        return itemstack
+    end
+end
+
+minetest.register_craft_predict(on_craft)
+minetest.register_on_craft(on_craft)
