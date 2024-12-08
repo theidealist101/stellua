@@ -32,6 +32,12 @@ minetest.register_node("stl_vehicles:tank", {
     end,
     allow_metadata_inventory_put = function (_, _, _, itemstack)
         return minetest.get_item_group(itemstack:get_name(), "fuel") > 0 and 1000000 or 0
+    end,
+    after_dig_node = function (pos, node, meta, user)
+        local inv = user:get_inventory()
+        for _, itemstack in ipairs(meta.inventory.main) do
+            minetest.add_item(pos, inv:add_item("main", itemstack))
+        end
     end
 })
 
@@ -119,6 +125,12 @@ minetest.register_node("stl_vehicles:impulse_engine", {
     end,
     allow_metadata_inventory_put = function (_, _, _, itemstack)
         return minetest.get_item_group(itemstack:get_name(), "fissile") > 0 and 1000000 or 0
+    end,
+    after_dig_node = function (pos, node, meta, user)
+        local inv = user:get_inventory()
+        for _, itemstack in ipairs(meta.inventory.main) do
+            minetest.add_item(pos, inv:add_item("main", itemstack))
+        end
     end
 })
 
