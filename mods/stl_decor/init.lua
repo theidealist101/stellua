@@ -62,7 +62,7 @@ minetest.register_node("stl_decor:crate", {
     tiles = {"stl_decor_crate_top.png", "stl_decor_crate_bottom.png", "stl_decor_crate_side.png"},
     paramtype2 = "color",
     palette = "palette.png",
-    groups = {choppy=2, spaceship=1},
+    groups = {choppy=2},
     sounds = stellua.node_sound_wood_defaults(),
     on_construct = function (pos)
         local meta = minetest.get_meta(pos)
