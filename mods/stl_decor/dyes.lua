@@ -49,10 +49,17 @@ end
 stellua.register_dyed_node("stl_decor:stained_glass", "stl_decor:glass", "Stained Glass")
 stellua.register_dyed_node("stl_decor:stained_wood", "stl_core:wood", "Stained Wood")
 
-minetest.register_decoration({
-    deco_type = "simple",
-    place_on = {"group:filler"},
-    fill_ratio = 0.001,
-    decoration = "stl_decor:flower",
-    param2_max = 255
-})
+stellua.register_on_planet_generated(function (planet)
+    local rand = PcgRandom(planet.seed)
+    for _ = 1, math.ceil(planet.life_stat*2) do
+        minetest.register_decoration({
+            deco_type = "simple",
+            place_on = {"group:filler"},
+            fill_ratio = rand:next(1, 20)*0.0001,
+            y_min = planet.level-500,
+            y_max = planet.level+499,
+            decoration = "stl_decor:flower",
+            param2 = rand:next(0, 255)
+        })
+    end
+end)

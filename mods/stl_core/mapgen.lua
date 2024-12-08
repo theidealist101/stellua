@@ -67,6 +67,15 @@ local function get_nearby_param2(rand, param2, dist)
     return y*16+x
 end
 
+stellua.get_nearby_param2 = get_nearby_param2
+
+--Register functions to be run after generating a new planet
+stellua.registered_on_planets_generated = {}
+
+function stellua.register_on_planet_generated(func)
+    table.insert(stellua.registered_on_planets_generated, func)
+end
+
 --Register noise functions
 stellua.noises2d, stellua.noises3d = {}, {}
 
@@ -345,6 +354,7 @@ minetest.register_on_mods_loaded(function()
         if planet.life_stat > 0 then
             local fill_ratio = planet.life_stat*0.2+prand:next(1, 12)*0.005
             local param2_grass = get_nearby_param2(prand, planet.param2_filler)
+            planet.param2_grass = param2_grass
             planet.param2_trees = {}
             for _ = 1, math.floor(planet.life_stat*8-4) do
                 local treedef = stellua.make_treedef(prand)
@@ -505,6 +515,11 @@ minetest.register_on_mods_loaded(function()
             planet.water_level and "^(skybox_planet_water.png^[multiply:"..minetest.colorspec_to_colorstring(planet.mapgen_water_top and {r=224, g=224, b=255} or minetest.registered_nodes[planet.mapgen_water].post_effect_color).."^[mask:skybox_planet_continent"..prand:next(1, 4)..".png)" or "",
             "^(skybox_planet_atmosphere.png^[colorize:"..minetest.colorspec_to_colorstring({r=col.x, g=col.y, b=col.z})..":alpha^[opacity:"..(alpha*255)..")"
         })
+
+        --whatever other mods have registered to do
+        for _, func in ipairs(stellua.registered_on_planets_generated) do
+            func(planet)
+        end
     end
 
     --pass it all to the mapgen env
