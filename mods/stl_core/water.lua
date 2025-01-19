@@ -161,7 +161,8 @@ register_water("stl_core:water", {
 register_snow("stl_core:water_snow", {
     description = "Water Snow",
     tiles = "default_snow.png",
-    melt_point = 273
+    melt_point = 273,
+    temp = 240
 })
 
 register_water("stl_core:ammonia_water", {
@@ -180,6 +181,7 @@ register_snow("stl_core:ammonia_snow", {
     description = "Ammonia Snow",
     tiles = "stl_core_ammonia_snow.png",
     melt_point = 215,
+    temp = 160,
     weight = 2
 })
 
@@ -202,7 +204,8 @@ minetest.override_item("stl_core:methane_bucket", {groups={fuel=120}, fuel_repla
 register_snow("stl_core:benzene_snow", { --source: I saw it on wikipedia
     description = "Benzene Snow",
     tiles = "stl_core_benzene_snow.png",
-    melt_point = 250
+    melt_point = 250,
+    temp = 200
 })
 
 register_water("stl_core:petroleum", {
@@ -269,13 +272,15 @@ minetest.register_node("stl_core:basalt", {
 register_snow("stl_core:ash", {
     description = "Ash",
     tiles = "stl_core_ash.png",
-    start_point = 350
+    start_point = 350,
+    temp = 380
 })
 
 register_snow("stl_core:charred_earth", {
     description = "Charred Earth",
     tiles = "default_coal_block.png",
     start_point = 410,
+    temp = 450,
     groups = {fuel=20}
 })
 

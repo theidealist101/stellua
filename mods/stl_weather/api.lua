@@ -79,6 +79,18 @@ minetest.register_chatcommand("setweather", {
 
 local up = vector.new(0, 1, 0)
 
+--Helper function to make particles not go underwater
+function stellua.get_particle_exptime(pos)
+    local out = 2
+    if minetest.registered_nodes[minetest.get_node(pos).name].liquidtype == "source"
+    or not minetest.registered_nodes[minetest.get_node(pos).name].walkable
+    and minetest.registered_nodes[minetest.get_node(pos-up).name].liquidtype == "source" then
+        pos.y = math.max(pos.y, stellua.planets[stellua.get_planet_index(pos.y)].water_level)
+        out = 0.95
+    end
+    return out
+end
+
 --Precipitation
 for _, val in pairs(stellua.registered_waters) do
     local name, defs = unpack(val)
@@ -90,17 +102,10 @@ for _, val in pairs(stellua.registered_waters) do
             return (temp*3+defs.temp)*0.25-5
         end,
         particles = function (pos)
-            local exptime = 2
-            if minetest.registered_nodes[minetest.get_node(pos).name].liquidtype == "source"
-            or not minetest.registered_nodes[minetest.get_node(pos).name].walkable
-            and minetest.registered_nodes[minetest.get_node(pos-up).name].liquidtype == "source" then
-                pos.y = math.max(pos.y, stellua.planets[stellua.get_planet_index(pos.y)].water_level)
-                exptime = 0.95
-            end
             return {
                 amount = 100,
                 time = 1,
-                exptime = exptime,
+                exptime = stellua.get_particle_exptime(pos),
                 pos = {min=pos+vector.new(-20, 20, -20), max=pos+vector.new(20, 20, 20)},
                 vel = vector.new(0, -20, 0),
                 collisiondetection = true,
@@ -108,6 +113,33 @@ for _, val in pairs(stellua.registered_waters) do
                 object_collision = true,
                 vertical = true,
                 texture = "stl_weather_raindrop.png^[multiply:"..minetest.colorspec_to_colorstring(defs.tint),
+                size = 2
+            }
+        end
+    })
+end
+
+for _, val in pairs(stellua.registered_snows) do
+    local name, defs = unpack(val)
+    stellua.register_weather(name.."_fall", {
+        cond = function (planet)
+            return planet.snow_type1 == name or planet.snow_type2 == name
+        end,
+        temp = function (temp)
+            return (temp*3+defs.temp)*0.25-5
+        end,
+        particles = function (pos)
+            return {
+                amount = 25,
+                time = 1,
+                exptime = stellua.get_particle_exptime(pos)*4,
+                pos = {min=pos+vector.new(-20, 20, -20), max=pos+vector.new(20, 20, 20)},
+                vel = vector.new(0, -5, 0),
+                jitter = {min=vector.new(-2, -2, -2), max=vector.new(2, 2, 2)},
+                collisiondetection = true,
+                collision_removal = true,
+                object_collision = true,
+                texture = "stl_weather_snowflake.png^[mask:"..defs.tiles,
                 size = 2
             }
         end
