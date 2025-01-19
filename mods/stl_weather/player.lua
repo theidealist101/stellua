@@ -41,8 +41,8 @@ function stellua.get_temperature(pos)
 
     --if in weather then it gets modified by that
     local weather = stellua.get_weather(index)
-    if weather.name and weather.name ~= "" then
-        out = stellua.registered_weathers[weather.name].temp(out)
+    if weather and weather ~= "" then
+        out = stellua.registered_weathers[weather].temp(out)
     end
 
     --if in a liquid then it tends towards that liquid's preferred temperature

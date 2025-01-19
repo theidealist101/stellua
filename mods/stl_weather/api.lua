@@ -27,7 +27,7 @@ minetest.register_globalstep(function()
         local planet = stellua.get_planet_index(pos.y)
         if planet then
             --check if we need to start a new weather type
-            local w = weather[planet] or {start=0, intensity=0}
+            local w = weather[planet] or {start=0}
             weather[planet] = w
             w.start = w.start+1
             local time = minetest.get_gametime()
@@ -49,12 +49,13 @@ end)
 
 --Get current weather table for planet index
 function stellua.get_weather(planet)
-    return weather[planet] or {start=0, intensity=0}
+    weather[planet] = weather[planet] or {start=0}
+    return weather[planet].name, weather[planet].start
 end
 
 --Set current weather table for planet index (unrestricted)
 function stellua.set_weather(planet, w)
-    weather[planet] = w
+    weather[planet] = {start=minetest.get_gametime(), name=w}
 end
 
 --Command to set the weather
@@ -67,12 +68,12 @@ minetest.register_chatcommand("setweather", {
         local p = stellua.get_planet_index(player:get_pos().y)
         if not p then return false, "Not on a planet!" end
         if param == "" then
-            weather[p] = {start=minetest.get_gametime(), intensity=0}
+            weather[p] = {start=minetest.get_gametime()}
             return true, "Cleared weather"
         end
         local planet = stellua.planets[p]
         if table.indexof(planet.weathers, param) <= 0 then return false, "Weather type "..param.." does not exist on this planet!" end
-        weather[p] = {start=minetest.get_gametime(), intensity=0, name=param}
+        weather[p] = {start=minetest.get_gametime(), name=param}
         return true, "Set weather to "..param
     end
 })
