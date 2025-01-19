@@ -100,14 +100,14 @@ function stellua.get_particle_exptime(pos)
     return out
 end
 
---Get whether position is exposed to sky
-function stellua.exposed_to_sky(pos)
-    for pointed in minetest.raycast(pos, pos+up*200, false, true) do
+--Get whether position is exposed to sky in a certain direction, and if not, how far it is from the obstacle
+function stellua.exposed_to_sky(pos, dir)
+    for pointed in minetest.raycast(pos, pos+(dir or up)*200, false, true) do
         if pointed.type == "node" then
             local nodename = minetest.get_node(pointed.under).name
             local nodedefs = minetest.registered_nodes[nodename]
             if nodename == "ignore" then return true
-            elseif nodedefs.walkable or nodedefs.liquidtype == "source" then return false end
+            elseif nodedefs.walkable or nodedefs.liquidtype == "source" then return false, vector.distance(pos, pointed.under) end
         end
     end
     return true
