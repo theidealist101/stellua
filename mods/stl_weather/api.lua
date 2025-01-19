@@ -47,6 +47,16 @@ minetest.register_globalstep(function()
     storage:set_string("weather", minetest.serialize(weather))
 end)
 
+--Get current weather table for planet index
+function stellua.get_weather(planet)
+    return weather[planet] or {start=0, intensity=0}
+end
+
+--Set current weather table for planet index (unrestricted)
+function stellua.set_weather(planet, w)
+    weather[planet] = w
+end
+
 --Command to set the weather
 minetest.register_chatcommand("setweather", {
     params = "[<weather type>]",
@@ -76,8 +86,8 @@ for _, val in pairs(stellua.registered_waters) do
         cond = function (planet)
             return planet.mapgen_water == name.."_source"
         end,
-        temp = function (planet)
-            return (planet.heat_stat*3+defs.temp)*0.25-5
+        temp = function (temp)
+            return (temp*3+defs.temp)*0.25-5
         end,
         particles = function (pos)
             local exptime = 2
