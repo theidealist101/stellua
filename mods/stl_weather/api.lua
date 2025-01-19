@@ -146,3 +146,26 @@ for _, val in pairs(stellua.registered_snows) do
         end
     })
 end
+
+--Spores
+stellua.register_weather("stl_weather:spores", {
+    cond = function (planet)
+        return planet.life_stat >= 1.5
+    end,
+    temp = function (temp)
+        return temp+20
+    end,
+    particles = function (pos)
+        return {
+            amount = 300,
+            time = 1,
+            exptime = 1,
+            pos = {min=pos+vector.new(-20, -20, -20), max=pos+vector.new(20, 20, 20)},
+            vel = {min=vector.new(-2, -2, -2), max=vector.new(2, 2, 2)},
+            jitter = {min=vector.new(-2, -2, -2), max=vector.new(2, 2, 2)},
+            texture = "stl_weather_spore.png",
+            glow = 15,
+            size = 4
+        }
+    end
+})
