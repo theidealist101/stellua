@@ -34,7 +34,6 @@ minetest.register_globalstep(function()
             --check if we need to start a new weather type
             local w = weather[planet] or {start=0}
             weather[planet] = w
-            w.start = w.start+1
             local time = minetest.get_gametime()
             if time-w.start > 420 then
                 w.start = time
