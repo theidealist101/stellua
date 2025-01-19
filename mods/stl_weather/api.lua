@@ -38,7 +38,7 @@ minetest.register_globalstep(function()
             end
             --show effects for current weather type
             if w.name and w.name ~= "" then
-                local pdefs = stellua.registered_weathers[w.name].particles(pos)
+                local pdefs = stellua.registered_weathers[w.name].particles(vector.round(pos))
                 pdefs.playername = player:get_player_name()
                 minetest.add_particlespawner(pdefs)
             end
@@ -67,6 +67,8 @@ minetest.register_chatcommand("setweather", {
     end
 })
 
+local up = vector.new(0, 1, 0)
+
 --Precipitation
 for _, val in pairs(stellua.registered_waters) do
     local name, defs = unpack(val)
@@ -79,7 +81,9 @@ for _, val in pairs(stellua.registered_waters) do
         end,
         particles = function (pos)
             local exptime = 2
-            if minetest.registered_nodes[minetest.get_node(pos).name].liquidtype == "source" then
+            if minetest.registered_nodes[minetest.get_node(pos).name].liquidtype == "source"
+            or not minetest.registered_nodes[minetest.get_node(pos).name].walkable
+            and minetest.registered_nodes[minetest.get_node(pos-up).name].liquidtype == "source" then
                 pos.y = math.max(pos.y, stellua.planets[stellua.get_planet_index(pos.y)].water_level)
                 exptime = 0.95
             end
