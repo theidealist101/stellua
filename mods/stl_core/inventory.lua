@@ -1,3 +1,11 @@
+--Register extra fields to add to planet info
+stellua.registered_planet_infos = {}
+
+function stellua.register_planet_info(func)
+    table.insert(stellua.registered_planet_infos, func)
+end
+
+--Page giving a menu for planet info
 sfinv.register_page("stl_core:planets", {
     title = "Planets",
     get = function (self, player, context)
@@ -30,17 +38,10 @@ sfinv.register_page("stl_core:planets", {
                 planet.life_stat > 1 and "High biodiversity" or planet.life_stat > 0.5 and "Low biodiversity" or planet.life_stat > 0 and "Only low-lying grasses" or "No plant life",
                 (planet.depth_filler == 0 and "Surface" or planet.water_level and planet.depth_seabed == 0 and "Seabed" or "Underground").." "..planet.ore_common.." deposits"
             }
-            if planet.caves then
-                table.insert(info, "Cave systems")
-                if planet.lava_level then table.insert(info, "Underground "..string.lower(planet.lava_name).." pools") end
+            for _, val in pairs(stellua.registered_planet_infos) do
+                local t = val(planet)
+                if t then table.insert(info, t) end
             end
-            for _, resource in ipairs({planet.snow_type1 or "", planet.snow_type2 ~= planet.snow_type1 and planet.snow_type2 or "", planet.life_stat > 1.5 and "stl_core:moss1" or "", planet.quartz or "", planet.crystal or "", planet.sulfur or ""}) do
-                if resource ~= "" then table.insert(info, minetest.registered_nodes[resource].description) end
-            end
-            if planet.scale > 1.1 then table.insert(info, "WARNING: HIGH GRAVITY") end
-            if planet.atmo_stat < 0.5 then table.insert(info, "WARNING: LOW ATMOSPHERE") end
-            if planet.heat_stat < 200 then table.insert(info, "WARNING: VERY COLD") end
-            if planet.heat_stat > 400 then table.insert(info, "WARNING: VERY HOT") end
             out = {
                 "label[0,2;"..table.concat(info, "\n").."]",
                 "style_type[label;font_size=*3]",
@@ -99,3 +100,52 @@ sfinv.register_page("stl_core:planets", {
         end
     end
 })
+
+--Builtin planet info
+stellua.register_planet_info(function(planet)
+    if planet.caves then return "Cave systems" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.caves and planet.lava_level then return "Underground "..string.lower(planet.lava_name).." pools" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.snow_type1 then return minetest.registered_nodes[planet.snow_type1].description end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.snow_type2 ~= planet.snow_type1 and planet.snow_type2 then return minetest.registered_nodes[planet.snow_type2].description end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.life_stat > 1.5 then return "Moss" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.quartz then return minetest.registered_nodes[planet.quartz].description end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.crystal then return minetest.registered_nodes[planet.crystal].description end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.sulfur then return minetest.registered_nodes[planet.sulfur].description end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.scale > 1.1 then return "WARNING: HIGH GRAVITY" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.atmo_stat < 0.5 then return "WARNING: LOW ATMOSPHERE" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.heat_stat < 200 then return "WARNING: VERY COLD" end
+end)
+
+stellua.register_planet_info(function(planet)
+    if planet.heat_stat > 400 then return "WARNING: VERY HOT" end
+end)
