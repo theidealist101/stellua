@@ -141,7 +141,7 @@ stellua.register_planet_info(function(planet)
 end)
 
 stellua.register_planet_info(function(planet)
-    if planet.sulfur then return minetest.registered_nodes[planet.sulfur].description end
+    if planet.sulfur then return "Underground "..string.lower(minetest.registered_nodes[planet.sulfur].description) end
 end)
 
 stellua.register_planet_warning(function(planet)

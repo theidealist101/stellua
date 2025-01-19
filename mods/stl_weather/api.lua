@@ -8,6 +8,11 @@ stellua.registered_weathers = {}
 function stellua.register_weather(name, defs)
     defs.cond = defs.cond or function() return false end
     stellua.registered_weathers[name] = defs
+    if defs.description then
+        stellua.register_planet_info(function (planet)
+            if table.indexof(planet.weathers, name) > 0 then return defs.description end
+        end)
+    end
 end
 
 --Set up the types of weather for each planet
@@ -149,8 +154,9 @@ end
 
 --Spores
 stellua.register_weather("stl_weather:spores", {
+    description = "Spore clouds",
     cond = function (planet)
-        return planet.life_stat >= 1.5
+        return planet.life_stat >= 1.6
     end,
     temp = function (temp)
         return temp+20
