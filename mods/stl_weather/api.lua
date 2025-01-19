@@ -26,7 +26,7 @@ stellua.register_on_planet_generated(function (planet)
 end)
 
 --Do the particles and stuff each globalstep
-minetest.register_globalstep(function()
+minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
         local pos = player:get_pos()
         local planet = stellua.get_planet_index(pos.y)
@@ -42,9 +42,12 @@ minetest.register_globalstep(function()
             end
             --show effects for current weather type
             if w.name and w.name ~= "" then
-                local pdefs = stellua.registered_weathers[w.name].particles(vector.round(pos))
+                local wdefs = stellua.registered_weathers[w.name]
+                local pdefs = wdefs.particles(vector.round(pos))
                 pdefs.playername = player:get_player_name()
                 minetest.add_particlespawner(pdefs)
+                --apply weather effects to player, such as damaging them if exposed
+                if wdefs.on_step then wdefs.on_step(player, dtime) end
             end
         end
     end
@@ -65,7 +68,7 @@ end
 --Command to set the weather
 minetest.register_chatcommand("setweather", {
     params = "[<weather type>]",
-    description = "Sets the weather to anything, as long as it's possible here (use without argument to clear weather)",
+    description = "Sets the weather to anything, as long as it's possible here; use without argument to clear weather, prefix with # to bypass checks and spawn impossible weather types",
     privs = {settime=true},
     func = function (playername, param)
         local player = minetest.get_player_by_name(playername)
@@ -76,7 +79,8 @@ minetest.register_chatcommand("setweather", {
             return true, "Cleared weather"
         end
         local planet = stellua.planets[p]
-        if table.indexof(planet.weathers, param) <= 0 then return false, "Weather type "..param.." does not exist on this planet!" end
+        if string.sub(param, 1, 1) == "#" then param = string.sub(param, 2)
+        elseif table.indexof(planet.weathers, param) <= 0 then return false, "Weather type "..param.." does not exist on this planet!" end
         weather[p] = {start=minetest.get_gametime(), name=param}
         return true, "Set weather to "..param
     end
@@ -95,6 +99,21 @@ function stellua.get_particle_exptime(pos)
     end
     return out
 end
+
+--Get whether position is exposed to sky
+function stellua.exposed_to_sky(pos)
+    for pointed in minetest.raycast(pos, pos+up*200, false, true) do
+        if pointed.type == "node" then
+            local nodename = minetest.get_node(pointed.under).name
+            local nodedefs = minetest.registered_nodes[nodename]
+            if nodename == "ignore" then return true
+            elseif nodedefs.walkable or nodedefs.liquidtype == "source" then return false end
+        end
+    end
+    return true
+end
+
+local elapsed = {}
 
 --Precipitation
 for _, val in pairs(stellua.registered_waters) do
@@ -120,6 +139,16 @@ for _, val in pairs(stellua.registered_waters) do
                 texture = "stl_weather_raindrop.png^[multiply:"..minetest.colorspec_to_colorstring(defs.tint),
                 size = 2
             }
+        end,
+        on_step = function (player, dtime)
+            local playername = player:get_player_name()
+            if defs.damage_per_second and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
+                elapsed[playername] = (elapsed[playername] or 0)+dtime
+                while elapsed[playername] > 2 do
+                    elapsed[playername] = elapsed[playername]-2
+                    player:set_hp(player:get_hp()-defs.damage_per_second)
+                end
+            end
         end
     })
 end
