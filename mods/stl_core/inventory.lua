@@ -5,6 +5,12 @@ function stellua.register_planet_info(func)
     table.insert(stellua.registered_planet_infos, func)
 end
 
+stellua.registered_planet_warnings = {}
+
+function stellua.register_planet_warning(func)
+    table.insert(stellua.registered_planet_warnings, func)
+end
+
 --Page giving a menu for planet info
 sfinv.register_page("stl_core:planets", {
     title = "Planets",
@@ -41,6 +47,10 @@ sfinv.register_page("stl_core:planets", {
             for _, val in pairs(stellua.registered_planet_infos) do
                 local t = val(planet)
                 if t then table.insert(info, t) end
+            end
+            for _, val in pairs(stellua.registered_planet_warnings) do
+                local t = val(planet)
+                if t then table.insert(info, "WARNING: "..string.upper(t)) end
             end
             out = {
                 "label[0,2;"..table.concat(info, "\n").."]",
@@ -134,18 +144,18 @@ stellua.register_planet_info(function(planet)
     if planet.sulfur then return minetest.registered_nodes[planet.sulfur].description end
 end)
 
-stellua.register_planet_info(function(planet)
-    if planet.scale > 1.1 then return "WARNING: HIGH GRAVITY" end
+stellua.register_planet_warning(function(planet)
+    if planet.scale > 1.1 then return "HIGH GRAVITY" end
 end)
 
-stellua.register_planet_info(function(planet)
-    if planet.atmo_stat < 0.5 then return "WARNING: LOW ATMOSPHERE" end
+stellua.register_planet_warning(function(planet)
+    if planet.atmo_stat < 0.5 then return "LOW ATMOSPHERE" end
 end)
 
-stellua.register_planet_info(function(planet)
-    if planet.heat_stat < 200 then return "WARNING: VERY COLD" end
+stellua.register_planet_warning(function(planet)
+    if planet.heat_stat < 200 then return "VERY COLD" end
 end)
 
-stellua.register_planet_info(function(planet)
-    if planet.heat_stat > 400 then return "WARNING: VERY HOT" end
+stellua.register_planet_warning(function(planet)
+    if planet.heat_stat > 400 then return "VERY HOT" end
 end)
