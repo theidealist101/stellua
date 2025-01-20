@@ -15,6 +15,10 @@ function stellua.register_weather(name, defs)
     end
 end
 
+stellua.register_planet_warning(function (planet)
+    if planet.water_level and minetest.registered_nodes[planet.mapgen_water].damage_per_second > 0 then return "HAZARDOUS RAINFALL" end
+end)
+
 --Set up the types of weather for each planet
 stellua.register_on_planet_generated(function (planet)
     planet.weathers = {"", ""}
