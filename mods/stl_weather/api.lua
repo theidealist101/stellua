@@ -48,7 +48,7 @@ minetest.register_globalstep(function(dtime)
             if w.name and w.name ~= "" then
                 local wdefs = stellua.registered_weathers[w.name]
                 if wdefs.particles then
-                    local pdefs = wdefs.particles(vector.round(pos))
+                    local pdefs = wdefs.particles(vector.round(pos), w)
                     pdefs.playername = player:get_player_name()
                     minetest.add_particlespawner(pdefs)
                 end
@@ -98,13 +98,13 @@ minetest.register_chatcommand("setweather", {
 
 local up = vector.new(0, 1, 0)
 
---Helper function to make particles not go underwater
+--Helper functions to make particles not go underwater
 function stellua.get_particle_exptime(pos)
     local out = 2
     if minetest.registered_nodes[minetest.get_node(pos).name].liquidtype == "source"
     or not minetest.registered_nodes[minetest.get_node(pos).name].walkable
     and minetest.registered_nodes[minetest.get_node(pos-up).name].liquidtype == "source" then
-        pos.y = math.max(pos.y, stellua.planets[stellua.get_planet_index(pos.y)].water_level)
+        pos.y = math.max(pos.y, stellua.planets[stellua.get_planet_index(pos.y)].water_level or -31000)
         out = 0.95
     end
     return out
@@ -222,6 +222,21 @@ stellua.register_weather("stl_weather:wind", {
     end,
     temp = function (temp)
         return temp-20
+    end,
+    particles = function (pos, w)
+        local planet = stellua.planets[stellua.get_planet_index(pos.y)]
+        return {
+            amount = 200,
+            time = 1,
+            exptime = 1,
+            pos = {min=vector.new(pos.x-20, math.max(pos.y-20, planet.water_level or planet.level), pos.z-20), max=pos+vector.new(20, 20, 20)},
+            vel = vector.multiply(w.dir, 25),
+            collisiondetection = true,
+            collision_removal = true,
+            object_collision = true,
+            texture = "stl_weather_wind.png",
+            size = 4
+        }
     end,
     on_start = function (w)
         w.dir = vector.rotate_around_axis(vector.new(0, 0, 1), up, math.random(1, 100)*0.02*math.pi)
