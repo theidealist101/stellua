@@ -146,3 +146,11 @@ The following sounds are borrowed from Mineclonia and are under CC BY-SA 3.0:
 The following sounds are derived from sound effects from freesound.org and are under CC0:
 - 242740__marlonhj__engine.ogg
 - 534856__m_cel__jet-engine.ogg
+- 624267__iwaobisou__soft-hail-leaves-looped.ogg
+
+And from freesound.org under CC BY 3.0:
+- 212799__ayton__rain-loop-ontario.ogg
+
+And from freesound.org under CC BY 4.0:
+- 777331__matthiasflowers__101glcglitzer-teckyy-kachelhi_endonly.ogg
+- 651545__nsstudios__wind-draft-loop-3.ogg

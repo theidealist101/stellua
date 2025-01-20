@@ -25,9 +25,12 @@ stellua.register_on_planet_generated(function (planet)
     end
 end)
 
+local sound_handles = {}
+
 --Do the particles and stuff each globalstep
 minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
+        local playername = player:get_player_name()
         local pos = player:get_pos()
         local planet = stellua.get_planet_index(pos.y)
         if planet then
@@ -45,19 +48,33 @@ minetest.register_globalstep(function(dtime)
                 end
             end
             --show effects for current weather type
+            local wdefs
             if w.name and w.name ~= "" then
-                local wdefs = stellua.registered_weathers[w.name]
+                wdefs = stellua.registered_weathers[w.name]
                 if wdefs.particles then
                     local pdefs = wdefs.particles(vector.round(pos), w)
-                    pdefs.playername = player:get_player_name()
+                    pdefs.playername = playername
                     minetest.add_particlespawner(pdefs)
                 end
                 --apply weather effects to player, such as damaging them if exposed
                 if wdefs.on_step then wdefs.on_step(player, dtime, w) end
             end
+            --play the correct sound for the player
+            local sh = sound_handles[playername]
+            if sh and sh[1] ~= w.name then
+                minetest.sound_fade(sh[2], stellua.registered_weathers[sh[1]].sound.fade or 100, 0)
+                sound_handles[playername] = nil
+            end
+            if sound_handles[playername] == nil and w.name and w.name ~= "" and wdefs.sound then
+                sound_handles[playername] = {w.name, minetest.sound_play(wdefs.sound, {loop=true, to_player=playername})}
+            end
         end
     end
     storage:set_string("weather", minetest.serialize(weather))
+end)
+
+minetest.register_on_leaveplayer(function(player)
+    sound_handles[player:get_player_name()] = nil
 end)
 
 --Get current weather table for planet index
@@ -156,6 +173,7 @@ for _, val in pairs(stellua.registered_waters) do
                 size = 2
             }
         end,
+        sound = {name="212799__ayton__rain-loop-ontario", gain=0.5, fade=0.1},
         on_step = function (player, dtime)
             local playername = player:get_player_name()
             if defs.damage_per_second and not player:get_attach() and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
@@ -188,6 +206,7 @@ for _, val in pairs(stellua.registered_waters) do
                     size = 8
                 }
             end,
+            sound = {name="624267__iwaobisou__soft-hail-leaves-looped", gain=1, fade=0.2},
             on_step = function (player, dtime)
                 local playername = player:get_player_name()
                 if not player:get_attach() and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
@@ -257,7 +276,8 @@ stellua.register_weather("stl_weather:spores", {
             glow = 15,
             size = 4
         }
-    end
+    end,
+    sound = {name="777331__matthiasflowers__101glcglitzer-teckyy-kachelhi_endonly", gain=0.1, fade=0.02}
 })
 
 --Wind which blows you in a certain direction
@@ -276,14 +296,15 @@ stellua.register_weather("stl_weather:wind", {
             time = 1,
             exptime = 1,
             pos = {min=vector.new(pos.x-20, math.max(pos.y-20, planet.water_level or planet.level), pos.z-20), max=pos+vector.new(20, 20, 20)},
-            vel = vector.multiply(w.dir, 25),
+            vel = vector.multiply(w.dir, 40),
             collisiondetection = true,
             collision_removal = true,
             object_collision = true,
             texture = "stl_weather_wind.png",
-            size = 4
+            size = 8
         }
     end,
+    sound = {name="651545__nsstudios__wind-draft-loop-3", gain=1, fade=0.2},
     on_start = function (w)
         w.dir = vector.rotate_around_axis(vector.new(0, 0, 1), up, math.random(1, 100)*0.02*math.pi)
     end,
