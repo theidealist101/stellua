@@ -37,36 +37,42 @@ minetest.register_globalstep(function(dtime)
             --check if we need to start a new weather type
             local w = weather[planet] or {start=0}
             weather[planet] = w
+            local planetdefs = stellua.planets[planet]
             local time = minetest.get_gametime()
             if time-w.start > 420 then
                 w.start = time
-                local options = stellua.planets[planet].weathers
+                local options = planetdefs.weathers
                 w.name = options[math.random(#options)]
                 if w.name ~= "" then
                     local wdefs = stellua.registered_weathers[w.name]
                     if wdefs.on_start then wdefs.on_start(w) end
                 end
             end
-            --show effects for current weather type
-            local wdefs
-            if w.name and w.name ~= "" then
-                wdefs = stellua.registered_weathers[w.name]
-                if wdefs.particles then
-                    local pdefs = wdefs.particles(vector.round(pos), w)
-                    pdefs.playername = playername
-                    minetest.add_particlespawner(pdefs)
-                end
-                --apply weather effects to player, such as damaging them if exposed
-                if wdefs.on_step then wdefs.on_step(player, dtime, w) end
-            end
-            --play the correct sound for the player
+            --stop old weather sound if no longer valid
+            local on_surface = pos.y-(planetdefs.water_level or planetdefs.level) > -20 or stellua.exposed_to_sky(pos)
             local sh = sound_handles[playername]
-            if sh and sh[1] ~= w.name then
+            if sh and (sh[1] ~= w.name or not on_surface) then
                 minetest.sound_fade(sh[2], stellua.registered_weathers[sh[1]].sound.fade or 100, 0)
                 sound_handles[playername] = nil
             end
-            if sound_handles[playername] == nil and w.name and w.name ~= "" and wdefs.sound then
-                sound_handles[playername] = {w.name, minetest.sound_play(wdefs.sound, {loop=true, to_player=playername})}
+            --show effects for current weather type
+            if on_surface then
+                local wdefs
+                if w.name and w.name ~= "" then
+                    wdefs = stellua.registered_weathers[w.name]
+                    --particles for weather type
+                    if wdefs.particles then
+                        local pdefs = wdefs.particles(vector.round(pos), w)
+                        pdefs.playername = playername
+                        minetest.add_particlespawner(pdefs)
+                    end
+                    --apply weather effects to player, such as damaging them if exposed
+                    if wdefs.on_step then wdefs.on_step(player, dtime, w) end
+                    --play the correct sound for the player
+                    if sound_handles[playername] == nil and wdefs.sound then
+                        sound_handles[playername] = {w.name, minetest.sound_play(wdefs.sound, {loop=true, to_player=playername})}
+                    end
+                end
             end
         end
     end
