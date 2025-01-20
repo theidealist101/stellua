@@ -39,15 +39,21 @@ minetest.register_globalstep(function(dtime)
                 w.start = time
                 local options = stellua.planets[planet].weathers
                 w.name = options[math.random(#options)]
+                if w.name ~= "" then
+                    local wdefs = stellua.registered_weathers[w.name]
+                    if wdefs.on_start then wdefs.on_start(w) end
+                end
             end
             --show effects for current weather type
             if w.name and w.name ~= "" then
                 local wdefs = stellua.registered_weathers[w.name]
-                local pdefs = wdefs.particles(vector.round(pos))
-                pdefs.playername = player:get_player_name()
-                minetest.add_particlespawner(pdefs)
+                if wdefs.particles then
+                    local pdefs = wdefs.particles(vector.round(pos))
+                    pdefs.playername = player:get_player_name()
+                    minetest.add_particlespawner(pdefs)
+                end
                 --apply weather effects to player, such as damaging them if exposed
-                if wdefs.on_step then wdefs.on_step(player, dtime) end
+                if wdefs.on_step then wdefs.on_step(player, dtime, w) end
             end
         end
     end
@@ -63,6 +69,8 @@ end
 --Set current weather table for planet index (unrestricted)
 function stellua.set_weather(planet, w)
     weather[planet] = {start=minetest.get_gametime(), name=w}
+    local wdefs = stellua.registered_weathers[w.name]
+    if wdefs.on_start then wdefs.on_start(w) end
 end
 
 --Command to set the weather
@@ -82,6 +90,8 @@ minetest.register_chatcommand("setweather", {
         if string.sub(param, 1, 1) == "#" then param = string.sub(param, 2)
         elseif table.indexof(planet.weathers, param) <= 0 then return false, "Weather type "..param.." does not exist on this planet!" end
         weather[p] = {start=minetest.get_gametime(), name=param}
+        local wdefs = stellua.registered_weathers[param]
+        if wdefs.on_start then wdefs.on_start(weather[p]) end
         return true, "Set weather to "..param
     end
 })
@@ -201,5 +211,25 @@ stellua.register_weather("stl_weather:spores", {
             glow = 15,
             size = 4
         }
+    end
+})
+
+--Wind which blows you in a certain direction
+stellua.register_weather("stl_weather:wind", {
+    description = "Strong winds",
+    cond = function (planet)
+        return planet.life_stat < 1 and planet.atmo_stat >= 1 and PcgRandom(planet.seed*2):next(1, 3) == 1
+    end,
+    temp = function (temp)
+        return temp-20
+    end,
+    on_start = function (w)
+        w.dir = vector.rotate_around_axis(vector.new(0, 0, 1), up, math.random(1, 100)*0.02*math.pi)
+    end,
+    on_step = function (player, dtime, w)
+        local exposed, dist = stellua.exposed_to_sky(player:get_pos()+up*1.625, vector.subtract(vector.zero(), w.dir))
+        if exposed or dist >= 32 then
+            player:add_velocity(vector.multiply(w.dir, dtime*25))
+        end
     end
 })
