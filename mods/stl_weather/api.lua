@@ -223,8 +223,8 @@ for _, val in pairs(stellua.registered_snows) do
                 collisiondetection = true,
                 collision_removal = true,
                 object_collision = true,
-                texture = "stl_weather_snowflake.png^[mask:"..defs.tiles,
-                size = 2
+                texture = "stl_weather_"..(defs.actual_snow and "snowflake" or "ash")..".png^[mask:"..defs.tiles,
+                size = 4
             }
         end
     })

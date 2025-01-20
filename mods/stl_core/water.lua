@@ -161,6 +161,7 @@ register_water("stl_core:water", {
 register_snow("stl_core:water_snow", {
     description = "Water Snow",
     tiles = "default_snow.png",
+    actual_snow = true,
     melt_point = 273,
     temp = 240
 })
@@ -180,6 +181,7 @@ register_water("stl_core:ammonia_water", {
 register_snow("stl_core:ammonia_snow", {
     description = "Ammonia Snow",
     tiles = "stl_core_ammonia_snow.png",
+    actual_snow = true,
     melt_point = 215,
     temp = 160,
     weight = 2
