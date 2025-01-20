@@ -15,10 +15,6 @@ function stellua.register_weather(name, defs)
     end
 end
 
-stellua.register_planet_warning(function (planet)
-    if planet.water_level and minetest.registered_nodes[planet.mapgen_water].damage_per_second > 0 then return "HAZARDOUS RAINFALL" end
-end)
-
 --Set up the types of weather for each planet
 stellua.register_on_planet_generated(function (planet)
     planet.weathers = {"", ""}
@@ -134,7 +130,7 @@ for _, val in pairs(stellua.registered_waters) do
     local name, defs = unpack(val)
     stellua.register_weather(name.."_rain", {
         cond = function (planet)
-            return planet.mapgen_water == name.."_source"
+            return planet.mapgen_water == name.."_source" and not planet.mapgen_water_top
         end,
         temp = function (temp)
             return (temp*3+defs.temp)*0.25-5
@@ -165,7 +161,48 @@ for _, val in pairs(stellua.registered_waters) do
             end
         end
     })
+    if defs.frozen_tiles then
+        stellua.register_weather(name.."_hail", {
+            cond = function (planet)
+                return planet.mapgen_water_top == name.."_frozen" and PcgRandom(planet.seed*3):next(1, 3) > 1
+            end,
+            temp = function (temp)
+                return (temp*3+defs.temp)*0.25-10
+            end,
+            particles = function (pos)
+                return {
+                    amount = 100,
+                    time = 1,
+                    exptime = 5,
+                    pos = {min=pos+vector.new(-20, 20, -20), max=pos+vector.new(20, 20, 20)},
+                    vel = vector.new(0, -20, 0),
+                    collisiondetection = true,
+                    collision_removal = true, --ought to be off but Luanti has palpitations
+                    bounce = 0,
+                    texture = "stl_weather_hailstone.png^[mask:"..defs.frozen_tiles,
+                    size = 4
+                }
+            end,
+            on_step = function (player, dtime)
+                local playername = player:get_player_name()
+                if stellua.exposed_to_sky(player:get_pos()+up*1.625) then
+                    elapsed[playername] = (elapsed[playername] or 0)+dtime
+                    while elapsed[playername] > 2 do
+                        elapsed[playername] = elapsed[playername]-2
+                        player:set_hp(player:get_hp()-1)
+                    end
+                end
+            end
+        })
+        stellua.register_planet_warning(function (planet)
+            if table.indexof(planet.weathers, name.."_hail") > 0 then return "HAZARDOUS PRECIPITATION" end
+        end)
+    end
 end
+
+stellua.register_planet_warning(function (planet)
+    if planet.water_level and minetest.registered_nodes[planet.mapgen_water].damage_per_second > 0 then return "HAZARDOUS PRECIPITATION" end
+end)
 
 for _, val in pairs(stellua.registered_snows) do
     local name, defs = unpack(val)
@@ -174,14 +211,14 @@ for _, val in pairs(stellua.registered_snows) do
             return planet.snow_type1 == name or planet.snow_type2 == name
         end,
         temp = function (temp)
-            return (temp*3+defs.temp)*0.25-5
+            return (temp*3+defs.temp)*0.25-10
         end,
         particles = function (pos)
             return {
                 amount = 25,
                 time = 1,
                 exptime = stellua.get_particle_exptime(pos)*4,
-                pos = {min=pos+vector.new(-20, 20, -20), max=pos+vector.new(20, 20, 20)},
+                pos = {min=pos+vector.new(-30, 20, -30), max=pos+vector.new(30, 20, 30)},
                 vel = vector.new(0, -5, 0),
                 jitter = {min=vector.new(-2, -2, -2), max=vector.new(2, 2, 2)},
                 collisiondetection = true,
