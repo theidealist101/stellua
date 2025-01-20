@@ -152,7 +152,7 @@ for _, val in pairs(stellua.registered_waters) do
         end,
         on_step = function (player, dtime)
             local playername = player:get_player_name()
-            if defs.damage_per_second and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
+            if defs.damage_per_second and not player:get_attach() and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
                 elapsed[playername] = (elapsed[playername] or 0)+dtime
                 while elapsed[playername] > 2 do
                     elapsed[playername] = elapsed[playername]-2
@@ -185,7 +185,7 @@ for _, val in pairs(stellua.registered_waters) do
             end,
             on_step = function (player, dtime)
                 local playername = player:get_player_name()
-                if stellua.exposed_to_sky(player:get_pos()+up*1.625) then
+                if not player:get_attach() and stellua.exposed_to_sky(player:get_pos()+up*1.625) then
                     elapsed[playername] = (elapsed[playername] or 0)+dtime
                     while elapsed[playername] > 2 do
                         elapsed[playername] = elapsed[playername]-2
