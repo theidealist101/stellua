@@ -87,8 +87,14 @@ minetest.register_chatcommand("setweather", {
             return true, "Cleared weather"
         end
         local planet = stellua.planets[p]
-        if string.sub(param, 1, 1) == "#" then param = string.sub(param, 2)
-        elseif table.indexof(planet.weathers, param) <= 0 then return false, "Weather type "..param.." does not exist on this planet!" end
+        if string.sub(param, 1, 1) == "#" then
+            param = string.sub(param, 2)
+            if not stellua.registered_weathers[param] then
+                return false, "Weather type "..param.." does not exist!"
+            end
+        elseif table.indexof(planet.weathers, param) <= 0 then
+            return false, "Weather type "..param.." does not exist"..(stellua.registered_weathers[param] and " on this planet!" or "!")
+        end
         weather[p] = {start=minetest.get_gametime(), name=param}
         local wdefs = stellua.registered_weathers[param]
         if wdefs.on_start then wdefs.on_start(weather[p]) end
