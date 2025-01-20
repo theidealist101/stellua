@@ -171,16 +171,16 @@ for _, val in pairs(stellua.registered_waters) do
             end,
             particles = function (pos)
                 return {
-                    amount = 100,
+                    amount = 60,
                     time = 1,
-                    exptime = 5,
+                    exptime = 4,
                     pos = {min=pos+vector.new(-20, 20, -20), max=pos+vector.new(20, 20, 20)},
                     vel = vector.new(0, -20, 0),
                     collisiondetection = true,
-                    collision_removal = true, --ought to be off but Luanti has palpitations
+                    --collision_removal = true, --ought to be off but Luanti has palpitations
                     bounce = 0,
                     texture = "stl_weather_hailstone.png^[mask:"..defs.frozen_tiles,
-                    size = 4
+                    size = 8
                 }
             end,
             on_step = function (player, dtime)
