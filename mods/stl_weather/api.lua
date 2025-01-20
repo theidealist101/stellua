@@ -294,3 +294,74 @@ stellua.register_weather("stl_weather:wind", {
         end
     end
 })
+
+--Showers of tiny meteors on barren planets
+stellua.register_weather("stl_weather:meteors", {
+    description = "Frequent meteor showers",
+    cond = function (planet)
+        return planet.atmo_stat <= 0.2 or planet.atmo_stat < 0.5 and PcgRandom(planet.seed*4):next(1, 2) == 1
+    end,
+    temp = function (temp)
+        return temp
+    end,
+    on_step = function (player, dtime, w)
+        w.elapsed = (w.elapsed or 0)-dtime
+        if w.elapsed <= 0 and math.random(1, #minetest.get_connected_players()) == 1 then
+            minetest.add_entity(player:get_pos()+vector.new(math.random(-20, 20), 50, math.random(-20, 20)), "stl_weather:meteor")
+            w.elapsed = math.random(1, 5)*0.2
+        end
+    end
+})
+
+minetest.register_entity("stl_weather:meteor", {
+    initial_properties = {
+        visual = "sprite",
+        textures = {"blank.png"},
+        physical = true,
+        collisionbox = {-0.2, -0.2, -0.2, 0.2, 0.2, 0.2}
+    },
+    on_activate = function (self, staticdata)
+        if staticdata and staticdata ~= "" then
+            self.vel = minetest.deserialize(staticdata)
+        else
+            self.vel = vector.normalize(vector.random_direction()-vector.new(0, 2, 0))*20
+        end
+        self.object:set_velocity(self.vel)
+    end,
+    on_step = function (self, _, moveresult)
+        local pos = self.object:get_pos()
+        if #moveresult.collisions > 0 then
+            for obj in minetest.objects_inside_radius(pos, 1) do
+                obj:set_hp(obj:get_hp()-16)
+            end
+            self.object:remove()
+            minetest.add_particlespawner({
+                amount = 100,
+                time = 0.1,
+                exptime = {min=0.5, max=1},
+                pos = pos,
+                radius = {min=0, max=2, bias=1},
+                drag = 1,
+                texture = "stl_weather_ash.png^[mask:stl_core_ash.png",
+                size = 4,
+                attract = {
+                    kind = "point",
+                    origin = pos,
+                    strength = -2
+                }
+            })
+            return
+        end
+        minetest.add_particle({
+            expirationtime = 0.2,
+            pos = pos,
+            velocity = vector.zero(),
+            jitter = {min=vector.new(-2, -2, -2), max=vector.new(2, 2, 2)},
+            texture = "stl_weather_ash.png^[mask:stl_core_ash.png",
+            size = 4
+        })
+    end,
+    get_staticdata = function (self)
+        return minetest.serialize(self.vel)
+    end
+})
