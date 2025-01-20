@@ -371,6 +371,7 @@ minetest.register_entity("stl_weather:meteor", {
                     strength = -2
                 }
             })
+            minetest.sound_play({name="717995__johnny25225__heavywobblyimpacthit_06", gain=1, pitch=2^(math.random(-10, 0)*0.1)}, {pos=pos}, true)
             return
         end
         minetest.add_particle({
