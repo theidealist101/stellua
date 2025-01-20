@@ -277,7 +277,7 @@ stellua.register_weather("stl_weather:spores", {
             size = 4
         }
     end,
-    sound = {name="777331__matthiasflowers__101glcglitzer-teckyy-kachelhi_endonly", gain=0.1, fade=0.02}
+    sound = {name="777331__matthiasflowers__101glcglitzer-teckyy-kachelhi_endonly", gain=0.05, fade=0.01}
 })
 
 --Wind which blows you in a certain direction
