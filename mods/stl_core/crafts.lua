@@ -372,3 +372,28 @@ minetest.register_craft({
     output = "stl_core:titanium 4",
     recipe = {"stl_core:titanium_block"}
 })
+
+--Telescope which lets you zoom
+minetest.register_craftitem("stl_core:telescope", {
+    description = "Telescope",
+    inventory_image = "mcl_spyglass.png",
+    stack_max = 1
+})
+
+minetest.register_craft({
+    output = "stl_core:telescope",
+    recipe = {
+        {"group:quartz"},
+        {"stl_core:copper"},
+        {"stl_core:copper"}
+    }
+})
+
+minetest.register_globalstep(function()
+    for _, player in ipairs(minetest.get_connected_players()) do
+        if not minetest.is_creative_enabled(player) then
+            local new = player:get_wielded_item():get_name() == "stl_core:telescope" and 10 or 0
+            if player:get_properties().zoom_fov ~= new then player:set_properties({zoom_fov=new}) end
+        end
+    end
+end)
