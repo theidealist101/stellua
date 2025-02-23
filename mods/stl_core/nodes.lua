@@ -261,7 +261,7 @@ for i, val in ipairs(quartz_types) do
         sunlight_propagates = true,
         light_source = 4,
         color = val[2],
-        groups = {cracky=1},
+        groups = {cracky=1, quartz=1},
         sounds = stellua.node_sound_glass_defaults()
     })
 end

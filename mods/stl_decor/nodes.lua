@@ -47,12 +47,10 @@ minetest.register_node("stl_decor:glass", {
     sounds = stellua.node_sound_glass_defaults()
 })
 
-for i = 1, 5 do
-    minetest.register_craft({
-        output = "stl_decor:glass",
-        recipe = {
-            {"stl_core:quartz"..i, "stl_core:quartz"..i},
-            {"stl_core:quartz"..i, "stl_core:quartz"..i}
-        }
-    })
-end
+minetest.register_craft({
+    output = "stl_decor:glass",
+    recipe = {
+        {"group:quartz", "group:quartz"},
+        {"group:quartz", "group:quartz"}
+    }
+})
