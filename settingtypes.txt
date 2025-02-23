@@ -1,0 +1,5 @@
+#Unit to use for temperature in menus
+stl_heat_unit (Temperature unit) enum Celsius Kelvin,Celsius,Fahrenheit,Rankine,Reaumur,Nguh
+
+#Unit to use for pressure in menus
+stl_atmo_unit (Pressure unit) enum atmospheres atmospheres,kilopascals,psi,bars

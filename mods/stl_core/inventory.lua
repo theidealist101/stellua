@@ -11,6 +11,20 @@ function stellua.register_planet_warning(func)
     table.insert(stellua.registered_planet_warnings, func)
 end
 
+--Settings for planet info units
+local units = {
+    Kelvin = {"K", 1, 0},
+    Celsius = {"°C", 1, -273.15},
+    Fahrenheit = {"°F", 1.8, -459.67},
+    Rankine = {"°R", 1.8, 0},
+    Reaumur = {"°Ré", 0.8, -218.52},
+    Nguh = {"°Ŋ", 1/13, -273.15/13},
+    atmospheres = {"atm", 1},
+    kilopascals = {"kPa", 101.325},
+    psi = {"psi", 14.69595},
+    bars = {"bar", 1.01325}
+}
+
 --Page giving a menu for planet info
 sfinv.register_page("stl_core:planets", {
     title = "Planets",
@@ -37,9 +51,11 @@ sfinv.register_page("stl_core:planets", {
             table.insert(out, "button[0,-0.15;1,1;back;<]")
         else
             local planet = stellua.planets[context.planet]
+            local heat_unit = units[minetest.settings:get("stl_heat_unit") or "Celsius"]
+            local atmo_unit = units[minetest.settings:get("stl_atmo_unit") or "atmospheres"]
             local info = {
-                "Average Temperature: "..planet.heat_stat.."K",
-                "Atmospheric Pressure: "..planet.atmo_stat.."atm",
+                "Average Temperature: "..(0.01*math.round(100*(heat_unit[2]*planet.heat_stat+heat_unit[3]))).." "..heat_unit[1],
+                "Atmospheric Pressure: "..(0.01*math.round(100*atmo_unit[2]*planet.atmo_stat)).." "..atmo_unit[1],
                 planet.water_level and string.sub(planet.water_name, 1, 1)..string.lower(string.sub(planet.water_name, 2)).." oceans" or "No surface liquid",
                 planet.life_stat > 1 and "High biodiversity" or planet.life_stat > 0.5 and "Low biodiversity" or planet.life_stat > 0 and "Only low-lying grasses" or "No plant life",
                 (planet.depth_filler == 0 and "Surface" or planet.water_level and planet.depth_seabed == 0 and "Seabed" or "Underground").." "..planet.ore_common.." deposits"
