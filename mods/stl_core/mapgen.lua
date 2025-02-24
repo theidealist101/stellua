@@ -228,7 +228,7 @@ minetest.register_on_mods_loaded(function()
         if planet.atmo_stat < 0.5 then
             planet.craters = true
             planet.crater_chance = math.ceil((0.5-planet.atmo_stat)*2)^2
-            planet.crater_max_radius = math.ceil((0.5-planet.atmo_stat)*90)+5
+            planet.crater_max_radius = math.ceil((0.5-planet.atmo_stat)*40)+5
         end
 
         local water_options = {}
