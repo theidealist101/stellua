@@ -6,10 +6,17 @@ local get_planet_index = stellua.get_planet_index
 local c_air = minetest.CONTENT_AIR
 local c_void = minetest.get_content_id("stl_core:void")
 local c_bedrock = minetest.get_content_id("stl_core:bedrock")
+local hypot = math.hypot
 
 --The actual mapgen
-local function logic(noise, cavern, planet, y)
+local function logic(noise, cavern, planet, y, crater_info)
     local height = y-noise
+
+    --if in a crater, modify the height accordingly
+    if crater_info then
+        local d, r = crater_info[1], crater_info[2]
+        height = height-2*r*(1.5*d/r-0.8)^8+2
+    end
 
     --if in a cavern, we can skip the terrain
     if not cavern then
@@ -101,6 +108,13 @@ minetest.register_on_generated(function(_, minp, maxp)
             local cave_noise1 = noises3d["cave1_"..index]
             local cave_noise2 = noises3d["cave2_"..index]
 
+            local rand = PcgRandom(planet.seed*maxp.x+maxp.z)
+            local crater_r, crater_pos
+            if planet.craters and rand:next(1, 1000000)*0.000001 <= planet.crater_chance then
+                crater_r = rand:next(5, planet.crater_max_radius)
+                crater_pos = {x=rand:next(minp.x+crater_r, maxp.x-crater_r), z=rand:next(minp.z+crater_r, maxp.z-crater_r)}
+            end
+
             for z = minp.z, maxp.z do
                 local vi = area:index(minp.x, y, z)
                 local ni = sl*(z-minp.z)+1
@@ -119,7 +133,12 @@ minetest.register_on_generated(function(_, minp, maxp)
                             planet_val = min(planet_val, river_noise.data[ni]^2+planet.river_level)
                         end
                         local cave_val = cave_noise1 and abs(cave_noise1.data[ni3d])+abs(cave_noise2.data[ni3d]) < 1
-                        data[vi], param2_data[vi] = logic(planet_val, cave_val, planet, y)
+                        local crater_info
+                        if crater_r then
+                            local d = hypot(x-crater_pos.x, z-crater_pos.z)
+                            if d <= crater_r then crater_info = {d, crater_r} end
+                        end
+                        data[vi], param2_data[vi] = logic(planet_val, cave_val, planet, y, crater_info)
                     end
 
                     --increment stuff

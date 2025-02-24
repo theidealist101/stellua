@@ -225,6 +225,12 @@ minetest.register_on_mods_loaded(function()
         planet.param2_filler = get_nearby_param2(prand, planet.param2_stone)
         planet.depth_filler = math.ceil(planet.life_stat+prand:next(-50, 100)*0.01)
 
+        if planet.atmo_stat < 0.5 then
+            planet.craters = true
+            planet.crater_chance = math.ceil((0.5-planet.atmo_stat)*2)^2
+            planet.crater_max_radius = math.ceil((0.5-planet.atmo_stat)*90)+5
+        end
+
         local water_options = {}
         for _ = 1, 10 do table.insert(water_options, {0, 0}) end
         for _, val in pairs(stellua.registered_waters) do
