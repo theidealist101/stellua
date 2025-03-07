@@ -4,6 +4,7 @@ Stellua uses the following API mods by other authors, licensed as specified in t
 
 - Sfinv by rubenwardy
 - LVAE by GreenXenith
+- Player API by celeron55 et al.
 
 All code in other mods is under GNU GPL v3.0:
 
