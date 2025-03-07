@@ -2,6 +2,8 @@
 local heat_huds, cold_huds = {}, {}
 
 minetest.register_on_joinplayer(function(player)
+    local immortal = player:get_armor_groups().immortal
+    if immortal and immortal > 0 then return end
     local playername = player:get_player_name()
     heat_huds[playername] = player:hud_add({
         type = "statbar",
@@ -59,6 +61,7 @@ local elapsed = {}
 
 minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
+        local immortal = player:get_armor_groups().immortal
         local playername = player:get_player_name()
         local meta = player:get_meta()
         local playertemp = meta:get_float("temp")
@@ -69,15 +72,17 @@ minetest.register_globalstep(function(dtime)
             playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-dtime*0.5, 0)
         end
         meta:set_float("temp", playertemp)
-        player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
-        player:hud_change(cold_huds[playername], "item", playertemp < 0 and 20 or 0)
-        player:hud_change(heat_huds[playername], "number", playertemp > 0 and playertemp or 0)
-        player:hud_change(cold_huds[playername], "number", playertemp < 0 and -playertemp or 0)
-        if playertemp <= -20 or playertemp >= 20 then
-            elapsed[playername] = (elapsed[playername] or 0)+dtime
-            while elapsed[playername] > 2 do
-                elapsed[playername] = elapsed[playername]-2
-                player:set_hp(player:get_hp()-1)
+        if not immortal or immortal == 0 then
+            player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
+            player:hud_change(cold_huds[playername], "item", playertemp < 0 and 20 or 0)
+            player:hud_change(heat_huds[playername], "number", playertemp > 0 and playertemp or 0)
+            player:hud_change(cold_huds[playername], "number", playertemp < 0 and -playertemp or 0)
+            if playertemp <= -20 or playertemp >= 20 then
+                elapsed[playername] = (elapsed[playername] or 0)+dtime
+                while elapsed[playername] > 2 do
+                    elapsed[playername] = elapsed[playername]-2
+                    player:set_hp(player:get_hp()-1)
+                end
             end
         end
     end
