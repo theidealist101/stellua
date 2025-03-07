@@ -275,7 +275,7 @@ minetest.register_globalstep(function(dtime)
                 if launch then
                     local fuel, ignite = stellua.get_fuel(vehicle:get_luaentity().tanks, dtime*power)
                     if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
-                    if fuel then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
+                    if fuel or minetest.is_creative_enabled(player:get_player_name()) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
                 end
                 if not launch then
                     if control.jump then vel.y = vel.y+ACCEL

@@ -96,7 +96,7 @@ sfinv.register_page("stl_core:planets", {
             local star, spos = stellua.get_slot_info(slot)
             local cost = planet.star == star and vector.distance(planet.pos, spos) or 16*vector.distance(stellua.stars[planet.star].pos, stellua.stars[star].pos)
             local fuel, ignite = stellua.get_fuel(ent.tanks, math.round(cost+0.3), "fissile")
-            if not fuel then
+            if not fuel and not minetest.is_creative_enabled(player:get_player_name()) then
                 stellua.land_vehicle(ent, stellua.get_slot_pos(slot))
                 minetest.chat_send_player(player:get_player_name(), "Not enough impulse fuel!")
                 if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {pos=stellua.get_slot_pos(slot)}, true) end
