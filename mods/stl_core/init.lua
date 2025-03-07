@@ -70,6 +70,10 @@ minetest.register_on_respawnplayer(function(player)
     return true
 end)
 
+minetest.register_on_joinplayer(function(player)
+    player:set_properties({use_texture_alpha=true})
+end)
+
 --A few useful commands
 minetest.register_chatcommand("planet", {
     params = "",
