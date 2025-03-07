@@ -315,7 +315,7 @@ minetest.register_abm({
     interval = 10,
     chance = 10,
     nodenames = {"group:water_source"},
-    neighbours = {"air"},
+    neighbors = {"air"},
     action = function (pos)
         local index = stellua.get_planet_index(pos.y)
         if not index then minetest.remove_node(pos) return end
