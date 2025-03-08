@@ -227,6 +227,9 @@ minetest.register_abm({
     end
 })
 
+local up = vector.new(0, 1, 0)
+local forward = vector.new(0, 0, 1)
+
 --Vigils, little turret things that shoot at the player when in line of sight
 minetest.register_entity("stl_precursor:vigil", {
     initial_properties = {
@@ -238,5 +241,53 @@ minetest.register_entity("stl_precursor:vigil", {
         physical = true,
         collisionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5},
         selectionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5}
-    }
+    },
+    on_step = function (self, dtime)
+        self.cooldown = (self.cooldown or 0)-dtime
+        if self.cooldown > 1 then return end
+        local pos = self.object:get_pos()
+        for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 16)) do
+            if obj:is_player() then
+                local dest = obj:get_pos()+up
+                local dir = vector.dir_to_rotation(dest-pos)
+                self.object:set_rotation(dir)
+                local raycast = minetest.raycast(pos, dest, false, true, {nodes={["group:precursor"]=true}})
+                if not raycast:next() and self.cooldown <= 0 then
+                    minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir))
+                    minetest.after(0.1, function() minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir)) end)
+                    minetest.after(0.2, function() minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir)) end)
+                    self.cooldown = 2
+                end
+                return
+            end
+        end
+    end
+})
+
+minetest.register_entity("stl_precursor:vigil_bullet", {
+    initial_properties = {
+        visual = "mesh",
+        visual_size = {x=10, y=10},
+        mesh = "stl_precursor_vigil_bullet.gltf",
+        textures = {"stl_precursor_vigil_bullet.png"},
+        glow = 14,
+        physical = true,
+        pointable = false,
+        static_save = false,
+        collisionbox = {-0.125, -0.125, -0.125, 0.125, 0.125, 0.125}
+    },
+    on_activate = function (self, staticdata)
+        if not staticdata or staticdata == "" then self.object:remove() return end
+        local rot = minetest.deserialize(staticdata)
+        self.object:set_rotation(rot)
+        self.object:set_velocity(vector.rotate(forward, rot)*16)
+    end,
+    on_step = function (self, _, moveresult)
+        if moveresult.collisions and #moveresult.collisions > 0 then
+            for _, col in ipairs(moveresult.collisions) do
+                if col.type == "object" then col.object:set_hp(col.object:get_hp()-1, {type="punch", object=self.object}) end
+            end
+            self.object:remove()
+        end
+    end
 })
