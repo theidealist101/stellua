@@ -78,7 +78,7 @@ minetest.register_tool("stl_precursor:magic_stick", {
     pointabilities = {nodes={["group:precursor"]=true}},
     tool_capabilities = {
         full_punch_interval = 1,
-        groupcaps = {precursor={uses=0, times={0.5}}}
+        groupcaps = {precursor={uses=0, times={0.1}}}
     }
 })
 
