@@ -5,7 +5,8 @@ minetest.register_node("stl_core:void", {
     paramtype = "light",
     sunlight_propagates = true,
     walkable = false,
-    pointable = false
+    pointable = false,
+    groups = {not_in_creative_inventory=1}
 })
 
 --Bedrock, used for bottom of worlds
@@ -101,6 +102,7 @@ for i = 1, 8 do
         drawtype = "plantlike",
         tiles = {"stl_core_grass"..i..".png"},
         use_texture_alpha = "clip",
+        inventory_image = "stl_core_grass"..i..".png",
         palette = "palette_foliage.png",
         paramtype = "light",
         sunlight_propagates = true,
