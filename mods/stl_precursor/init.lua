@@ -179,7 +179,11 @@ minetest.register_node("stl_precursor:antenna", {
     light_source = 14,
     groups = {precursor=1},
     pointabilities = {nodes={["group:precursor"]=true}},
-    sounds = stellua.node_sound_stone_defaults()
+    sounds = stellua.node_sound_stone_defaults(),
+    on_timer = function (pos)
+        minetest.sound_play({name="114279__plingativator__basinhum"}, {pos=pos, max_hear_distance=128})
+        minetest.get_node_timer(pos):start(20)
+    end
 })
 
 --Tool for breaking precursor buildings
@@ -206,3 +210,14 @@ minetest.register_decoration({
 
 --Generate precursor structures on generation
 minetest.register_mapgen_script(modpath.."mapgen_env.lua")
+
+--Make sure generated nodes are running smoothly
+minetest.register_abm({
+    nodenames = {"stl_precursor:antenna"},
+    interval = 10,
+    chance = 1,
+    action = function (pos)
+        local timer = minetest.get_node_timer(pos)
+        if not timer:is_started() then timer:start(0) end
+    end
+})
