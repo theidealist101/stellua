@@ -9,7 +9,8 @@ local buildings = {
     {"precursor_assembler_room", -2},
     {"precursor_watchtower", -2},
     {"precursor_stilts_room", -2},
-    {"precursor_basement", -10}
+    {"precursor_basement", -10},
+    {"precursor_antenna", -1}
 }
 
 local decors = {
@@ -20,7 +21,8 @@ local decors = {
     {"precursor_small_sign", 0},
     {"precursor_small_plinth", -1},
     {"precursor_small_assembler_room", -1},
-    {"precursor_small_fake_basement", -1}
+    {"precursor_small_fake_basement", -1},
+    {"precursor_small_antenna", -1}
 }
 
 local spots = {

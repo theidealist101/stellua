@@ -146,6 +146,42 @@ minetest.register_node("stl_precursor:air", {
     sunlight_propagates = true
 })
 
+minetest.register_node("stl_precursor:antenna_stem", {
+    description = "Precursor Antenna Stem",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
+    selection_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
+    tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_antenna_stem.png"},
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:antenna_ring", {
+    description = "Precursor Antenna Ring",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={{-1, -0.375, -1, 1, 0.375, 1}, {-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}}},
+    selection_box = {type="fixed", fixed={{-1, -0.375, -1, 1, 0.375, 1}, {-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}}},
+    tiles = {"stl_precursor_antenna_ring_top.png", "stl_precursor_antenna_ring_top.png", "stl_precursor_antenna_ring.png"},
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:antenna", {
+    description = "Precursor Antenna",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.75, -0.75, -0.75, 0.75, 0.75, 0.75}},
+    selection_box = {type="fixed", fixed={-0.75, -0.75, -0.75, 0.75, 0.75, 0.75}},
+    tiles = {"stl_precursor_antenna.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    light_source = 14,
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
 --Tool for breaking precursor buildings
 minetest.register_tool("stl_precursor:magic_stick", {
     description = "Magic Stick",
