@@ -96,6 +96,7 @@ minetest.register_node("stl_vehicles:assembler", {
         ]], true))
     end,
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 

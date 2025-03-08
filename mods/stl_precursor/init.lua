@@ -5,6 +5,7 @@ minetest.register_node("stl_precursor:wall", {
     description = "Precursor Wall",
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_wall.png"},
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -12,6 +13,7 @@ minetest.register_node("stl_precursor:wall_stripe", {
     description = "Precursor Wall with Stripe",
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_wall_stripe.png"},
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -19,6 +21,7 @@ minetest.register_node("stl_precursor:column", {
     description = "Precursor Column",
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_column.png"},
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -26,6 +29,7 @@ minetest.register_node("stl_precursor:column_stripe", {
     description = "Precursor Column with Stripe",
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_column_stripe.png"},
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -40,6 +44,7 @@ minetest.register_node("stl_precursor:floor", {
     walkable = false,
     pointable = false,
     groups = {attached_node=1, precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -49,6 +54,7 @@ minetest.register_node("stl_precursor:podium", {
     node_box = {type="fixed", fixed={-0.75, -0.5, -0.75, 0.75, 0.5, 0.75}},
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_wall_stripe.png"},
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -67,6 +73,7 @@ minetest.register_node("stl_precursor:gate", {
     walkable = false,
     pointable = false,
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
@@ -84,6 +91,7 @@ minetest.register_node("stl_precursor:beam", {
     pointable = false,
     climbable = true,
     groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
 
