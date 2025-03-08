@@ -14,15 +14,18 @@ local buildings = {
 
 local decors = {
     {"precursor_small_shelter", -1},
-    {"precursor_small_turret", 0},
     {"precursor_small_totem", 0},
     {"precursor_small_altar", -1},
     {"precursor_small_lamp", 0},
     {"precursor_small_sign", 0},
-    {"precursor_small_node", 0},
     {"precursor_small_plinth", -1},
     {"precursor_small_assembler_room", -1},
     {"precursor_small_fake_basement", -1}
+}
+
+local spots = {
+    {"precursor_small_turret", 0},
+    {"precursor_small_node", 0},
 }
 
 local data = {}
@@ -56,6 +59,22 @@ local function place_schem(schem, vm, area, pos, offset, miny, maxy)
         true,
         "place_center_x, place_center_z"
     )
+end
+
+local function choose_pos(poses, rand, origin_x, origin_z)
+    local pos
+    for _ = 1, 8 do
+        pos = {rand:next(origin_x-16, origin_x+16), rand:next(origin_z-16, origin_z+16)}
+        local valid = true
+        for _, p in ipairs(poses) do
+            if hypot(pos[1]-p[1], pos[2]-p[2]) < 8 then valid = false end
+        end
+        if valid then
+            table.insert(poses, pos)
+            break
+        end
+    end
+    return pos
 end
 
 minetest.register_on_generated(function(_, minp, maxp)
@@ -99,20 +118,20 @@ minetest.register_on_generated(function(_, minp, maxp)
     --spawn small buildings around it
     local poses = {{origin_x, origin_z}}
     for _ = 1, rand:next(3, 5) do
-        local pos
-        for _ = 1, 8 do
-            pos = {rand:next(origin_x-16, origin_x+16), rand:next(origin_z-16, origin_z+16)}
-            local valid = true
-            for _, p in ipairs(poses) do
-                if hypot(pos[1]-p[1], pos[2]-p[2]) < 8 then valid = false end
-            end
-            if valid then
-                table.insert(poses, pos)
-                break
-            end
+        local pos = choose_pos(poses, rand, origin_x, origin_z)
+        if pos then
+            local decor = decors[rand:next(1, #decors)]
+            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
         end
-        local decor = decors[rand:next(1, #decors)]
-        place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
+    end
+
+    --spawn turrets and light nodes, which are much more common and fill in the gaps
+    for _ = 1, rand:next(5, 8) do
+        local pos = choose_pos(poses, rand, origin_x, origin_z)
+        if pos then
+            local decor = spots[rand:next(1, #spots)]
+            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
+        end
     end
 
     vm:calc_lighting()
