@@ -147,6 +147,7 @@ minetest.register_tool("stl_precursor:magic_stick", {
     }
 })
 
+--[[
 --Some rooms to spawn around randomly on the surface
 minetest.register_decoration({
     deco_type = "schematic",
@@ -155,4 +156,7 @@ minetest.register_decoration({
     place_offset_y = -2,
     schematic = modpath.."schems/precursor_assembler_room.mts",
     flags = "place_center_x, place_center_z, force_placement, all_floors"
-})
+})]]
+
+--Generate precursor structures on generation
+minetest.register_mapgen_script(modpath.."mapgen_env.lua")
