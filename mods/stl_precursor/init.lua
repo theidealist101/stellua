@@ -51,7 +51,7 @@ minetest.register_node("stl_precursor:floor", {
 minetest.register_node("stl_precursor:podium", {
     description = "Precursor Podium",
     drawtype = "nodebox",
-    node_box = {type="fixed", fixed={-0.75, -0.5, -0.75, 0.75, 0.5, 0.75}},
+    node_box = {type="fixed", fixed={-0.75, -0.501, -0.75, 0.75, 0.501, 0.75}},
     tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_wall_stripe.png"},
     groups = {precursor=1},
     pointabilities = {nodes={["group:precursor"]=true}},
@@ -109,7 +109,12 @@ minetest.register_node("stl_precursor:vigil_spawner", {
     drawtype = "airlike",
     groups = {precursor=1, not_in_creative_inventory=1},
     pointabilities = {nodes={["group:precursor"]=true}},
-    sounds = stellua.node_sound_stone_defaults()
+    sounds = stellua.node_sound_stone_defaults(),
+    on_timer = function (pos)
+        if minetest.add_entity(pos, "stl_precursor:vigil") then
+            minetest.remove_node(pos)
+        end
+    end
 })
 
 minetest.register_node("stl_precursor:lamp", {
@@ -213,11 +218,25 @@ minetest.register_mapgen_script(modpath.."mapgen_env.lua")
 
 --Make sure generated nodes are running smoothly
 minetest.register_abm({
-    nodenames = {"stl_precursor:antenna"},
-    interval = 10,
+    nodenames = {"stl_precursor:antenna", "stl_precursor:vigil_spawner"},
+    interval = 2,
     chance = 1,
     action = function (pos)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then timer:start(0) end
     end
+})
+
+--Vigils, little turret things that shoot at the player when in line of sight
+minetest.register_entity("stl_precursor:vigil", {
+    initial_properties = {
+        visual = "mesh",
+        visual_size = {x=15, y=15},
+        mesh = "stl_precursor_vigil.gltf",
+        textures = {"stl_precursor_vigil.png"},
+        glow = 5,
+        physical = true,
+        collisionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5},
+        selectionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5}
+    }
 })
