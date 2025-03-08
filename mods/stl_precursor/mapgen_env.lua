@@ -12,11 +12,25 @@ local buildings = {
     {"precursor_basement", -10}
 }
 
+local decors = {
+    {"precursor_small_shelter", -1},
+    {"precursor_small_turret", 0},
+    {"precursor_small_totem", 0},
+    {"precursor_small_altar", -1},
+    {"precursor_small_lamp", 0},
+    {"precursor_small_sign", 0},
+    {"precursor_small_node", 0},
+    {"precursor_small_plinth", -1},
+    {"precursor_small_assembler_room", -1},
+    {"precursor_small_fake_basement", -1}
+}
+
 local data = {}
-local min, round = math.min, math.round
+local min, round, hypot = math.min, math.round, math.hypot
 
 local function place_schem(schem, vm, area, pos, offset, miny, maxy)
     pos.y = round(pos.y)
+    vm:get_data(data)
 
     --move up and down till we find a valid position
     local vi = area:index(pos.x, pos.y, pos.z)
@@ -48,8 +62,6 @@ minetest.register_on_generated(function(_, minp, maxp)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local area = VoxelArea:new{MinEdge=emin, MaxEdge=emax}
 
-    vm:get_data(data)
-
     local sl = maxp.y-minp.y+1
     local size2d = {x=sl, y=sl, z=1}
     local minp2d = {x=minp.x, y=minp.z}
@@ -60,10 +72,10 @@ minetest.register_on_generated(function(_, minp, maxp)
 
     --see if there ought to be a precursor outpost in this column of chunks
     local rand = PcgRandom(planet.seed*maxp.x+maxp.z)
-    if rand:next(1, 1) ~= 1 then return end
+    if rand:next(1, 2) ~= 1 then return end
 
     --pick the position of the origin
-    local origin_x, origin_z = rand:next(minp.x, maxp.x), rand:next(minp.z, maxp.z)
+    local origin_x, origin_z = rand:next(minp.x+16, maxp.x-16), rand:next(minp.z+16, maxp.z-16)
     local ni = sl*(origin_z-minp.z)+(origin_x-minp.z)+1
 
     --get the height of whichever planet we're on and see if we're at the surface
@@ -78,9 +90,30 @@ minetest.register_on_generated(function(_, minp, maxp)
     if planet.water_level then
         planet_val = min(planet_val, river_noise.data[ni]^2+planet.river_level)
     end
-    if minp.y > planet_val or maxp.y < planet_val or planet_val < planet.water_level then return end
+    if minp.y > planet_val or maxp.y < planet_val or planet.water_level and planet_val < planet.water_level then return end
 
     --spawn a large building directly on the origin
     local building = buildings[rand:next(1, #buildings)]
-    place_schem(building[1], vm, area, vector.new(origin_x, planet_val, origin_z), building[2], minp.y, maxp.y)
+    if not place_schem(building[1], vm, area, vector.new(origin_x, planet_val, origin_z), building[2], minp.y, maxp.y) then return end
+
+    --spawn small buildings around it
+    local poses = {{origin_x, origin_z}}
+    for _ = 1, rand:next(3, 5) do
+        local pos
+        for _ = 1, 8 do
+            pos = {rand:next(origin_x-16, origin_x+16), rand:next(origin_z-16, origin_z+16)}
+            local valid = true
+            for _, p in ipairs(poses) do
+                if hypot(pos[1]-p[1], pos[2]-p[2]) < 8 then valid = false end
+            end
+            if valid then
+                table.insert(poses, pos)
+                break
+            end
+        end
+        local decor = decors[rand:next(1, #decors)]
+        place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
+    end
+
+    vm:calc_lighting()
 end)
