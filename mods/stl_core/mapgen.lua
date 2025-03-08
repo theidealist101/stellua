@@ -373,7 +373,7 @@ minetest.register_on_mods_loaded(function()
                     treedef = treedef,
                     noise_params = {
                         offset = 0,
-                        scale = prand:next(1, 50)*0.001*fill_ratio,
+                        scale = prand:next(1, 50)*0.0005*fill_ratio,
                         spread = {x=s, y=s, z=s},
                         seed = prand:next(),
                         octaves = 3,
