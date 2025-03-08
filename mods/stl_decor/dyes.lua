@@ -68,7 +68,7 @@ stellua.register_on_planet_generated(function (planet)
     for _ = 1, math.ceil(planet.life_stat*2) do
         minetest.register_decoration({
             deco_type = "simple",
-            place_on = {"group:filler"},
+            place_on = {planet.mapgen_filler},
             fill_ratio = rand:next(1, 20)*0.0001,
             y_min = planet.level-500,
             y_max = planet.level+499,

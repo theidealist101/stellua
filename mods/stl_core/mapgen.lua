@@ -406,7 +406,7 @@ minetest.register_on_mods_loaded(function()
             if planet.life_stat > 0.5 then
                 minetest.register_decoration({
                     deco_type = "simple",
-                    place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
+                    place_on = {planet.mapgen_stone, planet.mapgen_filler},
                     fill_ratio = fill_ratio*prand:next(1, 10)*0.1,
                     y_min = cutoff,
                     y_max = level+499,
@@ -427,17 +427,15 @@ minetest.register_on_mods_loaded(function()
             end
         end
 
-        if planet.life_stat < 1 then
-            minetest.register_decoration({
-                deco_type = "simple",
-                place_on = {planet.mapgen_stone, planet.mapgen_filler, planet.mapgen_beach},
-                fill_ratio = (1-planet.life_stat)*0.01+prand:next(1, 20)*0.002,
-                y_min = level-500,
-                y_max = level+499,
-                decoration = "stl_core:gravel",
-                param2 = get_nearby_param2(prand, planet.param2_stone-32, 2)
-            })
-        end
+        minetest.register_decoration({
+            deco_type = "simple",
+            place_on = {planet.mapgen_stone, planet.mapgen_beach, planet.life_stat < 1 and planet.mapgen_filler or nil},
+            fill_ratio = (2-planet.life_stat)*0.005+prand:next(1, 20)*0.002,
+            y_min = level-500,
+            y_max = level+499,
+            decoration = "stl_core:gravel",
+            param2 = get_nearby_param2(prand, planet.param2_stone-32, 2)
+        })
 
         --snow
         local snow_options = {{0, 0}}
