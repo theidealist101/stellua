@@ -31,7 +31,7 @@ local spots = {
 local data = {}
 local min, round, hypot = math.min, math.round, math.hypot
 
-local function place_schem(schem, vm, area, pos, offset, miny, maxy)
+local function place_schem(schem, vm, area, pos, offset, miny, maxy, water_level)
     pos.y = round(pos.y)
     vm:get_data(data)
 
@@ -46,7 +46,7 @@ local function place_schem(schem, vm, area, pos, offset, miny, maxy)
         pos.y = pos.y-1
         vi = area:index(pos.x, pos.y, pos.z)
     end
-    if pos.y < miny then return false end
+    if pos.y < miny or water_level and pos.y < water_level then return false end
 
     --actually place it
     pos.y = pos.y+offset+1
@@ -121,7 +121,7 @@ minetest.register_on_generated(function(_, minp, maxp)
         local pos = choose_pos(poses, rand, origin_x, origin_z)
         if pos then
             local decor = decors[rand:next(1, #decors)]
-            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
+            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y, planet.water_level)
         end
     end
 
@@ -130,7 +130,7 @@ minetest.register_on_generated(function(_, minp, maxp)
         local pos = choose_pos(poses, rand, origin_x, origin_z)
         if pos then
             local decor = spots[rand:next(1, #spots)]
-            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y)
+            place_schem(decor[1], vm, area, vector.new(pos[1], planet_val, pos[2]), decor[2], minp.y, maxp.y, planet.water_level)
         end
     end
 
