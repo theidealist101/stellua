@@ -95,6 +95,7 @@ minetest.register_node("stl_vehicles:assembler", {
             listring[current_player;craft]
         ]], true))
     end,
+    groups = {precursor=1},
     sounds = stellua.node_sound_stone_defaults()
 })
 
