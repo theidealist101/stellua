@@ -181,7 +181,7 @@ minetest.register_node("stl_precursor:antenna", {
     pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults(),
     on_timer = function (pos)
-        minetest.sound_play({name="114279__plingativator__basinhum"}, {pos=pos, max_hear_distance=128})
+        --will put sound play here but haven't found a good one yet
         minetest.get_node_timer(pos):start(20)
     end
 })
