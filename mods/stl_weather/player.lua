@@ -1,5 +1,5 @@
 --HUDs for temperature
-local heat_huds, cold_huds = {}, {}
+local heat_huds, cold_huds, vignette_huds, vignette_ops = {}, {}, {}, {}
 
 minetest.register_on_joinplayer(function(player)
     local immortal = player:get_armor_groups().immortal
@@ -64,6 +64,8 @@ minetest.register_globalstep(function(dtime)
         local immortal = player:get_armor_groups().immortal
         local playername = player:get_player_name()
         local meta = player:get_meta()
+
+        --change player temperature
         local playertemp = meta:get_float("temp")
         local temp = player:get_attach() and 300 or stellua.get_temperature(vector.round(player:get_pos()))
         if temp < 270 or temp > 330 then
@@ -72,23 +74,60 @@ minetest.register_globalstep(function(dtime)
             playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-dtime*0.5, 0)
         end
         meta:set_float("temp", playertemp)
+
         if not immortal or immortal == 0 then
+            --update HUDs
             player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
             player:hud_change(cold_huds[playername], "item", playertemp < 0 and 20 or 0)
             player:hud_change(heat_huds[playername], "number", playertemp > 0 and playertemp or 0)
             player:hud_change(cold_huds[playername], "number", playertemp < 0 and -playertemp or 0)
+            local op = meta:get_int("vignette_op")
+            local vtype = meta:get_string("vignette_type")
+
+            --deal damage if too hot or cold
             if playertemp <= -20 or playertemp >= 20 then
                 elapsed[playername] = (elapsed[playername] or 0)+dtime
                 while elapsed[playername] > 2 do
                     elapsed[playername] = elapsed[playername]-2
                     player:set_hp(player:get_hp()-1)
                 end
+
+                --show this with a vignette
+                if not vignette_huds[playername] then
+                    vtype = playertemp < 0 and "cold" or "heat"
+                    vignette_huds[playername] = player:hud_add({
+                        type = "image",
+                        scale = {x=-100, y=-100},
+                        text = "stl_weather_vignette_"..vtype..".png^[opacity:0",
+                        position = {x=0.5, y=0.5},
+                        alignment = {x=0, y=0},
+                        offset = {x=0, y=0},
+                        z_index = -400
+                    })
+                    op = 0
+                elseif op < 255 then
+                    op = op+1
+                    player:hud_change(vignette_huds[playername], "text", "stl_weather_vignette_"..vtype..".png^[opacity:"..op)
+                end
+            elseif op > 0 then
+                op = op-1
+                player:hud_change(vignette_huds[playername], "text", "stl_weather_vignette_"..vtype..".png^[opacity:"..op)
+            elseif vignette_huds[playername] then
+                player:hud_remove(vignette_huds[playername])
+                vignette_huds[playername] = nil
             end
+            meta:set_int("vignette_op", op)
+            meta:set_string("vignette_type", vtype)
+        elseif vignette_huds[playername] then
+            player:hud_remove(vignette_huds[playername])
+            vignette_huds[playername] = nil
         end
     end
 end)
 
 --Restore temperature upon respawning
 minetest.register_on_respawnplayer(function(player)
-    player:get_meta():set_float("temp", 0)
+    local meta = player:get_meta()
+    meta:set_float("temp", 0)
+    meta:set_int("vignette_op", 0)
 end)
