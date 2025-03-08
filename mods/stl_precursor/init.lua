@@ -82,14 +82,55 @@ minetest.register_node("stl_precursor:beam", {
     drawtype = "nodebox",
     node_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
     selection_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
-    tiles = {"blank.png", "blank.png", "stl_precursor_beam.png^[opacity:128"},
+    tiles = {"blank.png", "blank.png", {name="stl_precursor_beam.png^[opacity:128", backface_culling=false}},
     use_texture_alpha = "blend",
     paramtype = "light",
     sunlight_propagates = true,
+    --post_effect_color = "#ffa5a580",
     light_source = 5,
     walkable = false,
     pointable = false,
     climbable = true,
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:column_sigil", {
+    description = "Precursor Column with Sigil",
+    tiles = {"stl_precursor_wall_top.png", "stl_precursor_wall_top.png", "stl_precursor_column_sigil.png"},
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:vigil_spawner", {
+    description = "Vigil Spawner",
+    drawtype = "airlike",
+    groups = {precursor=1, not_in_creative_inventory=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:lamp", {
+    description = "Precursor Lamp",
+    tiles = {"stl_precursor_lamp.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
+    light_source = 14,
+    groups = {precursor=1},
+    pointabilities = {nodes={["group:precursor"]=true}},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:post", {
+    description = "Precursor Post",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.125, -0.5, -0.125, 0.125, 0.5, 0.125}},
+    selection_box = {type="fixed", fixed={-0.125, -0.5, -0.125, 0.125, 0.5, 0.125}},
+    tiles = {"stl_precursor_column.png"},
+    paramtype = "light",
+    sunlight_propagates = true,
     groups = {precursor=1},
     pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
