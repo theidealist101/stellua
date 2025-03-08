@@ -13,9 +13,11 @@ local buildings = {
 }
 
 local data = {}
-local min = math.min
+local min, round = math.min, math.round
 
 local function place_schem(schem, vm, area, pos, offset, miny, maxy)
+    pos.y = round(pos.y)
+
     --move up and down till we find a valid position
     local vi = area:index(pos.x, pos.y, pos.z)
     while pos.y <= maxy and get_item_group(get_name_from_content_id(data[vi]), "ground") > 0 do
