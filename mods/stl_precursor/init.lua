@@ -136,6 +136,16 @@ minetest.register_node("stl_precursor:post", {
     sounds = stellua.node_sound_stone_defaults()
 })
 
+minetest.register_node("stl_precursor:air", {
+    description = "Precursor Air",
+    drawtype = "airlike",
+    walkable = false,
+    pointable = false,
+    buildable_to = true,
+    paramtype = "light",
+    sunlight_propagates = true
+})
+
 --Tool for breaking precursor buildings
 minetest.register_tool("stl_precursor:magic_stick", {
     description = "Magic Stick",

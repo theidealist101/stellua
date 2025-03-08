@@ -55,7 +55,7 @@ local function place_schem(schem, vm, area, pos, offset, miny, maxy, water_level
         pos,
         modpath.."schems/"..schem..".mts",
         "random",
-        {},
+        {air="stl_precursor:air"}, --so terrain doesn't replace it
         true,
         "place_center_x, place_center_z"
     )
