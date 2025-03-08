@@ -66,7 +66,23 @@ minetest.register_node("stl_precursor:gate", {
     paramtype2 = "4dir",
     walkable = false,
     pointable = false,
-    buildable_to = true,
+    groups = {precursor=1},
+    sounds = stellua.node_sound_stone_defaults()
+})
+
+minetest.register_node("stl_precursor:beam", {
+    description = "Precursor Beam",
+    drawtype = "nodebox",
+    node_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
+    selection_box = {type="fixed", fixed={-0.375, -0.5, -0.375, 0.375, 0.5, 0.375}},
+    tiles = {"blank.png", "blank.png", "stl_precursor_beam.png^[opacity:128"},
+    use_texture_alpha = "blend",
+    paramtype = "light",
+    sunlight_propagates = true,
+    light_source = 5,
+    walkable = false,
+    pointable = false,
+    climbable = true,
     groups = {precursor=1},
     sounds = stellua.node_sound_stone_defaults()
 })
