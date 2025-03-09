@@ -257,7 +257,7 @@ minetest.register_entity("stl_precursor:vigil", {
                     minetest.after(0.1, function() minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir)) end)
                     minetest.after(0.2, function() minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir)) end)
                     self.cooldown = 2
-                    minetest.sound_play({name="631467__adhdreaming__destroy-all-humans"}, {pos=pos})
+                    minetest.sound_play({name="631467__adhdreaming__destroy-all-humans", pitch=math.random()+1}, {pos=pos})
                 end
                 return
             end
