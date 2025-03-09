@@ -286,7 +286,7 @@ minetest.register_entity("stl_precursor:vigil_bullet", {
     on_step = function (self, _, moveresult)
         if moveresult.collisions and #moveresult.collisions > 0 then
             for _, col in ipairs(moveresult.collisions) do
-                if col.type == "object" then col.object:set_hp(col.object:get_hp()-1, {type="punch", object=self.object}) end
+                if col.type == "object" and col.object:is_player() then col.object:set_hp(col.object:get_hp()-1, {type="punch", object=self.object}) end
             end
             self.object:remove()
         end
