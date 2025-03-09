@@ -242,6 +242,9 @@ minetest.register_entity("stl_precursor:vigil", {
         collisionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5},
         selectionbox = {-0.5, -0.25, -0.5, 0.5, 0.25, 0.5}
     },
+    on_activate = function (self)
+        self.object:set_rotation(vector.new(0, math.random()*2*math.pi, 0))
+    end,
     on_step = function (self, dtime)
         self.cooldown = (self.cooldown or 0)-dtime
         if self.cooldown > 1 then return end
