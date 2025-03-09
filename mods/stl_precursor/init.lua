@@ -72,7 +72,7 @@ minetest.register_node("stl_precursor:gate", {
     paramtype2 = "4dir",
     walkable = false,
     pointable = false,
-    groups = {precursor=1},
+    groups = {precursor=1, blocks_vigils=1},
     pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
 })
@@ -251,7 +251,7 @@ minetest.register_entity("stl_precursor:vigil", {
                 local dest = obj:get_pos()+up
                 local dir = vector.dir_to_rotation(dest-pos)
                 self.object:set_rotation(dir)
-                local raycast = minetest.raycast(pos, dest, false, true, {nodes={["group:precursor"]=true}})
+                local raycast = minetest.raycast(pos, dest, false, true, {nodes={["group:blocks_vigils"]=true}})
                 if not raycast:next() and self.cooldown <= 0 then
                     minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir))
                     minetest.after(0.1, function() minetest.add_entity(pos+vector.normalize(dest-pos)*0.5, "stl_precursor:vigil_bullet", minetest.serialize(dir)) end)
