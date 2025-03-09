@@ -202,16 +202,12 @@ minetest.register_tool("stl_precursor:magic_stick", {
     }
 })
 
---[[
---Some rooms to spawn around randomly on the surface
-minetest.register_decoration({
-    deco_type = "schematic",
-    place_on = "group:ground",
-    fill_ratio = 0.0000005,
-    place_offset_y = -2,
-    schematic = modpath.."schems/precursor_assembler_room.mts",
-    flags = "place_center_x, place_center_z, force_placement, all_floors"
-})]]
+--Unobtanium, used for high power energy stuff
+minetest.register_craftitem("stl_precursor:unobtanium", {
+    description = "Unobtanium",
+    inventory_image = "stl_precursor_unobtanium.png",
+    groups = {fissile=2}
+})
 
 --Generate precursor structures on generation
 minetest.register_mapgen_script(modpath.."mapgen_env.lua")
@@ -233,6 +229,7 @@ local forward = vector.new(0, 0, 1)
 --Vigils, little turret things that shoot at the player when in line of sight
 minetest.register_entity("stl_precursor:vigil", {
     initial_properties = {
+        hp_max = 30,
         visual = "mesh",
         visual_size = {x=15, y=15},
         mesh = "stl_precursor_vigil.gltf",
@@ -265,6 +262,10 @@ minetest.register_entity("stl_precursor:vigil", {
                 return
             end
         end
+    end,
+    on_death = function (self, killer)
+        local drop = ItemStack("stl_precursor:unobtanium "..math.random(1, 2))
+        minetest.add_item(self.object:get_pos(), killer:get_inventory():add_item("main", drop))
     end
 })
 
