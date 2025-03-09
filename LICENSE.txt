@@ -29,7 +29,7 @@ All three are under the MIT license, as are any modifications made to them direc
 
 === MEDIA ===
 
-All textures not mentioned below are copyright (C) 2024 theidealist, and are under CC BY-SA 4.0
+All textures not mentioned below are copyright (C) 2024-5 theidealist, and are under CC BY-SA 4.0
 https://creativecommons.org/licenses/by-sa/4.0/
 
 The following textures are borrowed from Minetest Game and are under CC BY-SA 3.0:
@@ -142,6 +142,9 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_decor_crate_side.png <- mcl_barrels_barrel_side.png
 
 All sounds not mentioned come directly from Minetest Game and are under CC BY-SA 3.0
+
+The following sounds are copyright (C) 2025 theidealist, and are under CC BY-SA 4.0:
+- ominous_hum.ogg
 
 The following sounds are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - default_water_footstep.(1-3).ogg

@@ -70,7 +70,7 @@ minetest.register_globalstep(function(dtime)
                     if wdefs.on_step then wdefs.on_step(player, dtime, w) end
                     --play the correct sound for the player
                     if sound_handles[playername] == nil and wdefs.sound then
-                        sound_handles[playername] = {w.name, minetest.sound_play(wdefs.sound, {loop=true, to_player=playername})}
+                        sound_handles[playername] = {w.name, minetest.sound_play(wdefs.sound, {gain=0.5, loop=true, to_player=playername})}
                     end
                 end
             end

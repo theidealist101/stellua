@@ -186,7 +186,7 @@ minetest.register_node("stl_precursor:antenna", {
     pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults(),
     on_timer = function (pos)
-        --will put sound play here but haven't found a good one yet
+        minetest.sound_play({name="ominous_hum"}, {gain=2, pos=pos, max_hear_distance=128})
         minetest.get_node_timer(pos):start(20)
     end
 })
@@ -218,8 +218,7 @@ minetest.register_lbm({
     nodenames = {"stl_precursor:antenna", "stl_precursor:vigil_spawner"},
     run_at_every_load = true,
     action = function (pos)
-        local timer = minetest.get_node_timer(pos)
-        if not timer:is_started() then timer:start(0) end
+        minetest.get_node_timer(pos):start(0)
     end
 })
 
