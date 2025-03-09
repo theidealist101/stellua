@@ -103,6 +103,13 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - stl_decor_flower.png <- flowers_geranium.png
 - dye_white.png
 - character.png
+- default_tool_woodpick.png
+- default_tool_woodaxe.png
+- default_tool_woodshovel.png
+- default_tool_woodsword.png
+- default_tool_stonesword.png
+- default_tool_bronzesword.png
+- default_tool_steelsword.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 

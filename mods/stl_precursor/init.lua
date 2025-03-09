@@ -228,7 +228,7 @@ local forward = vector.new(0, 0, 1)
 --Vigils, little turret things that shoot at the player when in line of sight
 minetest.register_entity("stl_precursor:vigil", {
     initial_properties = {
-        hp_max = 30,
+        hp_max = 10,
         visual = "mesh",
         visual_size = {x=15, y=15},
         mesh = "stl_precursor_vigil.gltf",
@@ -240,6 +240,7 @@ minetest.register_entity("stl_precursor:vigil", {
     },
     on_activate = function (self)
         self.object:set_rotation(vector.new(0, math.random()*2*math.pi, 0))
+        self.object:set_armor_groups({slicey=100, zappy=50})
     end,
     on_step = function (self, dtime)
         self.cooldown = (self.cooldown or 0)-dtime
@@ -289,7 +290,7 @@ minetest.register_entity("stl_precursor:vigil_bullet", {
     on_step = function (self, _, moveresult)
         if moveresult.collisions and #moveresult.collisions > 0 then
             for _, col in ipairs(moveresult.collisions) do
-                if col.type == "object" and col.object:is_player() then col.object:set_hp(col.object:get_hp()-1, {type="punch", object=self.object}) end
+                if col.type == "object" then col.object:punch(self.object, 1, {full_punch_interval=1, damage_groups={zappy=1}}) end
             end
             self.object:remove()
         end

@@ -72,6 +72,7 @@ end)
 
 minetest.register_on_joinplayer(function(player)
     player:set_properties({use_texture_alpha=true})
+    player:set_armor_groups({thumpy=100, slicey=100, zappy=100})
 end)
 
 --A few useful commands
