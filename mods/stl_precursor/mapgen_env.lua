@@ -93,7 +93,7 @@ minetest.register_on_generated(function(_, minp, maxp)
 
     --see if there ought to be a precursor outpost in this column of chunks
     local rand = PcgRandom(planet.seed*maxp.x+maxp.z)
-    if rand:next(1, 20) ~= 1 then return end
+    if rand:next(1, planet.precursor_chance) ~= 1 then return end
 
     --pick the position of the origin
     local origin_x, origin_z = rand:next(minp.x+16, maxp.x-16), rand:next(minp.z+16, maxp.z-16)

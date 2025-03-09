@@ -112,7 +112,7 @@ minetest.register_node("stl_precursor:vigil_spawner", {
     sounds = stellua.node_sound_stone_defaults(),
     on_timer = function (pos)
         if minetest.add_entity(pos, "stl_precursor:vigil") then
-            minetest.remove_node(pos)
+            minetest.set_node(pos, {name="stl_precursor:air"})
         end
     end
 })
@@ -147,6 +147,7 @@ minetest.register_node("stl_precursor:air", {
     walkable = false,
     pointable = false,
     buildable_to = true,
+    floodable = true,
     paramtype = "light",
     sunlight_propagates = true
 })
@@ -211,6 +212,27 @@ minetest.register_craftitem("stl_precursor:unobtanium", {
 
 --Generate precursor structures on generation
 minetest.register_mapgen_script(modpath.."mapgen_env.lua")
+
+stellua.register_on_planet_generated(function(planet)
+    local rand = PcgRandom(planet.seed+1337)
+    planet.precursor_chance = rand:next(4, 24)
+    if planet.precursor_chance < 10 then
+        minetest.register_decoration({
+            deco_type = "schematic",
+            place_on = {planet.mapgen_filler, planet.mapgen_stone, planet.mapgen_beach},
+            fill_ratio = (10-planet.precursor_chance)*0.0001,
+            y_min = planet.level-500,
+            y_max = planet.level+499,
+            schematic = modpath.."schems/precursor_small_turret.mts",
+            place_offset_y = 1,
+            flags = "force_placement"
+        })
+    end
+end)
+
+stellua.register_planet_warning(function(planet)
+    if planet.precursor_chance < 10 then minetest.log(planet.precursor_chance) return "VIGILANT PRECURSORS" end
+end)
 
 --Make sure generated nodes are running smoothly
 minetest.register_lbm({
