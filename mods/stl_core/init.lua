@@ -25,6 +25,14 @@ dofile(modpath.."crafts.lua")
 dofile(modpath.."inventory.lua")
 minetest.register_mapgen_script(modpath.."mapgen_env.lua")
 
+--Store what minor version this was made in, so older worlds can be made incompatible
+local VERSION = 4
+
+local storage = minetest.get_mod_storage()
+local world_version = storage:get_int("version")
+assert(world_version == 0 or world_version == VERSION, "incompatible version (world 0."..world_version..", game 0."..VERSION..")")
+storage:set_int("version", VERSION)
+
 --Spawn player in a good place
 local start_planet
 
