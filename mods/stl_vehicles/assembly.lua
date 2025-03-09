@@ -94,6 +94,7 @@ function stellua.detach_vehicle(pos)
     end
     for _, p in ipairs(ship or {}) do
         lvae:set_node(p-pos, minetest.get_node(p))
+        lvae.data[lvae.area:indexp(p-pos)].entity.object:set_properties({infotext=""})
         minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
