@@ -247,7 +247,7 @@ minetest.register_entity("stl_precursor:vigil", {
         if self.cooldown > 1 then return end
         local pos = self.object:get_pos()
         for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 16)) do
-            if obj:is_player() then
+            if obj:is_player() and not minetest.is_creative_enabled(obj:get_player_name()) then
                 local dest = obj:get_pos()+up
                 local dir = vector.dir_to_rotation(dest-pos)
                 self.object:set_rotation(dir)
