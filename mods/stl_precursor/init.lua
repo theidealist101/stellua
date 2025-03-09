@@ -217,10 +217,10 @@ minetest.register_decoration({
 minetest.register_mapgen_script(modpath.."mapgen_env.lua")
 
 --Make sure generated nodes are running smoothly
-minetest.register_abm({
+minetest.register_lbm({
+    name = "stl_precursor:start_nodes",
     nodenames = {"stl_precursor:antenna", "stl_precursor:vigil_spawner"},
-    interval = 2,
-    chance = 1,
+    run_at_every_load = true,
     action = function (pos)
         local timer = minetest.get_node_timer(pos)
         if not timer:is_started() then timer:start(0) end
