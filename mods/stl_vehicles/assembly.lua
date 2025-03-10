@@ -10,13 +10,13 @@ local old_on_activate = lvae_defs.on_activate
 --local old_on_step = lvae_defs.on_step
 
 function lvae_defs.get_staticdata(self)
-    return minetest.serialize({old_get_staticdata(self), self.player, self.power, self.tanks})
+    return minetest.serialize({old_get_staticdata(self), self.player, self.power, self.tanks, self.collisionbox})
 end
 
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
-        staticdata, self.player, self.power, self.tanks = unpack(minetest.deserialize(staticdata))
-        self.object:set_properties({physical=true})
+        staticdata, self.player, self.power, self.tanks, self.collisionbox = unpack(minetest.deserialize(staticdata))
+        self.object:set_properties({physical=true, collisionbox=self.collisionbox})
     end
     return old_on_activate(self, staticdata, dtime)
 end
@@ -108,7 +108,8 @@ function stellua.detach_vehicle(pos)
         end
     end
     minp, maxp = minp-pos, maxp-pos
-    lvae.object:set_properties({physical=true, collisionbox={minp.x-0.5, minp.y-0.5, minp.z-0.5, maxp.x+0.5, maxp.y+0.5, maxp.z+0.5}})
+    lvae.collisionbox = {minp.x-0.5, minp.y-0.5, minp.z-0.5, maxp.x+0.5, maxp.y+0.5, maxp.z+0.5}
+    lvae.object:set_properties({physical=true, collisionbox=lvae.collisionbox})
     return lvae
 end
 
