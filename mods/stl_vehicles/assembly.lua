@@ -192,15 +192,22 @@ local NORTH = vector.new(0, 0, -1)
 local ACCEL = 0.5
 local FRICT = 0.2
 
+local aux1s = {}
+
 minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
         local pos = vector.round(player:get_pos())
         local index = stellua.get_planet_index(pos.y)
         local control = player:get_player_control()
-        if (control.aux1 or control.jump) and stellua.assemble_vehicle(pos) then
+        local playername = player:get_player_name()
+
+        local aux1 = control.aux1 and not aux1s[playername]
+        aux1s[playername] = control.aux1
+
+        if (aux1 or control.jump) and stellua.assemble_vehicle(pos) then
 
             --make player exit on aux1
-            if control.aux1 then
+            if aux1 then
                 --move forward until out of the vehicle
                 local dir = player:get_look_dir()
                 while stellua.assemble_vehicle(pos) do
@@ -233,7 +240,7 @@ minetest.register_globalstep(function(dtime)
             elseif control.jump and index then
                 local ent = stellua.detach_vehicle(pos)
                 player:set_attach(ent.object)
-                ent.player = player:get_player_name()
+                ent.player = playername
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=pos}, true)
             end
         end
@@ -245,7 +252,7 @@ minetest.register_globalstep(function(dtime)
             local rel_y = (y-500)%1000
 
             --land vehicle with aux1
-            if control.aux1 then
+            if aux1 then
                 player:set_detach()
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
@@ -255,7 +262,7 @@ minetest.register_globalstep(function(dtime)
             elseif index and rel_y >= 700 then
                 local planet = stellua.planets[index]
                 local rot = (minetest.get_timeofday()+0.5)*2*math.pi
-                local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
+                local slot = stellua.alloc_slot(playername, planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
                 local slotpos = stellua.get_slot_pos(slot)
                 minetest.emerge_area(slotpos, slotpos)
 
@@ -269,7 +276,7 @@ minetest.register_globalstep(function(dtime)
                 end
             end
 
-            if not control.aux1 and rel_y < 750 then
+            if not aux1 and rel_y < 750 then
                 local vel = vehicle:get_velocity()
                 local power = vehicle:get_luaentity().power
 
@@ -278,7 +285,7 @@ minetest.register_globalstep(function(dtime)
                 if launch then
                     local fuel, ignite = stellua.get_fuel(vehicle:get_luaentity().tanks, dtime*power)
                     if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
-                    if fuel or minetest.is_creative_enabled(player:get_player_name()) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
+                    if fuel or minetest.is_creative_enabled(playername) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
                 end
                 if not launch then
                     if control.jump and rel_y < 650 then vel.y = vel.y+ACCEL
