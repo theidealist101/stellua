@@ -231,7 +231,7 @@ stellua.register_on_planet_generated(function(planet)
 end)
 
 stellua.register_planet_warning(function(planet)
-    if planet.precursor_chance < 10 then minetest.log(planet.precursor_chance) return "VIGILANT PRECURSORS" end
+    if planet.precursor_chance < 10 then return "VIGILANT PRECURSORS" end
 end)
 
 --Make sure generated nodes are running smoothly
