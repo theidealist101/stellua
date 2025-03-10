@@ -90,6 +90,7 @@ minetest.register_on_generated(function(_, minp, maxp)
     --figure out what planet we're on
     local index = get_planet_index(minp.y)
     local planet = planets[index]
+    if not index then return end
 
     --see if there ought to be a precursor outpost in this column of chunks
     local rand = PcgRandom(planet.seed*maxp.x+maxp.z)
