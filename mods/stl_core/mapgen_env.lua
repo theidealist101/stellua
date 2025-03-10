@@ -94,7 +94,7 @@ minetest.register_on_generated(function(_, minp, maxp)
         --make sure out-of-bounds areas are void and bedrock
         if not index or rely >= 250 then
             for x = minp.x, maxp.x do for z = minp.z, maxp.z do
-                data[area:index(x, y, z)] = c_void
+                data[area:index(x, y, z)] = not index and (x%1000 <= 250 or x%1000 >= 750) and (z%1000 <= 250 or z%1000 >= 750) and c_air or c_void
             end end
         elseif rely == -500 then
             for x = minp.x, maxp.x do for z = minp.z, maxp.z do
