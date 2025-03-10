@@ -8,6 +8,7 @@ local lvae_defs = minetest.registered_entities["lvae:lvae"]
 local old_get_staticdata = lvae_defs.get_staticdata
 local old_on_activate = lvae_defs.on_activate
 --local old_on_step = lvae_defs.on_step
+local old_set_node = lvae_defs.set_node
 
 function lvae_defs.get_staticdata(self)
     return minetest.serialize({old_get_staticdata(self), self.player, self.power, self.tanks, self.collisionbox})
@@ -27,6 +28,13 @@ function lvae_defs.on_step(self, dtime)
         player:set_attach(self.object)
     end
     --return old_on_step(self, dtime)
+end
+
+function lvae_defs.set_node(self, pos, node)
+    old_set_node(self, pos, node)
+    local new = self.data[self.area:indexp(pos)]
+    if not new or not new.entity then return end
+    new.entity.object:set_properties({infotext=""})
 end
 
 --Override placing and digging functions, we don't want that
@@ -177,7 +185,6 @@ function stellua.detach_vehicle(pos)
             lvae:set_node(p-pos, node)
             minetest.remove_node(p)
         end
-        lvae.data[lvae.area:indexp(p-pos)].entity.object:set_properties({infotext=""})
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
                 if p[d] < minp[d] then minp[d] = p[d] end
