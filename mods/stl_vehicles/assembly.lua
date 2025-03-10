@@ -226,24 +226,26 @@ minetest.register_globalstep(function(dtime)
                     pos = vector.round(pos+dir)
                 end
 
-                --if in outer space, skip placement
                 local attempts = 0
+
+                --go up until there's space
+                while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
+                or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
+                    pos = pos+UP
+                    attempts = attempts+1
+                end
+
+                --if in outer space, skip placement
                 if index then
-                    --go up until there's space
-                    while (minetest.registered_nodes[minetest.get_node(pos).name].walkable
-                    or minetest.registered_nodes[minetest.get_node(pos+UP).name].walkable) and attempts < 8 do
-                        pos = pos+UP
-                        attempts = attempts+1
-                    end
                     --go down until there's something to stand on
                     while not minetest.registered_nodes[minetest.get_node(pos).name].walkable and attempts < 8 do
                         pos = pos-UP
                         attempts = attempts+1
                     end
-                end
+                else pos = pos-UP end
 
                 --if we could find a valid position then do it
-                if attempts < 8 or not index then
+                if attempts < 8 then
                     player:set_pos(pos+0.5*UP)
                     minetest.sound_play({name="doors_steel_door_close", gain=0.2}, {pos=pos}, true)
                 end
