@@ -32,7 +32,7 @@ end)
 --Get temperature at position for the player's purposes
 function stellua.get_temperature(pos)
     --always room temperature inside vehicles, at least for now
-    if stellua.assemble_vehicle(pos) then return 300 end
+    if stellua.assemble_vehicle(pos, true) then return 300 end
 
     --absolute zero in the vastness of space because I say so
     local index = stellua.get_planet_index(pos.y)
