@@ -241,6 +241,7 @@ minetest.register_globalstep(function(dtime)
         local vehicle = player:get_attach()
         if vehicle then
             local y = vehicle:get_pos().y
+            local rel_y = (y-500)%1000
 
             --land vehicle with aux1
             if control.aux1 then
@@ -250,7 +251,7 @@ minetest.register_globalstep(function(dtime)
                 stellua.set_respawn(player, pos)
 
             --load up slot if above y=200
-            elseif index and (y-500)%1000 >= 700 then
+            elseif index and rel_y >= 700 then
                 local planet = stellua.planets[index]
                 local rot = (minetest.get_timeofday()+0.5)*2*math.pi
                 local slot = stellua.alloc_slot(player:get_player_name(), planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
@@ -258,7 +259,7 @@ minetest.register_globalstep(function(dtime)
                 minetest.emerge_area(slotpos, slotpos)
 
                 --move to slot if above y=250
-                if (y-500)%1000 >= 750 then
+                if rel_y >= 750 then
                     local ent = vehicle:get_luaentity()
                     player:set_detach()
                     stellua.land_vehicle(ent, slotpos)
@@ -267,7 +268,7 @@ minetest.register_globalstep(function(dtime)
                 end
             end
 
-            if not control.aux1 and (y-500)%1000 < 750 then
+            if not control.aux1 and rel_y < 750 then
                 local vel = vehicle:get_velocity()
                 local power = vehicle:get_luaentity().power
 
@@ -279,7 +280,7 @@ minetest.register_globalstep(function(dtime)
                     if fuel or minetest.is_creative_enabled(player:get_player_name()) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
                 end
                 if not launch then
-                    if control.jump then vel.y = vel.y+ACCEL
+                    if control.jump and rel_y < 650 then vel.y = vel.y+ACCEL
                     elseif control.sneak then vel.y = vel.y-ACCEL end
                 end
 
