@@ -269,6 +269,7 @@ minetest.register_globalstep(function(dtime)
             --land vehicle with aux1
             if aux1 and on_ground(ent, pos) then
                 player:set_detach()
+                player:set_pos(pos)
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
                 stellua.set_respawn(player, pos)
