@@ -186,6 +186,18 @@ minetest.register_on_mods_loaded(function()
     end
 end)
 
+--Detect if vehicle is on ground
+local function on_ground(self, pos)
+    pos = pos or vector.round(self.object:get_pos())
+    local y = pos.y+math.round(self.collisionbox[2]-0.5)
+    for x = pos.x+math.round(self.collisionbox[1]-0.5), pos.x+math.round(self.collisionbox[4]+0.5) do
+        for z = pos.z+math.round(self.collisionbox[3]-0.5), pos.z+math.round(self.collisionbox[6]+0.5) do
+            if minetest.registered_nodes[minetest.get_node(vector.new(x, y, z)).name].walkable then return true end
+        end
+    end
+    return false
+end
+
 local UP = vector.new(0, 1, 0)
 local NORTH = vector.new(0, 0, -1)
 
@@ -248,73 +260,74 @@ minetest.register_globalstep(function(dtime)
         --allow player to control vehicle
         local vehicle = player:get_attach()
         if vehicle then
+            local ent = vehicle:get_luaentity()
             local y = vehicle:get_pos().y
             local rel_y = (y-500)%1000
 
             --land vehicle with aux1
-            if aux1 then
+            if aux1 and on_ground(ent, pos) then
                 player:set_detach()
                 minetest.sound_play({name="doors_door_close", gain=0.3}, {pos=vehicle:get_pos()}, true)
                 stellua.land_vehicle(vehicle)
                 stellua.set_respawn(player, pos)
 
-            --load up slot if above y=200
-            elseif index and rel_y >= 700 then
-                local planet = stellua.planets[index]
-                local rot = (minetest.get_timeofday()+0.5)*2*math.pi
-                local slot = stellua.alloc_slot(playername, planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
-                local slotpos = stellua.get_slot_pos(slot)
-                minetest.emerge_area(slotpos, slotpos)
+            else
+                --load up slot if above y=200
+                if index and rel_y >= 700 then
+                    local planet = stellua.planets[index]
+                    local rot = (minetest.get_timeofday()+0.5)*2*math.pi
+                    local slot = stellua.alloc_slot(playername, planet.star, planet.pos+0.15*planet.scale*vector.rotate_around_axis(UP, NORTH, -rot), vector.dir_to_rotation(vector.rotate_around_axis(UP, NORTH, rot)))
+                    local slotpos = stellua.get_slot_pos(slot)
+                    minetest.emerge_area(slotpos, slotpos)
 
-                --move to slot if above y=250
-                if rel_y >= 750 then
-                    local ent = vehicle:get_luaentity()
-                    player:set_detach()
-                    stellua.land_vehicle(ent, slotpos)
-                    player:set_pos(slotpos)
-                    stellua.set_respawn(player, slotpos)
-                end
-            end
-
-            if not aux1 and rel_y < 750 then
-                local vel = vehicle:get_velocity()
-                local power = vehicle:get_luaentity().power
-
-                --handle launching
-                local launch = control.jump and control.sneak
-                if launch then
-                    local fuel, ignite = stellua.get_fuel(vehicle:get_luaentity().tanks, dtime*power)
-                    if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
-                    if fuel or minetest.is_creative_enabled(playername) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
-                end
-                if not launch then
-                    if control.jump and rel_y < 650 then vel.y = vel.y+ACCEL
-                    elseif control.sneak then vel.y = vel.y-ACCEL end
+                    --move to slot if above y=250
+                    if rel_y >= 750 then
+                        player:set_detach()
+                        stellua.land_vehicle(ent, slotpos)
+                        player:set_pos(slotpos)
+                        stellua.set_respawn(player, slotpos)
+                    end
                 end
 
-                --handle other controls
-                local rot = vector.new(0, player:get_look_horizontal(), 0)
-                if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
-                if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
-                if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
-                if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+                if rel_y < 750 then
+                    local vel = vehicle:get_velocity()
+                    local power = vehicle:get_luaentity().power
 
-                --calculate velocity and apply
-                local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(math.hypot(vel.x, vel.z)-FRICT, 0), 8)
-                local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(launch and power or 0)), 0)
-                vehicle:set_velocity(xvel+yvel)
-                vehicle:set_rotation(rot)
+                    --handle launching
+                    local launch = control.jump and control.sneak
+                    if launch then
+                        local fuel, ignite = stellua.get_fuel(vehicle:get_luaentity().tanks, dtime*power)
+                        if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=vehicle}, true) end
+                        if fuel or minetest.is_creative_enabled(playername) then vel.y = vel.y+ACCEL+power*0.1 else launch = false end
+                    end
+                    if not launch then
+                        if control.jump and rel_y < 650 then vel.y = vel.y+ACCEL
+                        elseif control.sneak then vel.y = vel.y-ACCEL end
+                    end
 
-                --deal with sounds
-                local ent = vehicle:get_luaentity()
-                if launch and ent.launch ~= true then
-                    ent.launch = true
-                    if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
-                    ent.sound = minetest.sound_play({name="534856__m_cel__jet-engine", gain=0.5}, {loop=true, object=vehicle, fade=5})
-                elseif ent.launch ~= false and not launch then
-                    ent.launch = false
-                    if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
-                    ent.sound = minetest.sound_play({name="242740__marlonhj__engine", gain=0.1}, {loop=true, object=vehicle, fade=5})
+                    --handle other controls
+                    local rot = vector.new(0, player:get_look_horizontal(), 0)
+                    if control.up then vel = vel+vector.rotate(vector.new(0, 0, ACCEL), rot) end
+                    if control.down then vel = vel-vector.rotate(vector.new(0, 0, ACCEL), rot) end
+                    if control.left then vel = vel-vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+                    if control.right then vel = vel+vector.rotate(vector.new(ACCEL, 0, 0), rot) end
+
+                    --calculate velocity and apply
+                    local xvel = vector.normalize(vector.new(vel.x, 0, vel.z))*math.min(math.max(math.hypot(vel.x, vel.z)-FRICT, 0), 8)
+                    local yvel = vector.new(0, math.min(math.max(math.max(math.abs(vel.y)-FRICT, 0)*math.sign(vel.y), -8), 4+(launch and power or 0)), 0)
+                    vehicle:set_velocity(xvel+yvel)
+                    vehicle:set_rotation(rot)
+
+                    --deal with sounds
+                    if launch and ent.launch ~= true then
+                        ent.launch = true
+                        if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
+                        ent.sound = minetest.sound_play({name="534856__m_cel__jet-engine", gain=0.5}, {loop=true, object=vehicle, fade=5})
+                    elseif ent.launch ~= false and not launch then
+                        ent.launch = false
+                        if ent.sound then minetest.sound_fade(ent.sound, 5, 0) end
+                        ent.sound = minetest.sound_play({name="242740__marlonhj__engine", gain=0.1}, {loop=true, object=vehicle, fade=5})
+                    end
                 end
             end
         end
