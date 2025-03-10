@@ -1,6 +1,5 @@
 --Remember the next inventory id
-local storage = minetest.get_mod_storage()
-local inv_count = storage:get_int("inv_count")
+local inv_count = 1
 
 --Override static saving functions for LVAE to allow saving more arbitrary data
 local lvae_defs = minetest.registered_entities["lvae:lvae"]
@@ -11,13 +10,26 @@ local old_on_activate = lvae_defs.on_activate
 local old_set_node = lvae_defs.set_node
 
 function lvae_defs.get_staticdata(self)
-    return minetest.serialize({old_get_staticdata(self), self.player, self.power, self.tanks, self.collisionbox})
+    local tanks = table.copy(self.tanks or {})
+    for _, t in ipairs(tanks or {}) do
+        t[2] = minetest.get_inventory({type="detached", name=t[2]}):get_lists()
+        for _, l in pairs(t[2]) do
+            for i, item in ipairs(l) do
+                l[i] = item:to_string()
+            end
+        end
+    end
+    return minetest.serialize({old_get_staticdata(self), self.player, self.power, tanks, self.collisionbox})
 end
 
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
         staticdata, self.player, self.power, self.tanks, self.collisionbox = unpack(minetest.deserialize(staticdata))
         self.object:set_properties({physical=true, collisionbox=self.collisionbox})
+        for _, t in ipairs(self.tanks) do
+            minetest.create_detached_inventory("spaceship_inv"..inv_count, {}):set_lists(t[2])
+            t[2] = "spaceship_inv"..inv_count
+        end
     end
     return old_on_activate(self, staticdata, dtime)
 end
@@ -175,7 +187,6 @@ function stellua.detach_vehicle(pos)
         inv:set_lists(meta:get_inventory():get_lists())
         table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_float("fuel"), meta:get_string("fuel_group")})
         inv_count = inv_count+1
-        storage:set_int("inv_count", inv_count)
     end
     for _, p in ipairs(ship or {}) do
         local node = minetest.get_node(p)
@@ -225,7 +236,6 @@ function stellua.land_vehicle(vehicle, pos)
             meta:get_inventory():set_lists(inv:get_lists())
             minetest.remove_detached_inventory(invname)
         end
-        --not working right now when you leave and rejoin lol
     end
     if vehicle.sound then minetest.sound_fade(vehicle.sound, 5, 0) end
     vehicle:remove()
