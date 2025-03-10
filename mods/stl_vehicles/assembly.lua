@@ -34,22 +34,47 @@ local lvae_node_defs = minetest.registered_entities["lvae:node"]
 lvae_node_defs.on_rightclick = nil
 lvae_node_defs.on_punch = nil
 
+local UP = vector.new(0, 1, 0)
+local NORTH = vector.new(0, 0, -1)
+
 --Assemble a vehicle from any node
-function stellua.assemble_vehicle(pos)
+function stellua.assemble_vehicle(pos, find_interior)
+    --go down until we find the floor
+    local orig_pos = vector.copy(pos)
+    if find_interior then
+        local attempts = 0
+        while minetest.get_item_group(minetest.get_node(pos).name, "spaceship") == 0 and attempts < 64 do
+            pos = pos-UP
+            attempts = attempts+1
+        end
+        if attempts >= 64 then return end
+    end
+
+    --setup
     local checking = {pos}
     local checked = {minetest.hash_node_position(pos)}
     local out = {}
+    local out_hash = {}
     local seat
     local engines = {}
     local tanks = {}
     local power = 0
+    local minp, maxp = vector.copy(pos), vector.copy(pos)
 
+    --first pass: find the walls
     while #checking > 0 and #out < 1000 do
         local p = table.remove(checking, 1)
         local nodename = minetest.get_node(p).name
         local s = minetest.get_item_group(nodename, "spaceship")
-        if s > 0 then table.insert(out, p) end
-        if s > 0 or nodename == "air" then
+        if s > 0 then
+            table.insert(out, p)
+            table.insert(out_hash, minetest.hash_node_position(p))
+            if find_interior then
+                for _, c in ipairs({"x", "y", "z"}) do
+                    if p[c] < minp[c] then minp[c] = p[c] end
+                    if p[c] > maxp[c] then maxp[c] = p[c] end
+                end
+            end
             if s == 1 then
                 for i = 0, 5 do
                     local newp = p+minetest.wallmounted_to_dir(i)
@@ -74,14 +99,66 @@ function stellua.assemble_vehicle(pos)
         end
     end
 
-    if #out < 1000 and seat then return out, seat, engines, power, tanks end
+    if #out >= 1000 or not seat then return end
+
+    --second pass: find all interiors
+    if find_interior then
+        local wall_hash = table.copy(out_hash)
+        for x = minp.x+1, maxp.x-1 do
+            for y = minp.y+1, maxp.y-1 do
+                for z = minp.z+1, maxp.z-1 do
+                    local p = vector.new(x, y, z)
+                    if table.indexof(out_hash, minetest.hash_node_position(p)) <= 0 then
+                        local checking2 = {p}
+                        local checked2 = {minetest.hash_node_position(p)}
+                        local interior = {}
+                        local interior_hash = {}
+                        while #checking2 > 0 and #interior < 100 do
+                            local q = table.remove(checking2, 1)
+                            local q_hash = minetest.hash_node_position(q)
+                            if table.indexof(wall_hash, q_hash) <= 0 then
+                                table.insert(interior, q)
+                                table.insert(interior_hash, q_hash)
+                                for i = 0, 5 do
+                                    local newp = q+minetest.wallmounted_to_dir(i)
+                                    local hash = minetest.hash_node_position(newp)
+                                    if table.indexof(checked2, hash) <= 0 then
+                                        table.insert(checking2, newp)
+                                        table.insert(checked2, hash)
+                                    end
+                                end
+                            end
+                        end
+                        if #interior < 100 then table.insert_all(out, interior) end
+                        table.insert_all(out_hash, interior_hash)
+                    end
+                end
+            end
+        end
+    end
+
+    if table.indexof(out_hash, minetest.hash_node_position(orig_pos)) <= 0 then return end
+
+    return out, seat, engines, power, tanks
 end
+
+--Fake air for vehicles so they preserve position of air
+minetest.register_node("stl_vehicles:air", {
+    description = "Vehicle Air",
+    drawtype = "airlike",
+    walkable = false,
+    pointable = false,
+    buildable_to = true,
+    paramtype = "light",
+    sunlight_propagates = true,
+    groups = {not_in_creative_inventory=1}
+})
 
 --Detach a vehicle and return the LVAE
 function stellua.detach_vehicle(pos)
     local lvae = LVAE(pos)
     local minp, maxp
-    local ship, seat, engines, power, tanks = stellua.assemble_vehicle(vector.round(pos))
+    local ship, seat, engines, power, tanks = stellua.assemble_vehicle(vector.round(pos), true)
     lvae.power = power
     lvae.tanks = {}
     for _, p in ipairs(tanks or {}) do
@@ -93,9 +170,14 @@ function stellua.detach_vehicle(pos)
         storage:set_int("inv_count", inv_count)
     end
     for _, p in ipairs(ship or {}) do
-        lvae:set_node(p-pos, minetest.get_node(p))
+        local node = minetest.get_node(p)
+        if node.name == "air" then
+            lvae:set_node(p-pos, {name="stl_vehicles:air"})
+        else
+            lvae:set_node(p-pos, node)
+            minetest.remove_node(p)
+        end
         lvae.data[lvae.area:indexp(p-pos)].entity.object:set_properties({infotext=""})
-        minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
                 if p[d] < minp[d] then minp[d] = p[d] end
@@ -119,7 +201,11 @@ function stellua.land_vehicle(vehicle, pos)
     if vehicle.get_luaentity then vehicle = vehicle:get_luaentity() end
     for _, node in pairs(vehicle.data) do
         if node.entity then
-            minetest.set_node(node.entity.pos+pos, node)
+            if node.name == "stl_vehicles:air" then
+                minetest.remove_node(node.entity.pos)
+            else
+                minetest.set_node(node.entity.pos+pos, node)
+            end
         end
     end
     for _, val in ipairs(vehicle.tanks) do
@@ -174,7 +260,7 @@ minetest.register_on_mods_loaded(function()
             local on_rightclick = defs.on_rightclick
             minetest.override_item(name, {on_rightclick = function (pos, node, user, itemstack, pointed)
                 if on_rightclick then on_rightclick(pos, node, user)
-                elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(user:get_pos()) then
+                elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(vector.round(user:get_pos()), true) then
                     local ship, seat = stellua.assemble_vehicle(pos)
                     if seat then
                         user:set_pos(seat)
@@ -198,9 +284,6 @@ local function on_ground(self, pos)
     return false
 end
 
-local UP = vector.new(0, 1, 0)
-local NORTH = vector.new(0, 0, -1)
-
 local ACCEL = 0.5
 local FRICT = 0.2
 
@@ -216,13 +299,13 @@ minetest.register_globalstep(function(dtime)
         local aux1 = control.aux1 and not aux1s[playername]
         aux1s[playername] = control.aux1
 
-        if (aux1 or control.jump) and stellua.assemble_vehicle(pos) then
+        if (aux1 or control.jump) and stellua.assemble_vehicle(pos, true) then
 
             --make player exit on aux1
             if aux1 then
                 --move forward until out of the vehicle
                 local dir = player:get_look_dir()
-                while stellua.assemble_vehicle(pos) do
+                while stellua.assemble_vehicle(pos, true) do
                     pos = vector.round(pos+dir)
                 end
 
@@ -251,7 +334,7 @@ minetest.register_globalstep(function(dtime)
                 end
 
             --make vehicle launch on jump
-            elseif control.jump and index then
+            elseif control.jump and index and minetest.get_item_group(minetest.get_node(pos).name, "seat") > 0 then
                 local ent = stellua.detach_vehicle(pos)
                 player:set_attach(ent.object)
                 ent.player = playername
