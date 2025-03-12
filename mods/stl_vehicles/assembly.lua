@@ -27,8 +27,12 @@ function lvae_defs.on_activate(self, staticdata, dtime)
         staticdata, self.player, self.power, self.tanks, self.collisionbox = unpack(minetest.deserialize(staticdata))
         self.object:set_properties({physical=true, collisionbox=self.collisionbox})
         for _, t in ipairs(self.tanks) do
-            minetest.create_detached_inventory("spaceship_inv"..inv_count, {}):set_lists(t[2])
-            t[2] = "spaceship_inv"..inv_count
+            if type(t[2]) == "table" then
+                minetest.create_detached_inventory("spaceship_inv"..inv_count, {}):set_lists(t[2])
+                t[2] = "spaceship_inv"..inv_count
+            else
+                minetest.create_detached_inventory(t[2], {})
+            end
         end
     end
     return old_on_activate(self, staticdata, dtime)
