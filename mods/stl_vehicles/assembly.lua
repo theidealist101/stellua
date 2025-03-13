@@ -25,6 +25,7 @@ end
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
         staticdata, self.player, self.power, self.tanks, self.collisionbox = unpack(minetest.deserialize(staticdata))
+        self.collisionbox = self.collisionbox or {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
         self.object:set_properties({physical=true, collisionbox=self.collisionbox})
         for _, t in ipairs(self.tanks) do
             if type(t[2]) == "table" then
