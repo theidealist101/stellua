@@ -20,7 +20,7 @@ minetest.register_craftitem("stl_decor:dye", {
     palette = "palette_dye.png",
     on_place = function (itemstack, user, pointed)
         local node = minetest.get_node(pointed.under)
-        local nodename = stellua.dyed_nodes[node.name]
+        local nodename = stellua.registered_dyed_nodes[node.name]
         if nodename then
             minetest.swap_node(pointed.under, {name=nodename, param1=node.param1, param2=itemstack:get_meta():get_int("palette_index")})
             itemstack:take_item()
@@ -37,7 +37,7 @@ minetest.register_craft({
 
 stellua.register_color_craft("stl_decor:dye", "stl_decor:flower")
 
-stellua.dyed_nodes = {}
+stellua.registered_dyed_nodes = {}
 
 function stellua.register_dyed_node(name, node, desc)
     local defs = table.copy(minetest.registered_nodes[node])
@@ -56,8 +56,8 @@ function stellua.register_dyed_node(name, node, desc)
         recipe = {name, "stl_decor:dye"}
     })
     stellua.register_color_craft(name, "stl_decor:dye")
-    stellua.dyed_nodes[node] = name
-    stellua.dyed_nodes[name] = name
+    stellua.registered_dyed_nodes[node] = name
+    stellua.registered_dyed_nodes[name] = name
 end
 
 stellua.register_dyed_node("stl_decor:stained_glass", "stl_decor:glass", "Stained Glass")

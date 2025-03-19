@@ -392,3 +392,13 @@ Other Stuff
 
 * `stellua.set_respawn(player, pos)`
     * Sets the spawn point of a player.
+
+* `stellua.registered_dyed_nodes`
+    * Map of dyed nodes, indexed by undyed node.
+
+* `stellua.register_dyed_node(name, node, description)`
+    * Registers a new node based on another node but dyed, which can be produced from the undyed node or itself using the dye item, either by right-clicking with it or by crafting.
+    * Does not ensure that the texture is greyscale.
+    * `name`: the name of the new node.
+    * `node`: the name of the old node to copy definitions from.
+    * `description`: the description of the new node.
