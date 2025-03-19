@@ -232,6 +232,133 @@ A planet definition is a table with the following fields:
 }
 ```
 
+Liquids
+-------
+
+Each planet may have one surface liquid in oceans and rivers, and/or one underground liquid found in caves. They may also have a snow node on the surface corresponding to the surface liquid and/or a snow node unrelated to it.
+
+Liquids all have melting and boiling points. They will never generate in planets above their boiling point, and may generate below their melting point if they have a frozen form, in which case the layer's thickness depends on how far it is below their melting point. They will also freeze if placed in a temperature below their melting point, or if touching a colder liquid, and will evaporate and disappear if above their boiling point.
+
+With the stl_weather mod enabled, planets with surface liquid will also have that liquid's rain. If the liquid is frozen, it will also have hail; and each type of snow that spawns will have the corresponding snowy weather.
+
+* `stellua.registered_waters`
+    * List of liquid `{name, defs}` tuples for mapgen.
+    * `name` is the name of the source node but without `"_source"` on the end.
+    * `defs` is the water definition.
+
+* `stellua.register_water(name, defs)`
+    * Registers a liquid for mapgen.
+    * Also registers all necessary nodes with names `name.."_source"`, `name.."_flowing"`, possibly `name.."_frozen"`, and craftitem `name.."_bucket"`.
+    * Does not register the nodes for the snow.
+
+* `stellua.registered_snows`
+    * List of snow tuples for mapgen, same format as `stellua.registered_waters`.
+
+* `stellua.register_snow(name, defs)`
+    * Registers a snow type for mapgen.
+    * Also registers the node named `name` and item named `name.."_ball"`
+
+A water definition is a table with the following fields:
+
+```lua
+{
+    description = "Water",
+    --Node description but stripped of suffixes like " Source", " Flowing" etc.
+    --Also used (in lowercase) for planet info
+
+    tiles = "default_water",
+    --Name of textures, again stripped of suffixes
+
+    animation_period = 1,
+    --Length of tile animation for liquid nodes
+
+    frozen_tiles = "default_ice.png",
+    frozen_node = "stl_core:bitumen",
+    --Name of textures for the frozen form, or node used as frozen form itself, respectively
+    --If both are present, frozen_tiles is preferred
+    --If neither are present, the liquid has no frozen form - not recommended, may be buggy
+    --The node used for frozen_node will not melt into liquid, only form from liquid freezing, and will not generate on planets - recommended for non-renewable liquids
+
+    bucket_image = "bucket_water.png",
+    --Inventory image used for the bucket item
+
+    snow = "stl_core:water_snow",
+    --Name of node used as dust on terrain
+    --If not present, the liquid has no snow form
+
+    tint = {r=0, g=0, b=0, a=0},
+    --The post_effect_color of the liquid nodes
+
+    liquid_viscosity = 0,
+    liquid_renewable = true,
+    damage_per_second = 0,
+    --Overrides certain properties of the liquid nodes
+
+    melt_point = 100,
+    boil_point = 500,
+    --Melting point and boiling point of the liquid, in Kelvin
+    --Remember that actual temperature can go up to 1000K (at the bottom of a very hot world) and down to 0K (in space) which must be accounted for
+
+    temp = 300,
+    --Default temperature of the liquid, determines which of two liquids freezes when in contact
+    --Player temperature tends towards this when in the liquid nodes or its rain
+
+    weight = 1
+    --Modifies how likely it is to spawn on a planet given its conditions are met
+
+    generate_as_lava = false
+    --Whether liquid will generate underground
+}
+```
+
+A snow definition is a table with the following fields:
+
+```lua
+{
+    description = "Water Snow",
+    --Node description
+
+    tiles = "default_snow.png",
+    --Name of textures
+
+    actual_snow = true,
+    --Whether to show the snowflake texture for the associated weather instead of the ash texture
+
+    melt_point = 300,
+    --Maximum temperature for the snow to generate, in Kelvin
+
+    temp = 200,
+    --Default temperature of the snow
+    --Player temperature tends towards this when in the node or its weather
+
+    weight = 1,
+    --Modifies how likely it is to spawn on a planet given its conditions are met
+
+    groups = {}
+    --Table of groups for the snowball item (not the node)
+}
+```
+
+Planet Info
+-----------
+
+The "Planets" tab of the inventory provides readouts on each planet's features. The `heat_stat` and `atmo_stat` numbers are given directly, while `life_stat` is only given in vague categories since the fine-grained detail doesn't matter so much. The only other builtin features are the surface liquid type and the common ore; all others use API functions which other mods can also use.
+
+* `stellua.registered_planet_infos`
+    * List of functions for getting planet info
+
+* `stellua.register_planet_info(function(planet))`
+    * Registers a function for getting planet info
+    * The function must return a string to be added to the info, or `nil` to not add anything
+
+* `stellua.registered_planet_warnings`
+    * List of functions for getting planet warnings
+
+* `stellua.register_planet_warning(function(planet))`
+    * Registers a function for getting planet warnings, which are always shown after info
+    * The function must return a warning string, or `nil` to not add anything
+    * The string returned from it will be converted to uppercase and have `"WARNING: "` appended to the front
+
 Misc
 ----
 
@@ -245,3 +372,23 @@ Misc
 * `stellua.generate_name(rand, type)`
     * Returns a randomly generated name of the given type, using a PcgRandom `rand` to supply randomness.
     * The only currently supported type is `"star"`.
+
+* `stellua.make_treedef(rand)`
+    * Returns an L-system tree definition for use by Luanti API functions, using a PcgRandom `rand` to supply randomness.
+
+Other Stuff
+===========
+
+* `stellua.registered_color_crafts`
+    * List of `{output, recipe}` tuples as given by `stellua.register_color_craft`.
+
+* `stellua.register_color_craft(output, recipe)`
+    * Registers a crafting recipe to have the color on the items preserved.
+    * `output` and `recipe` are both item names.
+    * Essentially it checks the crafting grid and if all instances of the `recipe` item are the same color then it makes the `output` that color too, otherwise it prevents crafting. (To get anything more complex, like dye color mixing, you'll have to make it yourself.)
+
+* `stellua.remap(val, min_val, max_val, min_map, max_map)`
+    * Maps `val` from being between `min_val` and `max_val` to being between `min_map` and `max_map`. Borrowed from the Luamap mod.
+
+* `stellua.set_respawn(player, pos)`
+    * Sets the spawn point of a player.

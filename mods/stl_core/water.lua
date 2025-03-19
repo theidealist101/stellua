@@ -149,6 +149,8 @@ local function register_snow(name, defs)
     })
 end
 
+stellua.register_water, stellua.register_snow = register_water, register_snow
+
 register_water("stl_core:water", {
     description = "Water",
     tiles = "default_water",
