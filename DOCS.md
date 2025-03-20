@@ -376,8 +376,83 @@ Misc
 * `stellua.make_treedef(rand)`
     * Returns an L-system tree definition for use by Luanti API functions, using a PcgRandom `rand` to supply randomness.
 
-Other Stuff
-===========
+Weather
+=======
+
+With the stl_weather mod enabled, each planet has certain weather conditions that can appear on it based on its stats.
+
+Weather exists in two forms: the definitions which have all the basic properties, and a table specific to each occurrence which can be used to store custom data (e.g. wind direction, intensity).
+
+* `stellua.registered_weathers`
+    * Map of weather definitions, indexed by name.
+
+* `stellua.register_weather(name, defs)`
+    * Registers a weather type to be generated on planets.
+
+* `stellua.get_weather(index)`
+    * Returns the name and start time of the weather on the planet with the given index.
+
+* `stellua.set_weather(index, weather)`
+    * Sets the weather type on the planet with the given index to `weather`, and the start time to now.
+    * Does not check that the weather type can appear on this planet.
+
+A weather definition is a table with the following fields:
+
+```lua
+{
+    description = "Spore clouds",
+    --Description shown in the planet info
+
+    cond = function(planet),
+    --Gets whether this weather type can appear on the given planet
+
+    temp = function(temp),
+    --Modifies the input temperature to apply to the player
+
+    particles = function(pos, wtable),
+    --Gets the particle definition for the weather
+
+    sound = {name="rain", gain=1, fade=1},
+    --A SimpleSoundSpec giving the sound played on a loop during the weather
+
+    on_start = function(wtable),
+    --Runs when the weather begins, useful for setting up data
+
+    on_step = function(player, dtime, wtable)
+    --Runs every globalstep for each player in the weather
+}
+```
+
+A weather table is a table with the following fields:
+
+```lua
+{
+    name = "stl_weather:spores",
+    --Name of weather type
+
+    start = 0,
+    --Gametime when it started, as obtained by core.get_gametime
+
+    ----- Any further fields custom to each weather type (see their definitions)
+}
+```
+
+Misc
+----
+
+* `stellua.get_particle_exptime(pos)`
+    * Gets the expiration time of weather particles at this position to avoid them going underwater.
+
+* `stellua.exposed_to_sky(pos, dir)`
+    * Gets whether `pos` is exposed to sky in direction `dir`, or upwards if direction is not specified.
+    * If false, also returns the distance to the obstruction.
+
+* `stellua.get_temperature(pos)`
+    * Gets temperature at given position as felt by the player.
+    * Modified by planet, height, weather, and node it's in, as well as whether it's in a vehicle.
+
+Other Misc Stuff
+================
 
 * `stellua.registered_color_crafts`
     * List of `{output, recipe}` tuples as given by `stellua.register_color_craft`.
