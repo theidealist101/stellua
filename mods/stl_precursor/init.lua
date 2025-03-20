@@ -216,7 +216,8 @@ minetest.register_mapgen_script(modpath.."mapgen_env.lua")
 stellua.register_on_planet_generated(function(planet)
     local rand = PcgRandom(planet.seed+1337)
     planet.precursor_chance = rand:next(4, 24)
-    if planet.precursor_chance < 10 then
+    if planet.precursor_chance < 8 and planet.heat_stat > 100 and planet.heat_stat < 400 then
+        planet.precursor_vigilant = true
         minetest.register_decoration({
             deco_type = "schematic",
             place_on = {planet.mapgen_filler, planet.mapgen_stone, planet.mapgen_beach},
@@ -231,8 +232,14 @@ stellua.register_on_planet_generated(function(planet)
 end)
 
 stellua.register_planet_warning(function(planet)
-    if planet.precursor_chance < 10 then return "VIGILANT PRECURSORS" end
+    if planet.precursor_vigilant then return "VIGILANT PRECURSORS" end
 end)
+
+local old_is_spawn_suitable = stellua.is_spawn_suitable
+
+function stellua.is_spawn_suitable(planet)
+    return planet.precursor_chance > 12 and old_is_spawn_suitable(planet)
+end
 
 --Make sure generated nodes are running smoothly
 minetest.register_lbm({

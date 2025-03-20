@@ -228,7 +228,9 @@ A planet definition is a table with the following fields:
     precursor_chance = 10,
     --Base chance of a precursor outpost spawning per chunk, larger numbers are lower chances
     --Ranges from 4 to 24
-    --Values below 10 also cause occasional vigil turrets to spawn everywhere
+
+    precursor_vigilant = false
+    --Whether precursor vigil turrets spawn everywhere on the surface
 }
 ```
 
@@ -375,6 +377,10 @@ Misc
 
 * `stellua.make_treedef(rand)`
     * Returns an L-system tree definition for use by Luanti API functions, using a PcgRandom `rand` to supply randomness.
+
+* `stellua.is_spawn_suitable(planet)`
+    * Used internally to decide whether a planet is suitable for spawning.
+    * Can be overridden by other mods to add more conditions, but remember to store the old version locally and default to it.
 
 Weather
 =======
