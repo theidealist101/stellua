@@ -12,6 +12,28 @@ function stellua.remap(val, min_val, max_val, min_map, max_map)
 	return (val-min_val)/(max_val-min_val) * (max_map-min_map) + min_map
 end
 
+--Tweak groups of registered items so they don't appear in craft guide if there's no recipe
+for _, i in ipairs({"node", "craftitem", "tool"}) do
+    local old_register_item = minetest["register_"..i]
+    minetest["register_"..i] = function (name, defs)
+        defs.groups = defs.groups or {}
+        if defs.groups.not_in_craft_guide == nil then defs.groups.not_in_craft_guide = 1 end
+        return old_register_item(name, defs)
+    end
+end
+
+local old_override_item = minetest.override_item
+minetest.override_item = function (name, defs, ...)
+    if defs.groups and defs.groups.not_in_craft_guide == nil then defs.groups.not_in_craft_guide = 1 end
+    return old_override_item(name, defs, ...)
+end
+
+local old_register_craft = minetest.register_craft
+minetest.register_craft = function (defs)
+    minetest.override_item(ItemStack(defs.output):get_name(), {groups=table.insert_all({not_in_craft_guide=0}, ItemStack(defs.output):get_definition().groups)})
+    return old_register_craft(defs)
+end
+
 local modpath = minetest.get_modpath("stl_core").."/"
 dofile(modpath.."sounds.lua")
 dofile(modpath.."slots.lua")
