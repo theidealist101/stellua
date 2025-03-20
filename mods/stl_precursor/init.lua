@@ -71,7 +71,7 @@ minetest.register_node("stl_precursor:gate", {
     light_source = 5,
     paramtype2 = "4dir",
     walkable = false,
-    pointable = false,
+    pointable = "blocking",
     groups = {precursor=1, blocks_vigils=1},
     pointabilities = {nodes={["group:precursor"]=true}},
     sounds = stellua.node_sound_stone_defaults()
@@ -238,7 +238,7 @@ end)
 local old_is_spawn_suitable = stellua.is_spawn_suitable
 
 function stellua.is_spawn_suitable(planet)
-    return planet.precursor_chance > 12 and old_is_spawn_suitable(planet)
+    return planet.precursor_chance >= 8 and planet.precursor_chance <= 16 and old_is_spawn_suitable(planet)
 end
 
 --Make sure generated nodes are running smoothly
