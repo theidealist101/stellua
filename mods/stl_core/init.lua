@@ -30,7 +30,9 @@ end
 
 local old_register_craft = minetest.register_craft
 minetest.register_craft = function (defs)
-    minetest.override_item(ItemStack(defs.output):get_name(), {groups=table.insert_all({not_in_craft_guide=0}, ItemStack(defs.output):get_definition().groups)})
+    local name, idefs = ItemStack(defs.output):get_name(), ItemStack(defs.output):get_definition()
+    idefs.groups.not_in_craft_guide = 0
+    minetest.override_item(name, {groups=idefs.groups})
     return old_register_craft(defs)
 end
 
