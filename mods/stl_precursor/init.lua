@@ -89,7 +89,7 @@ minetest.register_node("stl_precursor:beam", {
     --post_effect_color = "#ffa5a580",
     light_source = 5,
     walkable = false,
-    pointable = false,
+    pointable = "blocking",
     climbable = true,
     groups = {precursor=1},
     pointabilities = {nodes={["group:precursor"]=true}},
