@@ -19,18 +19,37 @@ function lvae_defs.get_staticdata(self)
             end
         end
     end
-    return minetest.serialize({old_get_staticdata(self), self.player, self.power, tanks, self.collisionbox})
+    local invs = table.copy(self.invs or {})
+    for _, t in ipairs(invs or {}) do
+        t[2] = minetest.get_inventory({type="detached", name=t[2]}):get_lists()
+        for _, l in pairs(t[2]) do
+            for i, item in ipairs(l) do
+                l[i] = item:to_string()
+            end
+        end
+    end
+    return minetest.serialize({old_get_staticdata(self), self.player, self.power, tanks, self.collisionbox, invs, self.nodemeta})
 end
 
 function lvae_defs.on_activate(self, staticdata, dtime)
     if staticdata and staticdata ~= "" and not tonumber(staticdata) then
-        staticdata, self.player, self.power, self.tanks, self.collisionbox = unpack(minetest.deserialize(staticdata))
+        staticdata, self.player, self.power, self.tanks, self.collisionbox, self.invs, self.nodemeta = unpack(minetest.deserialize(staticdata))
         self.collisionbox = self.collisionbox or {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5}
         self.object:set_properties({physical=true, collisionbox=self.collisionbox})
         for _, t in ipairs(self.tanks) do
             if type(t[2]) == "table" then
                 minetest.create_detached_inventory("spaceship_inv"..inv_count, {}):set_lists(t[2])
                 t[2] = "spaceship_inv"..inv_count
+                inv_count = inv_count+1
+            else
+                minetest.create_detached_inventory(t[2], {})
+            end
+        end
+        for _, t in ipairs(self.invs) do
+            if type(t[2]) == "table" then
+                minetest.create_detached_inventory("spaceship_inv"..inv_count, {}):set_lists(t[2])
+                t[2] = "spaceship_inv"..inv_count
+                inv_count = inv_count+1
             else
                 minetest.create_detached_inventory(t[2], {})
             end
@@ -63,7 +82,7 @@ local UP = vector.new(0, 1, 0)
 local NORTH = vector.new(0, 0, -1)
 
 --Assemble a vehicle from any node
-function stellua.assemble_vehicle(pos, find_interior)
+function stellua.assemble_vehicle(pos, find_interior, find_meta)
     --go down until we find the floor
     local orig_pos = vector.copy(pos)
     if find_interior then
@@ -83,6 +102,8 @@ function stellua.assemble_vehicle(pos, find_interior)
     local seat
     local engines = {}
     local tanks = {}
+    local nodemeta = {}
+    local invs = {}
     local power = 0
     local minp, maxp = vector.copy(pos), vector.copy(pos)
 
@@ -164,7 +185,18 @@ function stellua.assemble_vehicle(pos, find_interior)
 
     if table.indexof(out_hash, minetest.hash_node_position(orig_pos)) <= 0 then return end
 
-    return out, seat, engines, power, tanks
+    --third pass: gather meta
+    if find_meta then
+        for _, p in ipairs(out) do
+            if table.indexof(tanks, p) < 0 then
+                local meta = minetest.get_meta(p)
+                table.insert(nodemeta, {p, meta:to_table().fields})
+                if not meta:get_inventory():is_empty("main") then table.insert(invs, p) end
+            end
+        end
+    end
+
+    return out, seat, engines, power, tanks, nodemeta, invs
 end
 
 --Fake air for vehicles so they preserve position of air
@@ -183,14 +215,21 @@ minetest.register_node("stl_vehicles:air", {
 function stellua.detach_vehicle(pos)
     local lvae = LVAE(pos)
     local minp, maxp
-    local ship, seat, engines, power, tanks = stellua.assemble_vehicle(vector.round(pos), true)
-    lvae.power = power
-    lvae.tanks = {}
+    local ship, seat, engines, power, tanks, nodemeta, invs = stellua.assemble_vehicle(vector.round(pos), true, true)
+    lvae.power, lvae.nodemeta = power, nodemeta
+    lvae.tanks, lvae.invs = {}, {}
     for _, p in ipairs(tanks or {}) do
         local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
         local meta = minetest.get_meta(p)
         inv:set_lists(meta:get_inventory():get_lists())
         table.insert(lvae.tanks, {p-pos, "spaceship_inv"..inv_count, meta:get_float("fuel"), meta:get_string("fuel_group")})
+        inv_count = inv_count+1
+    end
+    for _, p in ipairs(invs or {}) do
+        local inv = minetest.create_detached_inventory("spaceship_inv"..inv_count, {})
+        local meta = minetest.get_meta(p)
+        inv:set_lists(meta:get_inventory():get_lists())
+        table.insert(lvae.invs, {p-pos, "spaceship_inv"..inv_count})
         inv_count = inv_count+1
     end
     for _, p in ipairs(ship or {}) do
@@ -236,6 +275,20 @@ function stellua.land_vehicle(vehicle, pos)
         local meta = minetest.get_meta(pos+p)
         meta:set_float("fuel", fuel)
         meta:set_string("infotext", "Fuel: "..math.ceil(fuel))
+        local inv = minetest.get_inventory({type="detached", name=invname})
+        if inv then
+            meta:get_inventory():set_lists(inv:get_lists())
+            minetest.remove_detached_inventory(invname)
+        end
+    end
+    for _, val in ipairs(vehicle.nodemeta) do
+        local p, fields = unpack(val)
+        local meta = minetest.get_meta(pos+p)
+        meta:from_table({fields=fields})
+    end
+    for _, val in ipairs(vehicle.invs) do
+        local p, invname = unpack(val)
+        local meta = minetest.get_meta(pos+p)
         local inv = minetest.get_inventory({type="detached", name=invname})
         if inv then
             meta:get_inventory():set_lists(inv:get_lists())
