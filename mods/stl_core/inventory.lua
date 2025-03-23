@@ -103,7 +103,7 @@ sfinv.register_page("stl_core:planets", {
                 if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {pos=stellua.get_slot_pos(slot)}, true) end
                 return
             end
-            local pos = vector.new(0, stellua.get_planet_level(context.planet)+150, 0)
+            local pos = vector.new(math.random(-200, 200), stellua.get_planet_level(context.planet)+150, math.random(-200, 200))
             ent.player = playername
             ent.object:set_pos(pos)
             player:set_pos(pos)

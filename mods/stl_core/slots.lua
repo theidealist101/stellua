@@ -20,9 +20,9 @@ function stellua.alloc_slot(player, star, pos, rot)
     if player_slots[player] then return player_slots[player], false end
     local index = #slots+1
     slots[index] = {star, pos, rot}
-    player_slots[player] = index
     storage:set_string("slots", minetest.serialize(slots))
     minetest.log("action", "allocating slot "..index.." for player "..player.." (star="..star..")")
+    stellua.set_player_slot(player, index)
     return index, true
 end
 

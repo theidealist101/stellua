@@ -86,7 +86,7 @@ minetest.register_on_mods_loaded(function()
 end)
 
 minetest.register_on_newplayer(function(player)
-    local pos = vector.round(vector.new(0, stellua.get_planet_level(start_planet)+10^stellua.planets[start_planet].scale+60, 0))
+    local pos = vector.round(vector.new(math.random(-200, 200), stellua.get_planet_level(start_planet)+150, math.random(-200, 200)))
     player:set_pos(pos+vector.new(0, 1.5, 0))
     stellua.set_respawn(player, pos+vector.new(0, 1, 0))
     if stellua.detach_vehicle then
