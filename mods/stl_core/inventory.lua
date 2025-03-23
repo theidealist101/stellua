@@ -110,6 +110,7 @@ sfinv.register_page("stl_core:planets", {
             stellua.set_player_slot(playername)
             context.planet = nil
             minetest.close_formspec(playername, "")
+            sfinv.set_page(player, "stl_core:planets")
             if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=ent.object}, true) end
         end
         for i = 1, 60 do

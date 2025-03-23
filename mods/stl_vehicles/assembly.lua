@@ -394,6 +394,7 @@ minetest.register_globalstep(function(dtime)
                         stellua.land_vehicle(ent, slotpos)
                         player:set_pos(slotpos)
                         stellua.set_respawn(player, slotpos)
+                        sfinv.set_page(player, sfinv.get_page(player))
                     end
                 end
 
