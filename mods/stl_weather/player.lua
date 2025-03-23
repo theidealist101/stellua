@@ -58,6 +58,7 @@ end
 
 --Make player temperature increase or decrease depending on the planet
 local elapsed = {}
+local heal_elapsed = {}
 
 minetest.register_globalstep(function(dtime)
     for _, player in ipairs(minetest.get_connected_players()) do
@@ -74,6 +75,15 @@ minetest.register_globalstep(function(dtime)
             playertemp = math.sign(playertemp)*math.max(math.abs(playertemp)-dtime*0.5, 0)
         end
         meta:set_float("temp", playertemp)
+
+        --heal player inside vehicle
+        if player:get_attach() or stellua.assemble_vehicle(vector.round(player:get_pos()), true) then
+            heal_elapsed[playername] = (heal_elapsed[playername] or 0)+dtime
+            while heal_elapsed[playername] > 2 do
+                heal_elapsed[playername] = heal_elapsed[playername]-2
+                player:set_hp(player:get_hp()+1)
+            end
+        end
 
         if (not immortal or immortal == 0) and heat_huds[playername] then
             --update HUDs
