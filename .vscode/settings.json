@@ -9,5 +9,8 @@
         "ItemStack",
         "VoxelArea",
         "player_api"
+    ],
+    "Lua.diagnostics.disable": [
+        "duplicate-set-field"
     ]
 }

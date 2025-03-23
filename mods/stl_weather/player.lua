@@ -75,7 +75,7 @@ minetest.register_globalstep(function(dtime)
         end
         meta:set_float("temp", playertemp)
 
-        if not immortal or immortal == 0 then
+        if (not immortal or immortal == 0) and heat_huds[playername] then
             --update HUDs
             player:hud_change(heat_huds[playername], "item", playertemp > 0 and 20 or 0)
             player:hud_change(cold_huds[playername], "item", playertemp < 0 and 20 or 0)

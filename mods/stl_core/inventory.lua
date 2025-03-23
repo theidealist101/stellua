@@ -84,6 +84,7 @@ sfinv.register_page("stl_core:planets", {
         return sfinv.make_formspec(player, context, table.concat(out), false)
     end,
     on_player_receive_fields = function (self, player, context, fields)
+        local playername = player:get_player_name()
         if fields.back then
             context.planet = context.planet and context.planet > 0 and -stellua.planets[context.planet].star or 0
             sfinv.set_page(player, "stl_core:planets")
@@ -96,18 +97,19 @@ sfinv.register_page("stl_core:planets", {
             local star, spos = stellua.get_slot_info(slot)
             local cost = planet.star == star and vector.distance(planet.pos, spos) or 16*vector.distance(stellua.stars[planet.star].pos, stellua.stars[star].pos)
             local fuel, ignite = stellua.get_fuel(ent.tanks, math.round(cost+0.3), "fissile")
-            if not fuel and not minetest.is_creative_enabled(player:get_player_name()) then
+            if not fuel and not minetest.is_creative_enabled(playername) then
                 stellua.land_vehicle(ent, stellua.get_slot_pos(slot))
-                minetest.chat_send_player(player:get_player_name(), "Not enough impulse fuel!")
+                minetest.chat_send_player(playername, "Not enough impulse fuel!")
                 if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {pos=stellua.get_slot_pos(slot)}, true) end
                 return
             end
             local pos = vector.new(0, stellua.get_planet_level(context.planet)+150, 0)
-            ent.player = player:get_player_name()
+            ent.player = playername
             ent.object:set_pos(pos)
             player:set_pos(pos)
+            stellua.set_player_slot(playername)
             context.planet = nil
-            minetest.close_formspec(player:get_player_name(), "")
+            minetest.close_formspec(playername, "")
             if ignite then minetest.sound_play({name="fire_flint_and_steel", gain=0.2}, {object=ent.object}, true) end
         end
         for i = 1, 60 do
