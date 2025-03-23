@@ -195,12 +195,12 @@ function stellua.detach_vehicle(pos)
     end
     for _, p in ipairs(ship or {}) do
         local node = minetest.get_node(p)
-        if node.name == "air" then
-            lvae:set_node(p-pos, {name="stl_vehicles:air"})
-        else
-            lvae:set_node(p-pos, node)
-            minetest.remove_node(p)
+        local drawtype = minetest.registered_nodes[node.name].drawtype
+        if node.name == "air" or drawtype == "liquid" or drawtype == "flowingliquid" then
+            node = {name="stl_vehicles:air"}
         end
+        lvae:set_node(p-pos, node)
+        minetest.remove_node(p)
         if not minp then minp = table.copy(p) else
             for _, d in ipairs({"x", "y", "z"}) do
                 if p[d] < minp[d] then minp[d] = p[d] end
@@ -225,7 +225,7 @@ function stellua.land_vehicle(vehicle, pos)
     for _, node in pairs(vehicle.data) do
         if node.entity then
             if node.name == "stl_vehicles:air" then
-                minetest.remove_node(node.entity.pos)
+                minetest.remove_node(node.entity.pos+pos)
             else
                 minetest.set_node(node.entity.pos+pos, node)
             end
