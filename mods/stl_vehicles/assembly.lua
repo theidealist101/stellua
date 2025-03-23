@@ -335,7 +335,7 @@ minetest.register_on_mods_loaded(function()
             local on_rightclick = defs.on_rightclick
             minetest.override_item(name, {on_rightclick = function (pos, node, user, itemstack, pointed)
                 if on_rightclick then on_rightclick(pos, node, user)
-                elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(vector.round(user:get_pos()), true) then
+                elseif (itemstack:is_empty() or not ({minetest.item_place_node(itemstack, user, pointed)})[2]) and not stellua.assemble_vehicle(vector.round(user:get_pos()+UP*0.2), true) then
                     local ship, seat = stellua.assemble_vehicle(pos)
                     if seat then
                         user:set_pos(seat)
