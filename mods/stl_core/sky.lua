@@ -15,6 +15,7 @@ minetest.register_entity("stl_core:skybox", {
     },
     on_activate = function (self, staticdata)
         self.player = minetest.get_player_by_name(staticdata)
+        self.object:set_observers({[staticdata]=true})
     end,
     set_star = function (self, i)
         self.star = i
