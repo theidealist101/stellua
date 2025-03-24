@@ -132,7 +132,7 @@ stl_moreplants.register_place(function ()
     return {
         place_on = "group:tree",
         all_ceilings = true,
-        fill_ratio = 0.2
+        fill_ratio = 0.3
     }
 end)
 
