@@ -543,7 +543,9 @@ minetest.register_abm({
         if node.param2 ~= 0 then return end
         local index = stellua.get_planet_index(pos.y)
         if not index then return end
-        node.param2 = planets[index].param2_trees[minetest.get_content_id(node.name)]
+        local new_param2 = planets[index].param2_trees[minetest.get_content_id(node.name)]
+        if not new_param2 or new_param2 == 0 then return end
+        node.param2 = new_param2
         minetest.swap_node(pos, node)
     end
 })

@@ -8,7 +8,8 @@
         "unpack",
         "ItemStack",
         "VoxelArea",
-        "player_api"
+        "player_api",
+        "stl_moreplants"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

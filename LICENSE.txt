@@ -110,6 +110,8 @@ The following textures are borrowed from Minetest Game and are under CC BY-SA 3.
 - default_tool_stonesword.png
 - default_tool_bronzesword.png
 - default_tool_steelsword.png
+- stl_moreplants_vines1.png <- default_papyrus.png
+- stl_moreplants_fruit1.png <- default_apple.png
 
 The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 
@@ -147,6 +149,10 @@ The following textures are borrowed from Mineclonia and are under CC BY-SA 3.0:
 - stl_decor_crate_top.png <- mcl_barrels_barrel_top.png
 - stl_decor_crate_bottom.png <- mcl_barrels_barrel_bottom.png
 - stl_decor_crate_side.png <- mcl_barrels_barrel_side.png
+- stl_moreplants_vines2.png <- mcl_lush_caves_cave_vines_plant.png
+- stl_moreplants_vines3.png <- twisting_vines_plant.png
+- stl_moreplants_vines4.png <- mcl_core_vine.png
+- stl_moreplants_glow_vines.png <- mcl_lush_caves_cave_vines_plant_lit.png
 
 All sounds not mentioned come directly from Minetest Game and are under CC BY-SA 3.0
 

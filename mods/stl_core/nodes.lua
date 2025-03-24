@@ -237,7 +237,7 @@ for i = 1, 8 do
         paramtype2 = "color",
         palette = "palette_foliage.png",
         waving = 2,
-        groups = {snappy=2, tree=1},
+        groups = {snappy=2, tree=1, leaves=1},
         drop = {},
         after_dig_node = drop_with_color("stl_core:stick", 0.2),
         sounds = stellua.node_sound_leaves_defaults()

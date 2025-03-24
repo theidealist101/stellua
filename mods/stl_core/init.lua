@@ -61,7 +61,7 @@ storage:set_int("version", VERSION)
 local start_planet
 
 function stellua.is_spawn_suitable(planet)
-    return 250 < planet.heat_stat and planet.heat_stat < 350 and planet.scale < 1.1
+    return 200 < planet.heat_stat and planet.heat_stat < 400 and planet.scale < 1.1
     and 0.5 <= planet.atmo_stat and planet.atmo_stat <= 2 and planet.life_stat > 1
     and planet.crystal == "stl_core:uranium" --more to be added later
 end
