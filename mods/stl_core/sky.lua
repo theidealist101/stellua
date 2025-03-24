@@ -101,21 +101,24 @@ minetest.register_globalstep(function()
             player:set_physics_override({gravity=planet.gravity, speed=planet.walk_speed})
         end
 
+        local has_entities = false
         for _, obj in ipairs(minetest.get_objects_inside_radius(pos, 100)) do
             local entity = obj:get_luaentity()
-            if entity and entity.name == "stl_core:skybox" and entity.player == player then return end
+            if entity and entity.name == "stl_core:skybox" and entity.player == player then has_entities = true end
         end
-        for i, star in ipairs(stellua.stars) do
-            if i ~= current_star or not index then
-                local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
-                if obj then obj:get_luaentity():set_star(i) end
-            end
-        end
-        if current_star then
-            for _, i in ipairs(stellua.stars[current_star].planets) do
-                if i ~= index then
+        if not has_entities then
+            for i, star in ipairs(stellua.stars) do
+                if i ~= current_star or not index then
                     local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
-                    if obj then obj:get_luaentity():set_planet(i) end
+                    if obj then obj:get_luaentity():set_star(i) end
+                end
+            end
+            if current_star then
+                for _, i in ipairs(stellua.stars[current_star].planets) do
+                    if i ~= index then
+                        local obj = minetest.add_entity(pos, "stl_core:skybox", player:get_player_name())
+                        if obj then obj:get_luaentity():set_planet(i) end
+                    end
                 end
             end
         end
