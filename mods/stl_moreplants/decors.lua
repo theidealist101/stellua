@@ -24,7 +24,7 @@ stl_moreplants.register_place(function (planet)
     return {
         place_on = {planet.mapgen_filler, planet.mapgen_stone},
         y_min = planet.water_level,
-        y_max = planet.water_level,
+        y_max = planet.water_level+1,
         spawn_by = {planet.mapgen_water, planet.mapgen_water_top},
         fill_ratio = 0.2,
         fill_spread = 30
@@ -62,7 +62,7 @@ stl_moreplants.register_place(function (planet)
     if not planet.water_level then return end
     return {
         place_on = planet.mapgen_water,
-        y_max = planet.water_level+1,
+        y_max = planet.water_level,
         y_min = planet.water_level-1,
         liquid_surface = true,
         place_offset_y = -1,
@@ -136,9 +136,10 @@ stl_moreplants.register_place(function ()
 end)
 
 --Basic single node
-stl_moreplants.register_shape(function ()
+stl_moreplants.register_shape(function (planet, place)
     return {
-        decoration = {stl_moreplants.get_items_in_group("leaves"), stl_moreplants.get_items_in_group("fruit")},
+        decoration = place.y_max == planet.water_level and stl_moreplants.get_items_in_group("leaves")
+        or {stl_moreplants.get_items_in_group("leaves"), stl_moreplants.get_items_in_group("fruit")},
         param2_rand = true
     }
 end)
