@@ -23,9 +23,10 @@ stl_moreplants.register_place(function (planet)
     if not planet.water_level then return end
     return {
         place_on = {planet.mapgen_filler, planet.mapgen_stone},
-        y_min = planet.water_level,
+        y_min = planet.water_level+1,
         y_max = planet.water_level+1,
         spawn_by = {planet.mapgen_water, planet.mapgen_water_top},
+        num_spawn_by = 1,
         fill_ratio = 0.2,
         fill_spread = 30
     }
