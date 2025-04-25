@@ -46,6 +46,9 @@ Planets
 * `stellua.get_planet_level(index)`
     * Returns the y position in-world of the planet with the given index; specifically, the level of the middle of the slice.
 
+* `stellua.get_pos_on_planet(pos)`
+    * Returns the position relative to the current planet layer. The y position ranges from -500 to 499.
+
 * `stellua.registered_on_planets_generated`
     * List of functions to run when each planet is generated.
 

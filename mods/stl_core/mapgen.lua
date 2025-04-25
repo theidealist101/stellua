@@ -40,8 +40,8 @@ function stellua.get_planet_index(y)
     return index
 end
 
-function stellua.get_relative_pos(pos)
-    return vector.new(pos.x, pos.y%1000, pos.z)
+function stellua.get_pos_on_planet(pos)
+    return vector.new(pos.x, (pos.y+500)%1000-500, pos.z)
 end
 
 --Quickly convert planet index to y level
